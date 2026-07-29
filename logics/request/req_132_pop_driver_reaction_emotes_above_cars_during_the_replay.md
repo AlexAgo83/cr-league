@@ -2,8 +2,8 @@
 > From version: 0.8.0
 > Schema version: 1.0
 > Status: Draft
-> Understanding: 90%
-> Confidence: 85%
+> Understanding: 90
+> Confidence: 85
 > Complexity: Medium
 > Theme: Race replay expressiveness
 > Reminder: Update status/understanding/confidence and linked backlog/task references when you edit this doc.
@@ -19,7 +19,7 @@
 - Events are already resolved to a position on the trace, so an emote can appear where the incident happens rather than at a fixed screen location.
 - Event density is the main risk: 27 events across 5 cars in one race means an unfiltered mapping would produce near-continuous pops, and one pit stop alone emits three consecutive events.
 - The project ships 128 px WebP board icons produced from 4x4 sprite sheets, documented in the board icon assets runbook, and the emote set should follow the same production and conversion path.
-- The generator prompt for the emote sheet is produced by logics-manager design prompt with --kind icon-sheet, --cell-size 256x256 and a --cells manifest, so the sheet contract is reproducible.
+- The generator prompt for the emote sheet is already generated and committed, verbatim in `item_351` and at `logics/design/race-replay-driver-emotes/`, so the implementer sends it rather than composing one.
 
 # Acceptance criteria
 - AC1: A pure mapping function in packages/shared resolves a RaceEvent to an emote identifier or to nothing, and is covered by unit tests without a browser.

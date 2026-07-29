@@ -6,6 +6,7 @@
 > Confidence: 94
 > Complexity: High
 > Theme: 0.6 beta season lifecycle
+> Non-semantic edit: removed a pointer to a deleted agent handoff doc.
 > Reminder: Update status/understanding/confidence and linked backlog/task references when you edit this doc.
 
 # Needs
@@ -51,7 +52,6 @@
 # Implementation Handoff
 - 2026-07-27: First implementation wave started. `item_324` and `item_325` are partially delivered; `item_326` accessibility is Done.
 - Continue with visible absent-player default confirmation/report labels and `Direction de course` desktop/mobile browser evidence before starting `item_327` / `item_328` / `item_329`.
-- Handoff doc: `docs/agent-handoff-2026-07-27.md`.
 
 # Companion docs
 - Product brief(s): `prod_081_0_6_beta_season_lifecycle_and_league_management_product_brief`

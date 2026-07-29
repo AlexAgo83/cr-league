@@ -2,9 +2,9 @@
 > From version: 0.8.0
 > Schema version: 1.0
 > Status: Ready
-> Understanding: 90%
-> Confidence: 85%
-> Progress: 0%
+> Understanding: 90
+> Confidence: 85
+> Progress: 0
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
@@ -16,7 +16,7 @@
 - [ ] 1. Read CircuitMap.tsx around the car.eventLabel slot, useReplayClock.ts around positionPops, and RaceEventType in packages/shared/src/domain/race.ts before writing any code.
 - [ ] 2. Measure event density on a real race first: build a solo fixture, resolve a Grand Prix, and count events per team and per type, so the cooldown is tuned against data rather than guessed.
 - [ ] 3. Implement the pure event-to-emote mapping and the cooldown in packages/shared, with tests, before touching any rendering.
-- [ ] 4. Generate the sheet prompt with logics-manager design prompt, then slice, extract and convert following the board icon assets runbook.
+- [ ] 4. Send the generator prompt already committed in `item_351` (and at `logics/design/race-replay-driver-emotes/prompt.md`) to an image generator, then slice, extract and convert following the board icon assets runbook. Do not regenerate the prompt.
 - [ ] 5. Add the emote channel to useReplayClock by mirroring positionPops, then feed the existing CircuitMap slot for every car in the field.
 - [ ] 6. Add the float keyframe and the prefers-reduced-motion entry alongside the existing ones.
 - [ ] 7. Verify visually on a rendered replay, not only through unit tests, and check that the emote does not collide with the position delta.

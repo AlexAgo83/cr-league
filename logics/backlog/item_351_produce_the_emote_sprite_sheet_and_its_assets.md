@@ -2,8 +2,8 @@
 > From version: 0.8.0
 > Schema version: 1.0
 > Status: Ready
-> Understanding: 90
-> Confidence: 85
+> Understanding: 95
+> Confidence: 90
 > Progress: 0
 > Complexity: Medium
 > Theme: Race replay expressiveness
@@ -16,7 +16,7 @@
 
 # Scope
 - In:
-  - Generate the sheet prompt with logics-manager design prompt using --kind icon-sheet, --cell-size 256x256, a --cells manifest listing every emote in fill order, and the project palette and style. The generated pack is already committed at `logics/design/race-replay-driver-emotes/`.
+  - Send the generator prompt below as-is. It is already generated and committed; do not rewrite it or re-run the generator command.
   - Slice the returned sheet, remove the background if the generator ignores the transparency instruction, and convert to 128 px WebP as the board icon runbook describes.
   - Commit only the final WebP assets and keep the source sheet in logics/external, which is not versioned.
   - Add a test asserting every declared emote identifier resolves to a committed asset carrying a RIFF/WEBP header, mirroring the existing board icon asset test.
@@ -24,6 +24,54 @@
   - Do not commit the source sheet or intermediate PNG cells.
   - Do not add a runtime image dependency or a sprite atlas loader.
   - Do not produce per-team or per-livery emote variants.
+
+# Generator prompt
+
+Ready to send to an image generator. Also committed verbatim at
+`logics/design/race-replay-driver-emotes/prompt.md`, with the structured payload at
+`prompt-pack.json` (sections, cell manifest, layout, cell size).
+
+Produced by:
+
+```
+logics-manager design prompt --kind icon-sheet --cell-size 256x256 \
+  --palette "warm oranges, reds, charcoal, steel grey, gold; no blues" \
+  --style "glossy 3D board-game token, thick soft outlines, saturated colours, subtle top-left light" \
+  --cells "scare: ...|relief: ...|<the 16 emotes in fill order>" \
+  --text "driver reaction emotes that pop above a race car during a replay, seen at small size on a dark map"
+```
+
+The prompt to send:
+
+```text
+Create 16 icon sheet asset(s) for: driver reaction emotes that pop above a race car during a replay, seen at small size on a dark map.
+Generator target: general AI image generator.
+Canvas: 4x4 grid, 1024x1024 total with 256x256 cells; transparent background PNG; one asset per cell, centered, with generous padding and no bleed between cells. Fill left-to-right, then top-to-bottom.
+Assets, in fill order:
+1. scare: a worried grimace, wide eyes, sweat drop
+2. relief: an exhaling face, eyes closed, puff of breath
+3. fire: a determined blazing face
+4. angry: a frustrated snort, furrowed brow
+5. eyeing: narrowed focused eyes sizing up a target
+6. pressure: a tense clenched grimace, gritted teeth
+7. dizzy: a dazed face with spiral eyes
+8. strong: a confident grin with a flexed arm
+9. empty-battery: a drained face beside a flat battery
+10. warning: an alarmed face beside a hazard triangle
+11. cheer: a jubilant open-mouthed cheer
+12. smug: a self-satisfied smirk
+13. shocked: a jaw-dropped gasp
+14. cool: a face wearing dark visor shades
+15. sad: a downcast disappointed face
+16. sleepy: a bored half-lidded yawn
+Palette: warm oranges, reds, charcoal, steel grey, gold; no blues. Do not introduce colours outside it.
+Style: glossy 3D board-game token, thick soft outlines, saturated colours, subtle top-left light.
+Clean silhouettes, consistent lighting and perspective, readable at 24px, 32px and 48px.
+Exclude: text, letters, numbers, labels, grid lines, watermarks, background decoration, any opaque or gradient background, drop shadows cast onto the transparent background, cropped or clipped assets.
+```
+
+The 16 cells fill the 4x4 grid exactly. Cells 1 to 10 are the vocabulary the event mapping
+needs; 11 to 16 are reserve, so a later event type does not require a second sheet.
 
 # Acceptance criteria
 - AC1: Every emote identifier declared by the mapping has a committed 128 px WebP asset.

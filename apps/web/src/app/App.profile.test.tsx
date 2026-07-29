@@ -395,10 +395,9 @@ describe("App profile and admin", () => {
     resumeSavedLeague();
 
     expect(await screen.findByRole("button", { name: "Stand" })).toBeTruthy();
-    fireEvent.click(screen.getByRole("button", { name: "Profile menu" }));
-    fireEvent.click(screen.getByRole("button", { name: "Manage league" }));
+    fireEvent.click(screen.getByTestId("topbar-leave-to-menu"));
 
-    // Manage league keeps the multiplayer entry mode, so it lands on the league setup itself.
+    // Leaving keeps the multiplayer entry mode, so it lands on the league setup itself.
     expect(screen.getByRole("button", { name: /Create league/ })).toBeTruthy();
     expect(screen.getByText("Saved leagues")).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Profile menu" }));
@@ -453,7 +452,6 @@ describe("App profile and admin", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Profile menu" }));
     expect(screen.getByLabelText("Language")).toBeTruthy();
-    expect(screen.queryByRole("button", { name: "Manage league" })).toBe(null);
     expect(screen.queryByRole("button", { name: "Admin" })).toBe(null);
     expect(screen.queryByRole("button", { name: "Copy profile code" })).toBe(null);
   });

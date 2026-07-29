@@ -52,7 +52,6 @@ export function ProfileMenu({
   profileOpen,
   playerTeamName,
   pendingMessage,
-  showManageLeague = true,
   hasLeague,
   isSoloLeague = false,
   isAdmin,
@@ -60,7 +59,6 @@ export function ProfileMenu({
   onChangeLocale,
   onToggleOpen,
   onClose,
-  onAddLeague,
   onOpenLeagueControls,
   onOpenAdminConsole,
   onOpenProfileCode,
@@ -73,7 +71,6 @@ export function ProfileMenu({
   profileOpen: boolean;
   playerTeamName?: string;
   pendingMessage: string | null;
-  showManageLeague?: boolean;
   hasLeague: boolean;
   isSoloLeague?: boolean;
   isAdmin: boolean;
@@ -81,7 +78,6 @@ export function ProfileMenu({
   onChangeLocale: (locale: Locale) => void;
   onToggleOpen: () => void;
   onClose: () => void;
-  onAddLeague: () => void;
   onOpenLeagueControls: () => void;
   onOpenAdminConsole: () => void;
   onOpenProfileCode: () => void;
@@ -109,14 +105,7 @@ export function ProfileMenu({
         <div className="profile-menu-panel">
           <PendingFeedback message={pendingMessage} />
           <LanguageSwitcher locale={locale} onChangeLocale={onChangeLocale} />
-          {showManageLeague ? (
-            <button type="button" data-testid="profile-action-add-league" className="profile-menu-action" onClick={onAddLeague}>
-              {/* Solo has no league to manage; this leads back out to the save slots. */}
-              <BoardIcon className="profile-menu-action-icon" name={isSoloLeague ? "previous-action" : "create-league"} />
-              {tt(isSoloLeague ? "action_back_to_menu" : "action_add_league")}
-            </button>
-          ) : null}
-          {/* Unconditional: with no exit entry it still rules the language switch off the rest. */}
+          {/* The way out of a game is the topbar pill and the brand button, not an entry here. */}
           <hr className="profile-menu-separator" />
           {hasLeague && !isSoloLeague ? (
             <button type="button" data-testid="profile-action-race-direction" className="profile-menu-action" onClick={onOpenLeagueControls}>

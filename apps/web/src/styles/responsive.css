@@ -105,6 +105,26 @@
     display: none;
   }
 
+  /* One column each: at this width the icon column, and the input-beside-button pair, both cost
+     more than they are worth. */
+  .admin-console-header,
+  .admin-token-form {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .admin-console-header > :not(.admin-console-title-icon) {
+    grid-column: 1;
+  }
+
+  .admin-console-title-icon {
+    height: 40px;
+    width: 40px;
+  }
+
+  .admin-list-controls {
+    justify-content: flex-start;
+  }
+
   .setup-topbar {
     display: grid;
     grid-template-columns: auto minmax(0, 1fr);

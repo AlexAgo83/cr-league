@@ -65,13 +65,13 @@ export function AdminConsoleView({
   return (
     <section className="admin-console" aria-label={tt("admin_title")}>
       <div className="panel admin-console-header">
+        {/* The icon is a sibling of the copy, not its container: nesting it indented the title
+            past the token form below and left the panel with two left edges. */}
+        <BoardIcon className="admin-console-title-icon" name="security-warning" />
         <div className="admin-console-title">
-          <BoardIcon className="admin-console-title-icon" name="security-warning" />
-          <div>
-            <span className="section-kicker">{tt("admin_kicker")}</span>
-            <h1>{tt("admin_title")}</h1>
-            <p>{tt("admin_body")}</p>
-          </div>
+          <span className="section-kicker">{tt("admin_kicker")}</span>
+          <h1>{tt("admin_title")}</h1>
+          <p>{tt("admin_body")}</p>
         </div>
         <form
           className="admin-token-form"

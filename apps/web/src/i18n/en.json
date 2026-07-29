@@ -411,7 +411,6 @@
   "card_downside_needs_gap": "Downside: needs small gap",
   "action_create_league": "Create league",
   "action_join_league": "Join league",
-  "action_add_league": "Manage league",
   "action_start_league": "Start league",
   "action_back": "Back",
   "action_next": "Next",
@@ -1027,7 +1026,6 @@
   "wheel_back_to_catalogue": "Back to the arcade",
   "wheel_back_to_entry": "Change the names",
   "wheel_running_order": "Running order",
-  "action_back_to_menu": "Back to menu",
   "action_resume_game": "Back to the game",
   "menu_title": "Menu"
 }

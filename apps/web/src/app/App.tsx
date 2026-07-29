@@ -744,13 +744,12 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
     setProfileOpen(false);
   }
 
-  const profileMenu = (showManageLeague = true) => (
+  const profileMenu = () => (
     <ProfileMenu
       locale={locale}
       profileOpen={profileOpen}
       playerTeamName={playerTeam?.name}
       pendingMessage={pendingMessage}
-      showManageLeague={showManageLeague}
       hasLeague={Boolean(leagueState)}
       isSoloLeague={soloMode}
       isAdmin={Boolean(profileSession?.admin)}
@@ -758,7 +757,6 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
       onChangeLocale={changeLocale}
       onToggleOpen={() => setProfileOpen((open) => !open)}
       onClose={() => setProfileOpen(false)}
-      onAddLeague={soloMode ? leaveSoloForSlots : addLeague}
       onOpenLeagueControls={() => {
         if (leagueState) {
           setForm((current) => ({
@@ -797,7 +795,7 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
   );
 
   const setupTopbar = (
-    <SetupTopbar hideWordmark profileMenu={profileSession ? profileMenu(false) : null} languageSwitcher={languageSwitcher} pendingMessage={pendingMessage} onHome={goHome} onResumeGame={lastGame ? resumeLastGame : undefined} />
+    <SetupTopbar hideWordmark profileMenu={profileSession ? profileMenu() : null} languageSwitcher={languageSwitcher} pendingMessage={pendingMessage} onHome={goHome} onResumeGame={lastGame ? resumeLastGame : undefined} />
   );
 
   const notificationStack = <NotificationStack notifications={notifications} onDismiss={dismissNotification} />;

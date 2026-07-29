@@ -411,7 +411,6 @@
   "card_downside_needs_gap": "Contrepartie : petit écart requis",
   "action_create_league": "Créer ligue",
   "action_join_league": "Rejoindre",
-  "action_add_league": "Gérer ligue",
   "action_start_league": "Lancer ligue",
   "action_back": "Retour",
   "action_next": "Suivant",
@@ -1027,7 +1026,6 @@
   "wheel_back_to_catalogue": "Retour à l'arcade",
   "wheel_back_to_entry": "Changer les noms",
   "wheel_running_order": "Ordre en course",
-  "action_back_to_menu": "Retour menu",
   "action_resume_game": "Retour à la partie",
   "menu_title": "Menu"
 }

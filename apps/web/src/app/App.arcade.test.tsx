@@ -57,17 +57,15 @@ describe("solo sub-modes", () => {
   });
 });
 
-describe("profile menu", () => {
-  it("leaves a solo game for its save slots, not for a league to manage", async () => {
+describe("topbar menu pill", () => {
+  it("leaves a solo game for its save slots, not for the root menu", async () => {
     render(<App />);
     fireEvent.click(screen.getByRole("button", { name: "PRESS START" }));
     fireEvent.click(await screen.findByRole("button", { name: /^Solo$/ }));
     fireEvent.click(await screen.findByRole("button", { name: /^Campaign$/ }));
     await screen.findByRole("heading", { name: "1. Read the circuit" });
 
-    fireEvent.click(screen.getByTestId("profile-menu"));
-    expect(screen.getByTestId("profile-action-add-league").textContent).toBe("Back to menu");
-    fireEvent.click(screen.getByTestId("profile-action-add-league"));
+    fireEvent.click(screen.getByTestId("topbar-leave-to-menu"));
 
     // The brand button already covers the root menu; from a campaign the useful move is another save.
     expect(await screen.findByRole("heading", { name: "Choose a save" })).toBeTruthy();

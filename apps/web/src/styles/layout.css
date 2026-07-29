@@ -760,19 +760,6 @@
   text-align: left;
 }
 
-/* Only the entries that carry an icon become a row; the rest stay plain text buttons. */
-.profile-menu-action:has(.profile-menu-action-icon) {
-  align-items: center;
-  display: flex;
-  gap: 10px;
-}
-
-.profile-menu-action-icon {
-  flex: 0 0 auto;
-  height: 24px;
-  width: 24px;
-}
-
 .profile-menu-action:hover {
   border-color: var(--color-accent);
   color: var(--color-text);
@@ -837,17 +824,29 @@
   width: min(100%, 1180px);
 }
 
-.admin-console-header,
 .admin-data-panel,
 .admin-recovery-panel {
   display: grid;
   gap: 1rem;
 }
 
+/* One left edge for the whole panel: the icon owns a column, the copy and the token form share
+   the other rather than each starting wherever their own box happens to. */
+.admin-console-header {
+  align-items: start;
+  column-gap: 0.85rem;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  row-gap: 1rem;
+}
+
+.admin-console-header > :not(.admin-console-title-icon) {
+  grid-column: 2;
+}
+
 .admin-console-title {
-  align-items: center;
-  display: flex;
-  gap: 0.85rem;
+  display: grid;
+  gap: 0.25rem;
 }
 
 .admin-console-title-icon {
@@ -856,11 +855,12 @@
   width: 58px;
 }
 
+/* `minmax(0, …)`, not `minmax(220px, …)`: the floor plus the button overflowed a phone. */
 .admin-token-form {
+  align-items: end;
   display: grid;
   gap: 0.75rem;
-  grid-template-columns: minmax(220px, 1fr) auto;
-  align-items: end;
+  grid-template-columns: minmax(0, 1fr) auto;
 }
 
 .admin-token-form button,
@@ -889,7 +889,6 @@
   margin-bottom: 0.75rem;
 }
 
-.admin-filter-form,
 .admin-pagination {
   align-items: end;
   display: flex;
@@ -897,10 +896,19 @@
   gap: 0.5rem;
 }
 
+/* Explicit columns rather than flex: as a shrink-to-fit flex item the form measured narrower than
+   its own contents and dropped the submit button onto a second line at every width. */
+.admin-filter-form {
+  align-items: end;
+  display: grid;
+  gap: 0.5rem;
+  grid-template-columns: minmax(0, 260px) auto;
+}
+
 .admin-filter-form label {
   display: grid;
   gap: 0.35rem;
-  min-width: min(100%, 260px);
+  min-width: 0;
 }
 
 .admin-pagination span {

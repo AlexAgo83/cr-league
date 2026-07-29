@@ -982,9 +982,9 @@
   "solo_slot_label": "Slot {slot}",
   "solo_slot_empty": "Empty",
   "solo_slot_empty_hint": "Start a new season here.",
-  "solo_slot_progress": "Season {season} · round {round}/{rounds}",
-  "solo_slot_meta": "{races} GP raced · {points} pts",
-  "solo_slot_last_played": "Last played {date}",
+  "save_progress": "Season {season} · round {round}/{rounds}",
+  "save_meta": "{races} GP raced · {points} pts",
+  "save_last_played": "Last played {date}",
   "solo_slot_delete": "Delete save",
   "solo_slot_delete_title": "Delete this save?",
   "solo_slot_delete_confirm": "This deletes only that local solo save. The other slots stay untouched."

@@ -1,7 +1,9 @@
 // @vitest-environment jsdom
 
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { copyText, loadPlayerClaims, loadProfileSession, PROFILE_SESSION_KEY, safeStorage, storeProfileEmail, storeProfileSession } from "./appStorage.js";
+import { claimFromState, copyText, loadPlayerClaims, loadProfileSession, PLAYER_CLAIMS_KEY, PROFILE_SESSION_KEY, safeStorage, storeProfileEmail, storeProfileSession } from "./appStorage.js";
+import { baseState } from "./App.testFixtures.js";
+import type { LeagueState } from "./types.js";
 
 const realStorage = window.localStorage;
 
@@ -66,5 +68,31 @@ describe("copyText", () => {
 
     expect(execCommand).toHaveBeenCalledWith("copy");
     expect(document.querySelector("input[value='ABCD1234']")).toBe(null);
+  });
+});
+
+describe("saved league claims", () => {
+  it("captures the progress the saved-league card shows", () => {
+    const state = baseState as unknown as LeagueState;
+
+    const claim = claimFromState(state, new Date("2026-07-20T18:00:00.000Z"));
+
+    expect(claim?.season).toBe(state.currentGrandPrix.season);
+    expect(claim?.round).toBe(state.currentGrandPrix.round);
+    expect(claim?.maxRounds).toBe(state.league.maxGrandPrixPerSeason);
+    expect(claim?.updatedAt).toBe("2026-07-20T18:00:00.000Z");
+  });
+
+  it("still loads a claim stored before the card carried progress", () => {
+    // The card falls back to name and code for these rather than dropping the league.
+    localStorage.setItem(
+      PLAYER_CLAIMS_KEY,
+      JSON.stringify([{ teamId: "t1", claimCode: "c1", leagueId: "l1", leagueName: "Harbour Series", leagueCode: "HRB07", teamName: "Nord Kinetics" }])
+    );
+
+    const claims = loadPlayerClaims();
+
+    expect(claims).toHaveLength(1);
+    expect(claims[0]?.updatedAt).toBeUndefined();
   });
 });

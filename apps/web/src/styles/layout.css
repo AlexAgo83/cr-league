@@ -5244,7 +5244,8 @@ label small {
   text-transform: uppercase;
 }
 
-.solo-slot-date {
+.solo-slot-date,
+.saved-league-date {
   opacity: 0.72;
 }
 

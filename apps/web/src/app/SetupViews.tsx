@@ -5,17 +5,16 @@ import { BoardIcon, type BoardIconName } from "../features/VisualIcon.js";
 import { PendingFeedback } from "../features/PendingFeedback.js";
 import type { FormState } from "./types.js";
 import type { SoloSlotSummary } from "./soloStorage.js";
+import type { StoredPlayerClaim } from "./appStorage.js";
+
+function formatDate(iso: string) {
+  const date = new Date(iso);
+  return Number.isNaN(date.getTime()) ? "" : date.toLocaleDateString();
+}
 
 export type ProfileMode = "choice" | "create" | "recover";
 export type SetupMode = "choice" | "create" | "join";
 export type SetupEntryMode = "choice" | "multiplayer" | "solo";
-
-type SavedClaim = {
-  teamId: string;
-  leagueName: string;
-  leagueCode: string;
-  teamName: string;
-};
 
 // A choice step is a poster moment, not a form: icon first, and the panel drops the paper
 // surface so the ambient circuit shows through. The forms keep the light surface.
@@ -91,11 +90,6 @@ export function SoloSlotsView({
   // to tell apart, so the glow stays off.
   const filled = slots.filter((slot): slot is SoloSlotSummary => Boolean(slot));
   const lastPlayed = filled.length > 1 ? filled.reduce((best, slot) => (slot.updatedAt > best.updatedAt ? slot : best)) : null;
-  const formatDate = (iso: string) => {
-    const date = new Date(iso);
-    return Number.isNaN(date.getTime()) ? "" : date.toLocaleDateString();
-  };
-
   return (
     <section className="setup-grid setup-grid-single setup-grid-split" aria-labelledby="solo-slots-title">
       <div className="panel setup-main-panel setup-hero-panel setup-entry-hero-panel">
@@ -121,9 +115,9 @@ export function SoloSlotsView({
                   <strong>{slot ? slot.teamName : tt("solo_slot_empty")}</strong>
                   {slot ? (
                     <>
-                      <small>{tt("solo_slot_progress", { season: slot.season, round: slot.round, rounds: slot.maxRounds })}</small>
-                      <small>{tt("solo_slot_meta", { races: slot.resolvedGrandPrix, points: slot.points })}</small>
-                      <small className="solo-slot-date">{tt("solo_slot_last_played", { date: formatDate(slot.updatedAt) })}</small>
+                      <small>{tt("save_progress", { season: slot.season, round: slot.round, rounds: slot.maxRounds })}</small>
+                      <small>{tt("save_meta", { races: slot.resolvedGrandPrix, points: slot.points })}</small>
+                      <small className="solo-slot-date">{tt("save_last_played", { date: formatDate(slot.updatedAt) })}</small>
                     </>
                   ) : (
                     <small>{tt("solo_slot_empty_hint")}</small>
@@ -315,7 +309,7 @@ export function LeagueSetupView({
   message: string;
   mode: SetupMode;
   pendingMessage: string | null;
-  savedClaims: SavedClaim[];
+  savedClaims: StoredPlayerClaim[];
   savedLeagueIndex: number;
   status: "idle" | "loading" | "error";
   onBack: () => void;
@@ -472,6 +466,14 @@ export function LeagueSetupView({
                         {claim.teamName}
                         {claim.leagueCode ? ` · ${claim.leagueCode}` : ""}
                       </small>
+                      {/* Claims stored before the card carried progress have none of this. */}
+                      {claim.season && claim.round && claim.maxRounds ? (
+                        <small>{tt("save_progress", { season: claim.season, round: claim.round, rounds: claim.maxRounds })}</small>
+                      ) : null}
+                      {claim.resolvedGrandPrix !== undefined && claim.points !== undefined ? (
+                        <small>{tt("save_meta", { races: claim.resolvedGrandPrix, points: claim.points })}</small>
+                      ) : null}
+                      {claim.updatedAt ? <small className="saved-league-date">{tt("save_last_played", { date: formatDate(claim.updatedAt) })}</small> : null}
                     </button>
                   );
                 })()}

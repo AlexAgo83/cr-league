@@ -45,6 +45,14 @@ export type StoredPlayerClaim = NonNullable<LeagueState["player"]> & {
   leagueName: string;
   leagueCode: string;
   teamName: string;
+  // Optional: claims stored before the saved-league card showed progress have none, and the
+  // card just falls back to name and code until the league is next played.
+  season?: number;
+  round?: number;
+  maxRounds?: number;
+  points?: number;
+  resolvedGrandPrix?: number;
+  updatedAt?: string;
 };
 
 export async function api<T>(path: string, init: RequestInit): Promise<T> {
@@ -95,7 +103,7 @@ export async function copyText(text: string) {
   }
 }
 
-export function claimFromState(state: LeagueState): StoredPlayerClaim | null {
+export function claimFromState(state: LeagueState, now = new Date()): StoredPlayerClaim | null {
   const team = state.teams.find((candidate) => candidate.id === state.player?.teamId);
   return state.player && team
     ? {
@@ -103,7 +111,13 @@ export function claimFromState(state: LeagueState): StoredPlayerClaim | null {
         leagueId: state.league.id,
         leagueName: state.league.name,
         leagueCode: state.league.code ?? "",
-        teamName: team.name
+        teamName: team.name,
+        season: state.currentGrandPrix.season,
+        round: state.currentGrandPrix.round,
+        maxRounds: state.league.maxGrandPrixPerSeason,
+        points: team.points,
+        resolvedGrandPrix: state.grandPrixHistory.filter((grandPrix) => grandPrix.result).length,
+        updatedAt: now.toISOString()
       }
     : null;
 }

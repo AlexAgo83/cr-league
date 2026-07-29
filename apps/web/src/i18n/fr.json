@@ -982,9 +982,9 @@
   "solo_slot_label": "Emplacement {slot}",
   "solo_slot_empty": "Vide",
   "solo_slot_empty_hint": "Commence une saison ici.",
-  "solo_slot_progress": "Saison {season} · manche {round}/{rounds}",
-  "solo_slot_meta": "{races} GP courus · {points} pts",
-  "solo_slot_last_played": "Dernière partie le {date}",
+  "save_progress": "Saison {season} · manche {round}/{rounds}",
+  "save_meta": "{races} GP courus · {points} pts",
+  "save_last_played": "Dernière partie le {date}",
   "solo_slot_delete": "Supprimer",
   "solo_slot_delete_title": "Supprimer cette sauvegarde ?",
   "solo_slot_delete_confirm": "Ceci supprime uniquement cette sauvegarde solo locale. Les autres emplacements ne bougent pas."

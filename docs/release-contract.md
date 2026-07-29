@@ -5,11 +5,15 @@ CR League releases are promoted from immutable GitHub releases. Render auto depl
 ## Version and tag
 
 1. Update `package.json`, `apps/api/package.json`, `apps/web/package.json`, and `packages/shared/package.json` to the same semver version.
-2. Add a short changelog entry under `changelogs/`.
-3. Commit the version and changelog update.
-4. Create a tag named `v<package.json version>`, for example `v0.1.1`.
-5. Wait for the `CI` workflow on that commit to succeed.
-6. Publish a GitHub Release for that tag.
+2. Update the `@cr-league/shared` dependency in `apps/api/package.json` and `apps/web/package.json` to that same version. The pin is exact, so it does not follow the bump on its own.
+3. Run `npm install` to refresh `package-lock.json`, then verify with `npm ci`, not `npm install`. `npm install` rewrites the lockfile to make itself pass; `npm ci` refuses a lockfile that disagrees with the manifests, which is what CI runs. A stale pin makes every CI lane fail at install, before a single test runs, with `404 '@cr-league/shared@<old>' is not in this registry`.
+4. Add a short changelog entry under `changelogs/`.
+5. Commit the version, lockfile and changelog update.
+6. Create a tag named `v<package.json version>`, for example `v0.1.1`.
+7. Wait for the `CI` workflow on that commit to succeed.
+8. Publish a GitHub Release for that tag.
+
+CI runs `npm run test:coverage`, not `npm test`. Instrumentation makes tests several times slower, so a test that is comfortable locally can pass the 5s per-test timeout on a runner. Reproduce timing failures with `npm run test:coverage`.
 
 The release workflow rejects a tag that does not exactly match `v<package.json version>` at the release commit. The `/health` endpoint returns the same package version and commit SHA so the workflow can verify the API deployment.
 

@@ -542,6 +542,14 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
     setSetupEntryMode("solo");
   }
 
+  /** Leaving a solo game lands on its save slots, not the root menu the brand button reaches. */
+  function leaveSoloForSlots() {
+    addLeague();
+    setActiveSoloSlot(null);
+    setSoloSlots(listSoloSlots());
+    setSetupEntryMode("campaign");
+  }
+
   function startCampaign() {
     // A first-time player has nothing to choose between, so keep their path to a race direct.
     if (!hasAnySoloSave()) {
@@ -726,7 +734,7 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
       onChangeLocale={changeLocale}
       onToggleOpen={() => setProfileOpen((open) => !open)}
       onClose={() => setProfileOpen(false)}
-      onAddLeague={addLeague}
+      onAddLeague={soloMode ? leaveSoloForSlots : addLeague}
       onOpenLeagueControls={() => {
         if (leagueState) {
           setForm((current) => ({

@@ -110,8 +110,8 @@ export function ProfileMenu({
           <PendingFeedback message={pendingMessage} />
           {showManageLeague ? (
             <button type="button" data-testid="profile-action-add-league" className="profile-menu-action" onClick={onAddLeague}>
-              {/* Solo has no league to manage: the same action just leaves the game for the menu. */}
-              {tt(isSoloLeague ? "action_leave_game" : "action_add_league")}
+              {/* Solo has no league to manage; what a campaign player wants here is another save. */}
+              {tt(isSoloLeague ? "action_change_save" : "action_add_league")}
             </button>
           ) : null}
           {hasLeague && !isSoloLeague ? (

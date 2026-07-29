@@ -8,6 +8,7 @@
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
+> Non-semantic edit: 2026-07-29 closeout stamps plus rejoining bullets the closeout split mid-sentence; status/progress unchanged.
 
 # Context
 - Orchestrate the scaffolded request chain and keep sibling implementation slices linked.
@@ -46,17 +47,26 @@
 - request-AC6 -> This task. Proof: the result screen lists the classification with the winner accented and offers Draw again, Change the names and Back to the arcade. A rendered draw returned "1 Sam, 2 Chris, 3 Robin, 4 Alex" for names entered Alex-first.
 - request-AC7 -> This task. Proof: `arcadeStorage` uses its own key; "does not touch campaign or multiplayer storage" asserts the slot, index and claim keys are unchanged, and a rendered run left `cr-league-solo-slot-v1-0` null.
 - request-AC8 -> This task. Proof: `solo-campaign`, `arcade` and `destiny-wheel` are committed as 128px WebP (5.8-7.6 KB each) and `arcade-catalogue.webp` as 1600x600, 60 KB. The delivered sheet came back opaque as predicted and went through `rembg`; no extracted cell touched its edge, so no manual recrop was needed. A rendered run reported no 404 under /assets/crl.
-- request-AC9 -> This task. Proof: lint, typecheck and build pass; 518 unit tests pass (9 skipped) and 7 chromium e2e scenarios pass.
+- request-AC9 -> This task. Proof: lint, typecheck and build pass; 519 unit tests pass (9 skipped) and 7 chromium e2e scenarios pass.
 
 # Validation
-- Run `python3 -m logics_manager lint --require-status`.
-- Run scaffold command tests.
+- `npm run lint` passed.
+- `npm run typecheck` passed.
+- `npm run build` passed.
+- `npm test` passed: 519 passed, 9 skipped.
+- `npm run test:e2e` passed: 7 chromium scenarios.
+- `npm run balance:gate` passed: 0 blocking issues.
+- `logics-manager lint --require-status` passed.
+- Rendered walkthrough of the arcade: catalogue, empty and filled participant lists, the replay reporting 14 map elements and 0 plan surfaces, the final order, and no 404 under /assets/crl.
+- Finish workflow executed on 2026-07-29.
+- Linked backlog/request close verification passed.
 
 # Report
 - Implementation complete, assets included.
-- One diagnostic in the request was too optimistic: ReplayView needed no change for the plan
-  surfaces, which are optional props, but the circuit traits panel and the tower title had no
-  opt-out. Two optional props were added, both defaulting to the existing behaviour.
+- One diagnostic in the request was too optimistic: ReplayView needed no change for the plan surfaces, which are optional props, but the circuit traits panel and the tower title had no opt-out. Two optional props were added, both defaulting to the existing behaviour.
+- Finished on 2026-07-29.
+- Linked backlog item(s): `item_356_produce_the_arcade_board_icons_and_hero`, `item_357_split_solo_into_campaign_and_arcade`, `item_358_enter_and_keep_the_destiny_wheel_participants`, `item_359_race_the_destiny_wheel_draw_and_show_the_order`
+- Related request(s): `req_134_split_solo_into_campaign_and_arcade_with_a_destiny_wheel_draw`
 - Two defects found by looking at the rendered screen rather than the tests: the tower was
   titled "Final classification" over a live order, which gives a draw away before the flag, and
   the participant input painted light text on the paper cockpit colour because the dark choice

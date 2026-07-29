@@ -8,6 +8,7 @@
 > Complexity: Medium
 > Theme: Solo modes
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
+> Non-semantic edit: 2026-07-29 closeout stamps only; status/progress unchanged.
 
 # Problem
 - The draw has to produce an order, and the race the game already simulates is what produces it.
@@ -39,6 +40,8 @@
 - request-AC5 -> This backlog slice. Proof: AC2: Two launches with the same participants can give different orders.
 - request-AC6 -> This backlog slice. Proof: AC3: The replay shows the map without plan, cards, qualifying or payoff surfaces.
 - request-AC9 -> This backlog slice. Proof: AC4: The result screen offers drawing again with the same participants.
+- request-AC7 -> This backlog slice. Evidence needed: Arcade never reads or writes a campaign save slot.
+- request-AC8 -> This backlog slice. Evidence needed: The three new board icons and the arcade hero exist as committed assets in the app's formats, and the icon existence test covers them.
 
 # Decision framing
 - Product framing: Not needed
@@ -59,3 +62,9 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_135_orchestrate_the_solo_arcade_and_its_destiny_wheel`
+
+# Notes
+- Task `task_135_orchestrate_the_solo_arcade_and_its_destiny_wheel` was finished via `logics-manager flow finish task` on 2026-07-29.

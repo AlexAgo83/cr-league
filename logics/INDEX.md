@@ -104,7 +104,7 @@
 | [prod_083_solo_multiplayer_entry_and_local_solo_mode_product_brief](product/prod_083_solo_multiplayer_entry_and_local_solo_mode_product_brief.md) | Solo / Multiplayer Entry And Local Solo Mode Product Brief | Settled |  |  | product/prod_083_solo_multiplayer_entry_and_local_solo_mode_product_brief.md |
 | [prod_084_race_replay_driver_emotes_product_brief](product/prod_084_race_replay_driver_emotes_product_brief.md) | Race Replay Driver Emotes Product Brief | Settled |  |  | product/prod_084_race_replay_driver_emotes_product_brief.md |
 | [prod_085_solo_save_slots_product_brief](product/prod_085_solo_save_slots_product_brief.md) | Solo Save Slots Product Brief | Proposed |  |  | product/prod_085_solo_save_slots_product_brief.md |
-| [prod_086_solo_arcade_product_brief](product/prod_086_solo_arcade_product_brief.md) | Solo Arcade Product Brief | Proposed |  |  | product/prod_086_solo_arcade_product_brief.md |
+| [prod_086_solo_arcade_product_brief](product/prod_086_solo_arcade_product_brief.md) | Solo Arcade Product Brief | Settled |  |  | product/prod_086_solo_arcade_product_brief.md |
 
 ## Roadmaps
 

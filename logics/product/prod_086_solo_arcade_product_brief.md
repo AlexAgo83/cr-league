@@ -1,14 +1,26 @@
 ## prod_086_solo_arcade_product_brief - Solo Arcade Product Brief
 > Date: 2026-07-29
-> Status: Proposed
+> Status: Settled
 > Related request: `req_134_split_solo_into_campaign_and_arcade_with_a_destiny_wheel_draw`
-> Related backlog: `item_356_produce_the_arcade_board_icons_and_hero`, `item_357_split_solo_into_campaign_and_arcade`, `item_358_enter_and_keep_the_destiny_wheel_participants`, `item_359_race_the_destiny_wheel_draw_and_show_the_order`
+> Related backlog: `item_356_produce_the_arcade_board_icons_and_hero`
 > Related task: `task_135_orchestrate_the_solo_arcade_and_its_destiny_wheel`
 > Related architecture: (none yet)
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
 
 # Overview
 Give Solo a second door: beside the campaign season, a catalogue of short games that use the racing the game already has for something other than a championship. The first one turns a race into a way to settle who goes first.
+
+```mermaid
+flowchart TD
+  Solo[Player picks Solo] --> Mode{Campaign or Arcade}
+  Mode -- Campaign --> Slots[Three save slots, unchanged]
+  Mode -- Arcade --> Catalogue[Catalogue of short games]
+  Catalogue --> Wheel[Destiny Wheel]
+  Wheel --> Names[Enter names, persisted on launch]
+  Names --> Race[simulateRace, no cards, no plan, no points]
+  Race --> Order[Finishing order is the draw]
+  Order --> Names
+```
 
 # Goals
 - Name the existing solo play Campaign, and put it beside a second sub-mode rather than under it.
@@ -35,5 +47,5 @@ Give Solo a second door: beside the campaign season, a catalogue of short games 
 - Context-pack output can be handed to an implementation agent directly.
 
 # References
-- Product back-reference: `req_134_split_solo_into_campaign_and_arcade_with_a_destiny_wheel_draw`
+- Product back-reference: `item_356_produce_the_arcade_board_icons_and_hero`
 - Task back-reference: `task_135_orchestrate_the_solo_arcade_and_its_destiny_wheel`

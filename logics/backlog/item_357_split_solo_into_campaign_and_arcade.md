@@ -8,6 +8,7 @@
 > Complexity: Low
 > Theme: Solo modes
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
+> Non-semantic edit: 2026-07-29 closeout stamps only; status/progress unchanged.
 
 # Problem
 - Solo leads straight to campaign save slots, so a second kind of solo play has nowhere to live.
@@ -32,6 +33,13 @@
 # AC Traceability
 - request-AC1 -> This backlog slice. Proof: AC1: Solo shows Campaign and Arcade, and Campaign behaves exactly as Solo did before.
 - request-AC2 -> This backlog slice. Proof: AC2: Arcade opens a catalogue listing the games that exist and nothing else.
+- request-AC3 -> This backlog slice. Evidence needed: The Destiny Wheel asks for participants by name, and the list persists locally when it is validated.
+- request-AC4 -> This backlog slice. Evidence needed: Launching runs a generated Grand Prix through the existing race simulation, without cards, plan, qualifying, points or credits.
+- request-AC5 -> This backlog slice. Evidence needed: The race plays on the existing circuit map and its replay, with the plan and stats surfaces absent rather than disabled.
+- request-AC6 -> This backlog slice. Evidence needed: The finishing order is shown as the result of the draw, and the draw can be run again with the same participants.
+- request-AC7 -> This backlog slice. Evidence needed: Arcade never reads or writes a campaign save slot.
+- request-AC8 -> This backlog slice. Evidence needed: The three new board icons and the arcade hero exist as committed assets in the app's formats, and the icon existence test covers them.
+- request-AC9 -> This backlog slice. Evidence needed: Lint, typecheck, build, unit tests and the e2e suite pass.
 
 # Decision framing
 - Product framing: Not needed
@@ -52,3 +60,9 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_135_orchestrate_the_solo_arcade_and_its_destiny_wheel`
+
+# Notes
+- Task `task_135_orchestrate_the_solo_arcade_and_its_destiny_wheel` was finished via `logics-manager flow finish task` on 2026-07-29.

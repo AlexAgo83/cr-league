@@ -975,5 +975,17 @@
   "circuit_stats_races": "Courses",
   "circuit_stats_best_finish": "Meilleur résultat",
   "circuit_stats_none": "Jamais couru.",
-  "circuit_stats_wins_label": "Victoires"
+  "circuit_stats_wins_label": "Victoires",
+  "solo_slots_kicker": "Solo",
+  "solo_slots_title": "Choisis une sauvegarde",
+  "solo_slots_intro": "Trois parties locales, conservées sur cet appareil.",
+  "solo_slot_label": "Emplacement {slot}",
+  "solo_slot_empty": "Vide",
+  "solo_slot_empty_hint": "Commence une saison ici.",
+  "solo_slot_progress": "Saison {season} · manche {round}/{rounds}",
+  "solo_slot_meta": "{races} GP courus · {points} pts",
+  "solo_slot_last_played": "Dernière partie le {date}",
+  "solo_slot_delete": "Supprimer",
+  "solo_slot_delete_title": "Supprimer cette sauvegarde ?",
+  "solo_slot_delete_confirm": "Ceci supprime uniquement cette sauvegarde solo locale. Les autres emplacements ne bougent pas."
 }

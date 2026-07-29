@@ -1,10 +1,10 @@
 ## item_354_store_solo_games_in_three_slots_with_a_light_index - Store solo games in three slots with a light index
 > From version: 0.8.0
 > Schema version: 1.0
-> Status: Ready
-> Understanding: 90%
-> Confidence: 85%
-> Progress: 0%
+> Status: Done
+> Understanding: 100
+> Confidence: 95
+> Progress: 100
 > Complexity: Medium
 > Theme: Solo persistence
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

@@ -10,7 +10,7 @@ npm run capture:screenshots
 ## Why It Needs No Backend
 
 Solo mode is entirely local: the league lives in `localStorage` under
-`cr-league-solo-save-v1`. The script injects a save, forces the locale to English, enters
+`cr-league-solo-slot-v1-0` (solo save slot 1). The script injects a save, forces the locale to English, enters
 Solo once, then moves between screens client-side. It starts the web dev server if it is not
 already running, and needs neither the API nor Postgres.
 

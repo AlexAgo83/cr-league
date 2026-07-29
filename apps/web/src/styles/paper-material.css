@@ -69,6 +69,12 @@
   padding: 16px 18px;
 }
 
+.setup-choice-panel .solo-slot-delete {
+  background: rgb(248 243 232 / 0.06);
+  border: 1px solid rgb(248 243 232 / 0.18);
+  color: #f8f3e8;
+}
+
 .setup-choice-panel .setup-choice:hover,
 .setup-choice-panel .setup-choice:focus-visible {
   background: rgb(248 243 232 / 0.12);

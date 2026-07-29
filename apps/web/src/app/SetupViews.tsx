@@ -1,11 +1,14 @@
+import { useState } from "react";
 import { useT } from "../i18n/index.js";
+import { ConfirmActionModal } from "./AppModals.js";
 import { BoardIcon, type BoardIconName } from "../features/VisualIcon.js";
 import { PendingFeedback } from "../features/PendingFeedback.js";
 import type { FormState } from "./types.js";
+import type { SoloSlotSummary } from "./soloStorage.js";
 
 export type ProfileMode = "choice" | "create" | "recover";
 export type SetupMode = "choice" | "create" | "join";
-export type SetupEntryMode = "choice" | "multiplayer";
+export type SetupEntryMode = "choice" | "multiplayer" | "solo";
 
 type SavedClaim = {
   teamId: string;
@@ -64,6 +67,91 @@ export function SetupEntryView({
           <SetupChoice icon="championship" label={tt("action_start_multiplayer")} hint={tt("setup_multiplayer_hint")} onSelect={onStartMultiplayer} />
         </div>
       </div>
+    </section>
+  );
+}
+
+export function SoloSlotsView({
+  slots,
+  status,
+  onBack,
+  onOpenSlot,
+  onDeleteSlot
+}: {
+  slots: ReadonlyArray<SoloSlotSummary | null>;
+  status: "idle" | "loading" | "error";
+  onBack: () => void;
+  onOpenSlot: (slot: number) => void;
+  onDeleteSlot: (slot: number) => void;
+}) {
+  const tt = useT();
+  const [pendingDelete, setPendingDelete] = useState<SoloSlotSummary | null>(null);
+  const formatDate = (iso: string) => {
+    const date = new Date(iso);
+    return Number.isNaN(date.getTime()) ? "" : date.toLocaleDateString();
+  };
+
+  return (
+    <section className="setup-grid setup-grid-single setup-grid-split" aria-labelledby="solo-slots-title">
+      <div className="panel setup-main-panel setup-hero-panel setup-entry-hero-panel">
+        <SetupBackButton onBack={onBack} />
+        <span className="section-kicker">{tt("solo_slots_kicker")}</span>
+        <h1 id="solo-slots-title">{tt("solo_slots_title")}</h1>
+        <p className={status === "error" ? "status error" : "status"}>{tt("solo_slots_intro")}</p>
+      </div>
+      <div className="panel setup-main-panel setup-form-panel setup-choice-panel">
+        <ul className="solo-slot-list">
+          {slots.map((slot, index) => (
+            <li key={index} className={slot ? "solo-slot solo-slot-filled" : "solo-slot"}>
+              <button
+                type="button"
+                className="setup-choice solo-slot-open"
+                aria-label={slot ? `${tt("solo_slot_label", { slot: index + 1 })}: ${slot.teamName}` : `${tt("solo_slot_label", { slot: index + 1 })}: ${tt("solo_slot_empty")}`}
+                disabled={status === "loading"}
+                onClick={() => onOpenSlot(index)}
+              >
+                <BoardIcon className="setup-choice-icon" name={slot ? "stand-drive" : "empty-card-slot"} />
+                <span className="setup-choice-copy">
+                  <small className="solo-slot-index">{tt("solo_slot_label", { slot: index + 1 })}</small>
+                  <strong>{slot ? slot.teamName : tt("solo_slot_empty")}</strong>
+                  {slot ? (
+                    <>
+                      <small>{tt("solo_slot_progress", { season: slot.season, round: slot.round, rounds: slot.maxRounds })}</small>
+                      <small>{tt("solo_slot_meta", { races: slot.resolvedGrandPrix, points: slot.points })}</small>
+                      <small className="solo-slot-date">{tt("solo_slot_last_played", { date: formatDate(slot.updatedAt) })}</small>
+                    </>
+                  ) : (
+                    <small>{tt("solo_slot_empty_hint")}</small>
+                  )}
+                </span>
+              </button>
+              {slot ? (
+                <button type="button" className="secondary-button solo-slot-delete" disabled={status === "loading"} onClick={() => setPendingDelete(slot)}>
+                  {tt("solo_slot_delete")}
+                </button>
+              ) : null}
+            </li>
+          ))}
+        </ul>
+      </div>
+      {pendingDelete ? (
+        <ConfirmActionModal
+          label={tt("solo_slot_delete_title")}
+          testId="dialog-delete-solo-slot"
+          image="/assets/crl/danger-reset.webp"
+          kicker={tt("solo_slots_kicker")}
+          title={tt("solo_slot_delete_title")}
+          body={`${pendingDelete.teamName} — ${tt("solo_slot_delete_confirm")}`}
+          actionLabel={tt("solo_slot_delete")}
+          status={status}
+          danger
+          onClose={() => setPendingDelete(null)}
+          onConfirm={() => {
+            onDeleteSlot(pendingDelete.slot);
+            setPendingDelete(null);
+          }}
+        />
+      ) : null}
     </section>
   );
 }

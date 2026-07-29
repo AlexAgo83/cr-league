@@ -6,7 +6,7 @@ import { CITY_CIRCUITS } from "./circuits.js";
 import { testCircuit, baseState, decidedState, resolvedState, nextGrandPrixState, seasonTwoState, qualifyingRun, qualifiedState, decidedStateWithQualifying, settingsState } from "./App.testFixtures.js";
 import { closeLeagueIntro, createLeagueFromSetup, expectGarageCode, response, saveProfile, startMultiplayerSetup, withoutPlayer } from "./App.testHelpers.js";
 import { createInitialSoloLeagueState } from "./soloLeague.js";
-import { SOLO_SAVE_KEY, SOLO_SAVE_SCHEMA_VERSION } from "./soloStorage.js";
+import { SOLO_SAVE_SCHEMA_VERSION, SOLO_SLOT_KEY_PREFIX } from "./soloStorage.js";
 import { t } from "../i18n/index.js";
 
 beforeEach(() => {
@@ -245,9 +245,54 @@ describe("App", () => {
 
     expect(await screen.findByRole("heading", { name: "1. Read the circuit" })).toBeTruthy();
     expect(fetch).not.toHaveBeenCalled();
-    expect(localStorage.getItem("cr-league-solo-save-v1")).toContain("solo-local");
+    expect(localStorage.getItem(`${SOLO_SLOT_KEY_PREFIX}0`)).toContain("solo-local");
     fireEvent.click(screen.getByTestId("profile-menu"));
     expect(screen.queryByTestId("profile-action-race-direction")).toBe(null);
+  });
+
+  it("picks a solo slot once one holds a game, and opens that slot", async () => {
+    render(<App />);
+    // Play a first solo game so slot 1 is taken, then come back to the entry screen.
+    fireEvent.click(screen.getByRole("button", { name: /Solo/ }));
+    await screen.findByRole("heading", { name: "1. Read the circuit" });
+    const firstSave = localStorage.getItem(`${SOLO_SLOT_KEY_PREFIX}0`);
+    cleanup();
+
+    render(<App />);
+    fireEvent.click(screen.getByRole("button", { name: /Solo/ }));
+
+    expect(await screen.findByRole("heading", { name: "Choose a save" })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: /Slot 2: Empty/ }));
+
+    await screen.findByRole("heading", { name: "1. Read the circuit" });
+    // The chosen slot is the one that got written; the existing game is untouched.
+    expect(localStorage.getItem(`${SOLO_SLOT_KEY_PREFIX}1`)).toContain("solo-local");
+    expect(localStorage.getItem(`${SOLO_SLOT_KEY_PREFIX}0`)).toBe(firstSave);
+  });
+
+  it("asks for confirmation before deleting a solo slot and keeps the others", async () => {
+    render(<App />);
+    fireEvent.click(screen.getByRole("button", { name: /Solo/ }));
+    await screen.findByRole("heading", { name: "1. Read the circuit" });
+    cleanup();
+    render(<App />);
+    fireEvent.click(screen.getByRole("button", { name: /Solo/ }));
+    await screen.findByRole("heading", { name: "Choose a save" });
+    fireEvent.click(screen.getByRole("button", { name: /Slot 2: Empty/ }));
+    await screen.findByRole("heading", { name: "1. Read the circuit" });
+    cleanup();
+
+    render(<App />);
+    fireEvent.click(screen.getByRole("button", { name: /Solo/ }));
+    await screen.findByRole("heading", { name: "Choose a save" });
+    fireEvent.click(screen.getAllByRole("button", { name: "Delete save" })[0]!);
+
+    expect(await screen.findByTestId("dialog-delete-solo-slot")).toBeTruthy();
+    expect(localStorage.getItem(`${SOLO_SLOT_KEY_PREFIX}0`)).not.toBe(null);
+    fireEvent.click(screen.getByTestId("modal-confirm"));
+
+    await waitFor(() => expect(localStorage.getItem(`${SOLO_SLOT_KEY_PREFIX}0`)).toBe(null));
+    expect(localStorage.getItem(`${SOLO_SLOT_KEY_PREFIX}1`)).toContain("solo-local");
   });
 
   it("runs local solo qualifying without calling the API", async () => {
@@ -263,7 +308,7 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "New chrono" }));
     fireEvent.click(screen.getAllByRole("button", { name: "New chrono" }).at(-1)!);
 
-    await waitFor(() => expect(localStorage.getItem("cr-league-solo-save-v1")).toContain("\"time\""));
+    await waitFor(() => expect(localStorage.getItem(`${SOLO_SLOT_KEY_PREFIX}0`)).toContain("\"time\""));
     expect(fetch).not.toHaveBeenCalled();
   });
 
@@ -272,7 +317,7 @@ describe("App", () => {
     localStorage.setItem("cr-league-help-garage:solo-local", "1");
     const soloState = createInitialSoloLeagueState();
     localStorage.setItem(
-      SOLO_SAVE_KEY,
+      `${SOLO_SLOT_KEY_PREFIX}0`,
       JSON.stringify({
         schemaVersion: SOLO_SAVE_SCHEMA_VERSION,
         createdAt: "2026-01-01T00:00:00.000Z",
@@ -284,7 +329,8 @@ describe("App", () => {
 
     render(<App />);
 
-    fireEvent.click(screen.getByRole("button", { name: /Solo/ }));
+    fireEvent.click(screen.getByRole("button", { name: /^Solo/ }));
+    fireEvent.click(await screen.findByRole("button", { name: /Slot 1/ }));
     await screen.findByRole("heading", { name: "1. Read the circuit" });
     fireEvent.click(screen.getByRole("button", { name: "Garage" }));
     await waitFor(() => expect(document.querySelector(".garage-grid")).toBeTruthy());
@@ -294,7 +340,7 @@ describe("App", () => {
     fireEvent.click(within(screen.getByRole("dialog", { name: "Unlock this car?" })).getByRole("button", { name: "Unlock for 1000" }));
 
     await waitFor(() => {
-      const save = JSON.parse(localStorage.getItem(SOLO_SAVE_KEY)!);
+      const save = JSON.parse(localStorage.getItem(`${SOLO_SLOT_KEY_PREFIX}0`)!);
       expect(save.state.teams[0].credits).toBe(2_000);
       expect(save.state.teams[0].unlockedCarAssetIds).toContain("car-008");
       expect(save.state.teams[0].livery.carAssetId).toBe("car-008");
@@ -316,13 +362,13 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Launch GP" }));
     fireEvent.click(screen.getAllByRole("button", { name: "Launch GP" }).at(-1)!);
 
-    await waitFor(() => expect(localStorage.getItem("cr-league-solo-save-v1")).toContain("\"classification\""));
+    await waitFor(() => expect(localStorage.getItem(`${SOLO_SLOT_KEY_PREFIX}0`)).toContain("\"classification\""));
     fireEvent.click(screen.getByRole("button", { name: "Stand" }));
     fireEvent.click(await screen.findByRole("button", { name: "Next GP" }));
     fireEvent.click(screen.getAllByRole("button", { name: "Next GP" }).at(-1)!);
 
     await waitFor(() => {
-      const save = JSON.parse(localStorage.getItem("cr-league-solo-save-v1")!);
+      const save = JSON.parse(localStorage.getItem(`${SOLO_SLOT_KEY_PREFIX}0`)!);
       expect(save.state.currentGrandPrix.round).toBe(2);
       expect(save.state.currentGrandPrix.result).toBe(null);
     });
@@ -342,7 +388,7 @@ describe("App", () => {
     expect(screen.getByRole("dialog", { name: "Reset solo season?" })).toBeTruthy();
     fireEvent.click(screen.getByTestId("modal-confirm"));
 
-    expect(localStorage.getItem("cr-league-solo-save-v1")).toBe(null);
+    expect(localStorage.getItem(`${SOLO_SLOT_KEY_PREFIX}0`)).toBe(null);
     expect(screen.getByRole("button", { name: /Solo/ })).toBeTruthy();
     expect(fetch).not.toHaveBeenCalled();
   });

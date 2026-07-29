@@ -103,6 +103,9 @@ async function enterSolo(page: Page) {
   await page.goto("/drive", { waitUntil: "networkidle" });
   const solo = page.getByRole("button", { name: "Solo" });
   if (await solo.count()) await solo.first().click();
+  // A seeded save makes Solo open the slot picker instead of the game; pick the seeded slot.
+  const slot = page.getByRole("button", { name: /^Slot 1:/ });
+  if (await slot.count()) await slot.first().click();
   await page.locator(".game-shell").waitFor({ state: "visible", timeout: 15_000 });
 }
 

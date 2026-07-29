@@ -1,9 +1,9 @@
 ## req_133_offer_three_solo_save_slots_with_readable_state - Offer three solo save slots with readable state
 > From version: 0.8.0
 > Schema version: 1.0
-> Status: Draft
-> Understanding: 90%
-> Confidence: 85%
+> Status: Done
+> Understanding: 100
+> Confidence: 95
 > Complexity: Medium
 > Theme: Solo persistence
 > Reminder: Update status/understanding/confidence and linked backlog/task references when you edit this doc.

@@ -48,7 +48,7 @@ import { usePlanForm } from "./usePlanForm.js";
 import { useRaceDerivations } from "./useRaceDerivations.js";
 import { useReplayUiState } from "./useReplayUiState.js";
 import { createInitialSoloLeagueState, isSoloLeagueState } from "./soloLeague.js";
-import { clearSoloSave, loadSoloSave, saveSoloState } from "./soloStorage.js";
+import { clearSoloSlot, firstFreeSoloSlot, hasAnySoloSave, listSoloSlots, loadSoloSlot, saveSoloSlot, type SoloSlot, type SoloSlotSummary } from "./soloStorage.js";
 
 const AdminConsoleView = lazy(() => import("../features/AdminConsoleView.js").then((module) => ({ default: module.AdminConsoleView })));
 
@@ -148,6 +148,8 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
   const tt = useCallback((key: TranslationKey, params?: Parameters<typeof t>[2]) => t(key, locale, params), [locale]);
   const [profileMode, setProfileMode] = useState<ProfileMode>("choice");
   const [setupEntryMode, setSetupEntryMode] = useState<SetupEntryMode>("choice");
+  const [activeSoloSlot, setActiveSoloSlot] = useState<SoloSlot | null>(null);
+  const [soloSlots, setSoloSlots] = useState<Array<SoloSlotSummary | null>>([null, null, null]);
   const [setupMode, setSetupMode] = useState<SetupMode>("choice");
   const { commandClicks, markCommandClicked, resetCommandClicks } = useCommandClicks();
   const [seasonRecapSeason, setSeasonRecapSeason] = useState<number | null>(null);
@@ -525,20 +527,36 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
   }
 
   function persistSoloState(nextState: LeagueState) {
-    saveSoloState(nextState);
+    if (activeSoloSlot !== null) saveSoloSlot(activeSoloSlot, nextState);
     setLeagueState(nextState);
   }
 
-  async function startSolo() {
-    const save = loadSoloSave();
+  function openSoloSlot(slot: SoloSlot) {
+    const save = loadSoloSlot(slot);
     const state = save?.state ?? createInitialSoloLeagueState();
-    if (!save) saveSoloState(state);
+    if (!save) saveSoloSlot(slot, state);
+    setActiveSoloSlot(slot);
     setAdminInspecting(false);
     setSetupEntryMode("choice");
     setLeagueState(state);
     setGameView("drive");
     showStatus(tt(save ? "status_solo_resumed" : "status_solo_started"));
     pushCommandHint("prepare");
+  }
+
+  function deleteSoloSlot(slot: SoloSlot) {
+    clearSoloSlot(slot);
+    setSoloSlots(listSoloSlots());
+  }
+
+  async function startSolo() {
+    // A first-time player has nothing to choose between, so keep their path to a race direct.
+    if (!hasAnySoloSave()) {
+      openSoloSlot(firstFreeSoloSlot() ?? 0);
+      return;
+    }
+    setSoloSlots(listSoloSlots());
+    setSetupEntryMode("solo");
   }
 
   async function runSoloMutation(loadingKey: TranslationKey, action: () => LeagueState, successKey: TranslationKey) {
@@ -682,7 +700,9 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
   }
 
   function resetSoloLeague() {
-    clearSoloSave();
+    if (activeSoloSlot !== null) clearSoloSlot(activeSoloSlot);
+    setActiveSoloSlot(null);
+    setSoloSlots(listSoloSlots());
     setSoloResetOpen(false);
     setProfileOpen(false);
     setLeagueState(null);
@@ -883,6 +903,9 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
     profileFormError,
     leagueFormError,
     setupEntryMode,
+    soloSlots,
+    openSoloSlot: (slot: number) => openSoloSlot(Math.min(2, Math.max(0, Math.trunc(slot))) as SoloSlot),
+    deleteSoloSlot: (slot: number) => deleteSoloSlot(Math.min(2, Math.max(0, Math.trunc(slot))) as SoloSlot),
     setupMode,
     savedClaims,
     savedLeagueIndex,

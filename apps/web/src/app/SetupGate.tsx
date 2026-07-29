@@ -4,7 +4,7 @@ import type { GameView, FormState, LeagueState, ProfileSession } from "./types.j
 import { ChangelogView } from "../features/ChangelogView.js";
 import { SetupShell } from "./OnboardingShell.js";
 import { useSetup } from "./setupContext.js";
-import { LeagueSetupView, ProfileSetupView, SetupEntryView } from "./SetupViews.js";
+import { LeagueSetupView, ProfileSetupView, SetupEntryView, SoloSlotsView } from "./SetupViews.js";
 
 export function SetupGate({
   profileSession,
@@ -38,6 +38,9 @@ export function SetupGate({
     profileFormError,
     leagueFormError,
     setupEntryMode,
+    soloSlots,
+    openSoloSlot,
+    deleteSoloSlot,
     setupMode,
     savedClaims,
     savedLeagueIndex,
@@ -62,6 +65,14 @@ export function SetupGate({
     return (
       <SetupShell topbar={setupTopbar} notificationStack={notificationStack} errorModal={overlays} profileCodeModal={null} profileLogoutModal={null} preferencesResetModal={null}>
         <SetupEntryView message={message} status={status} onStartSolo={startSolo} onStartMultiplayer={() => setSetupEntryMode("multiplayer")} />
+      </SetupShell>
+    );
+  }
+
+  if (!leagueState && setupEntryMode === "solo" && !utilitySetupView) {
+    return (
+      <SetupShell topbar={setupTopbar} notificationStack={notificationStack} errorModal={overlays} profileCodeModal={null} profileLogoutModal={null} preferencesResetModal={null}>
+        <SoloSlotsView slots={soloSlots} status={status} onBack={() => setSetupEntryMode("choice")} onOpenSlot={openSoloSlot} onDeleteSlot={deleteSoloSlot} />
       </SetupShell>
     );
   }

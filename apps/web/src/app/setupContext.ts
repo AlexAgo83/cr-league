@@ -1,6 +1,7 @@
 import { createContext, useContext } from "react";
 import type { StoredPlayerClaim } from "./appStorage.js";
 import type { ProfileMode, SetupEntryMode, SetupMode } from "./SetupViews.js";
+import type { SoloSlotSummary } from "./soloStorage.js";
 
 // The setup flow (entry choice, profile, league creation/join) is a disjoint subtree: AppShell
 // renders it but never reads any of its state. Passing it through as props meant ~23 forwarded
@@ -14,6 +15,9 @@ export type SetupContextValue = {
   profileFormError: string | null;
   leagueFormError: string | null;
   setupEntryMode: SetupEntryMode;
+  soloSlots: ReadonlyArray<SoloSlotSummary | null>;
+  openSoloSlot: (slot: number) => void;
+  deleteSoloSlot: (slot: number) => void;
   setupMode: SetupMode;
   savedClaims: StoredPlayerClaim[];
   savedLeagueIndex: number;

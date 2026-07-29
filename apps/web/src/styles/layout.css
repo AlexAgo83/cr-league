@@ -5203,3 +5203,45 @@ label small {
 .classification li.current-team {
   background: color-mix(in srgb, var(--color-accent) 12%, transparent);
 }
+
+/* Solo save slots. The open action reuses .setup-choice so the slot reads like the other
+   choice steps; the delete action sits beside it rather than inside the clickable area. */
+.solo-slot-list {
+  display: grid;
+  gap: 10px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.solo-slot {
+  align-items: center;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.solo-slot-open {
+  width: 100%;
+}
+
+.solo-slot-index {
+  color: var(--color-accent);
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.solo-slot-date {
+  opacity: 0.72;
+}
+
+.solo-slot:not(.solo-slot-filled) .setup-choice-icon {
+  opacity: 0.45;
+}
+
+.solo-slot-delete {
+  font-size: 0.78rem;
+  min-height: 0;
+  padding: 6px 10px;
+}

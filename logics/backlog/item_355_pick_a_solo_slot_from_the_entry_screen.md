@@ -1,10 +1,10 @@
 ## item_355_pick_a_solo_slot_from_the_entry_screen - Pick a solo slot from the entry screen
 > From version: 0.8.0
 > Schema version: 1.0
-> Status: Ready
-> Understanding: 90%
-> Confidence: 85%
-> Progress: 0%
+> Status: Done
+> Understanding: 100
+> Confidence: 95
+> Progress: 100
 > Complexity: Medium
 > Theme: Solo persistence
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

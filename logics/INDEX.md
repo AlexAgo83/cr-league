@@ -249,7 +249,7 @@
 | [req_130_repo_review_remediation_pass_7_db_indexes_test_fake_drift_0_6_e2e_coverage_code_organization_and_admin_session_hardening](request/req_130_repo_review_remediation_pass_7_db_indexes_test_fake_drift_0_6_e2e_coverage_code_organization_and_admin_session_hardening.md) | Repo review remediation pass 7: DB indexes, test-fake drift, 0.6 E2E coverage, code organization, and admin/session hardening | Done |  |  | request/req_130_repo_review_remediation_pass_7_db_indexes_test_fake_drift_0_6_e2e_coverage_code_organization_and_admin_session_hardening.md |
 | [req_131_solo_and_multiplayer_entry_split_with_local_solo_mode](request/req_131_solo_and_multiplayer_entry_split_with_local_solo_mode.md) | Solo and multiplayer entry split with local solo mode | Done |  |  | request/req_131_solo_and_multiplayer_entry_split_with_local_solo_mode.md |
 | [req_132_pop_driver_reaction_emotes_above_cars_during_the_replay](request/req_132_pop_driver_reaction_emotes_above_cars_during_the_replay.md) | Pop driver reaction emotes above cars during the replay | Done |  |  | request/req_132_pop_driver_reaction_emotes_above_cars_during_the_replay.md |
-| [req_133_offer_three_solo_save_slots_with_readable_state](request/req_133_offer_three_solo_save_slots_with_readable_state.md) | Offer three solo save slots with readable state | Draft |  |  | request/req_133_offer_three_solo_save_slots_with_readable_state.md |
+| [req_133_offer_three_solo_save_slots_with_readable_state](request/req_133_offer_three_solo_save_slots_with_readable_state.md) | Offer three solo save slots with readable state | Done |  |  | request/req_133_offer_three_solo_save_slots_with_readable_state.md |
 
 ## Backlog
 
@@ -607,9 +607,9 @@
 | [item_350_map_race_events_to_a_curated_emote_vocabulary](backlog/item_350_map_race_events_to_a_curated_emote_vocabulary.md) | Map race events to a curated emote vocabulary | Done |  | 100 | backlog/item_350_map_race_events_to_a_curated_emote_vocabulary.md |
 | [item_351_produce_the_emote_sprite_sheet_and_its_assets](backlog/item_351_produce_the_emote_sprite_sheet_and_its_assets.md) | Produce the emote sprite sheet and its assets | Done |  | 100 | backlog/item_351_produce_the_emote_sprite_sheet_and_its_assets.md |
 | [item_352_render_the_emote_above_every_car_on_the_replay_map](backlog/item_352_render_the_emote_above_every_car_on_the_replay_map.md) | Render the emote above every car on the replay map | Done |  | 100 | backlog/item_352_render_the_emote_above_every_car_on_the_replay_map.md |
-| [item_353_bound_what_a_solo_save_costs_in_storage](backlog/item_353_bound_what_a_solo_save_costs_in_storage.md) | Bound what a solo save costs in storage | Ready |  | 0% | backlog/item_353_bound_what_a_solo_save_costs_in_storage.md |
-| [item_354_store_solo_games_in_three_slots_with_a_light_index](backlog/item_354_store_solo_games_in_three_slots_with_a_light_index.md) | Store solo games in three slots with a light index | Ready |  | 0% | backlog/item_354_store_solo_games_in_three_slots_with_a_light_index.md |
-| [item_355_pick_a_solo_slot_from_the_entry_screen](backlog/item_355_pick_a_solo_slot_from_the_entry_screen.md) | Pick a solo slot from the entry screen | Ready |  | 0% | backlog/item_355_pick_a_solo_slot_from_the_entry_screen.md |
+| [item_353_bound_what_a_solo_save_costs_in_storage](backlog/item_353_bound_what_a_solo_save_costs_in_storage.md) | Bound what a solo save costs in storage | Done |  | 100 | backlog/item_353_bound_what_a_solo_save_costs_in_storage.md |
+| [item_354_store_solo_games_in_three_slots_with_a_light_index](backlog/item_354_store_solo_games_in_three_slots_with_a_light_index.md) | Store solo games in three slots with a light index | Done |  | 100 | backlog/item_354_store_solo_games_in_three_slots_with_a_light_index.md |
+| [item_355_pick_a_solo_slot_from_the_entry_screen](backlog/item_355_pick_a_solo_slot_from_the_entry_screen.md) | Pick a solo slot from the entry screen | Done |  | 100 | backlog/item_355_pick_a_solo_slot_from_the_entry_screen.md |
 
 ## Tasks
 
@@ -748,4 +748,4 @@
 | [task_131_orchestrate_repo_review_remediation_pass_7](tasks/task_131_orchestrate_repo_review_remediation_pass_7.md) | Orchestrate repo review remediation pass 7 | Done |  | 100 | tasks/task_131_orchestrate_repo_review_remediation_pass_7.md |
 | [task_132_orchestrate_solo_multiplayer_entry_and_local_solo_mode](tasks/task_132_orchestrate_solo_multiplayer_entry_and_local_solo_mode.md) | Orchestrate Solo / Multiplayer entry and local solo mode | Done | codex | 100% | tasks/task_132_orchestrate_solo_multiplayer_entry_and_local_solo_mode.md |
 | [task_133_orchestrate_race_replay_driver_emotes](tasks/task_133_orchestrate_race_replay_driver_emotes.md) | Orchestrate race replay driver emotes | Done |  | 100% | tasks/task_133_orchestrate_race_replay_driver_emotes.md |
-| [task_134_orchestrate_solo_save_slots](tasks/task_134_orchestrate_solo_save_slots.md) | Orchestrate solo save slots | Ready |  | 0% | tasks/task_134_orchestrate_solo_save_slots.md |
+| [task_134_orchestrate_solo_save_slots](tasks/task_134_orchestrate_solo_save_slots.md) | Orchestrate solo save slots | Done |  | 100 | tasks/task_134_orchestrate_solo_save_slots.md |

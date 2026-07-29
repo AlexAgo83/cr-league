@@ -9,7 +9,7 @@ export { SOLO_LEAGUE_ID };
 // ponytail: the storage keys are duplicated from appStorage.ts / soloStorage.ts, which pull in
 // browser-only modules that cannot be imported from a Node script. A drift shows up immediately
 // as screenshots of the splash screen, so it needs no test to catch it.
-export const SOLO_SAVE_KEY = "cr-league-solo-save-v1";
+export const SOLO_SAVE_KEY = "cr-league-solo-slot-v1-0";
 export const LANGUAGE_KEY = "cr-league-language";
 
 const PLAYER = { teamId: SOLO_TEAM_ID };

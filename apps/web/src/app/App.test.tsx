@@ -285,7 +285,7 @@ describe("App", () => {
     render(<App />);
     fireEvent.click(screen.getByRole("button", { name: /Solo/ }));
     await screen.findByRole("heading", { name: "Choose a save" });
-    fireEvent.click(screen.getAllByRole("button", { name: "Delete save" })[0]!);
+    fireEvent.click(screen.getByRole("button", { name: "Delete save — Slot 1: Volt Union" }));
 
     expect(await screen.findByTestId("dialog-delete-solo-slot")).toBeTruthy();
     expect(localStorage.getItem(`${SOLO_SLOT_KEY_PREFIX}0`)).not.toBe(null);
@@ -330,7 +330,7 @@ describe("App", () => {
     render(<App />);
 
     fireEvent.click(screen.getByRole("button", { name: /^Solo/ }));
-    fireEvent.click(await screen.findByRole("button", { name: /Slot 1/ }));
+    fireEvent.click(await screen.findByRole("button", { name: /^Slot 1:/ }));
     await screen.findByRole("heading", { name: "1. Read the circuit" });
     fireEvent.click(screen.getByRole("button", { name: "Garage" }));
     await waitFor(() => expect(document.querySelector(".garage-grid")).toBeTruthy());

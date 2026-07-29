@@ -126,7 +126,13 @@ export function SoloSlotsView({
                 </span>
               </button>
               {slot ? (
-                <button type="button" className="secondary-button solo-slot-delete" disabled={status === "loading"} onClick={() => setPendingDelete(slot)}>
+                <button
+                  type="button"
+                  className="secondary-button solo-slot-delete"
+                  aria-label={`${tt("solo_slot_delete")} — ${tt("solo_slot_label", { slot: index + 1 })}: ${slot.teamName}`}
+                  disabled={status === "loading"}
+                  onClick={() => setPendingDelete(slot)}
+                >
                   {tt("solo_slot_delete")}
                 </button>
               ) : null}

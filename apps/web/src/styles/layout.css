@@ -5207,12 +5207,9 @@ label small {
 /* Solo save slots. The open action reuses .setup-choice so the slot reads like the other
    choice steps; the delete action sits beside it rather than inside the clickable area. */
 .solo-slot-list {
-  align-items: center;
   display: grid;
-  /* The delete column is declared on the list, not the row, so an empty slot keeps the same
-     card width as a filled one instead of stretching across the missing button. */
+  /* Equal rows so the three slots read as three identical cells whatever they hold. */
   grid-auto-rows: 1fr;
-  grid-template-columns: minmax(0, 1fr) auto;
   gap: 10px;
   list-style: none;
   margin: 0;
@@ -5220,11 +5217,10 @@ label small {
 }
 
 .solo-slot {
-  display: contents;
+  position: relative;
 }
 
 .solo-slot-open {
-  grid-column: 1;
   height: 100%;
   width: 100%;
 }
@@ -5244,9 +5240,26 @@ label small {
   opacity: 0.45;
 }
 
+/* A button cannot nest inside the card button, so it overlays its corner instead. It stays
+   quiet until pointed at: deleting a season is not what the player came to this screen for. */
 .solo-slot-delete {
-  grid-column: 2;
-  font-size: 0.78rem;
+  background: none;
+  border: 0;
+  font-size: 0.72rem;
   min-height: 0;
-  padding: 6px 10px;
+  opacity: 0.5;
+  padding: 8px 12px;
+  position: absolute;
+  right: 4px;
+  top: 4px;
+}
+
+.solo-slot-delete:hover,
+.solo-slot-delete:focus-visible {
+  opacity: 1;
+}
+
+/* Keeps the last played line clear of the button. */
+.solo-slot-filled .setup-choice-copy {
+  padding-right: 84px;
 }

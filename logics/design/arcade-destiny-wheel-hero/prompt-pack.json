@@ -1,0 +1,31 @@
+{
+  "asset_kind": "hero-image",
+  "cell_size": "1600x600",
+  "cells": [],
+  "count": 1,
+  "generator_target": "general AI image generator",
+  "kind": "logics-design-prompt-pack",
+  "layout": "1 image",
+  "machining": [
+    "export as a single image",
+    "no slicing"
+  ],
+  "ok": true,
+  "palette": "near-black #100e12, orange #ff6a1f and teal #248276",
+  "prompt": "Create 1 hero image asset(s) for: Arcade catalogue hero panel for CR League: a neon-lit arcade corner of a race paddock at night, a row of cabinet screens showing race maps, karts parked in the shadows.\nGenerator target: general AI image generator.\nCanvas: one full-bleed image, 1600x600; opaque background. No cells, no panels, no padding between elements.\nReserved zone: keep the left half low in detail and free of subject matter; text is composited there.\nPalette: near-black #100e12, orange #ff6a1f and teal #248276. Do not introduce colours outside it.\nStyle: cinematic 3D render, night city racing, same look as the existing CRL hero panels.\nCinematic composition and lighting.\nExclude: text, letters, numbers, logos, watermarks, UI chrome, sponsor decals.",
+  "ref": "",
+  "safe_area": "the left half",
+  "sections": {
+    "canvas": "Canvas: one full-bleed image, 1600x600; opaque background. No cells, no panels, no padding between elements.",
+    "exclude": "Exclude: text, letters, numbers, logos, watermarks, UI chrome, sponsor decals.",
+    "palette": "Palette: near-black #100e12, orange #ff6a1f and teal #248276. Do not introduce colours outside it.",
+    "quality": "Cinematic composition and lighting.",
+    "safe_area": "Reserved zone: keep the left half low in detail and free of subject matter; text is composited there.",
+    "style": "Style: cinematic 3D render, night city racing, same look as the existing CRL hero panels.",
+    "subject": "Create 1 hero image asset(s) for: Arcade catalogue hero panel for CR League: a neon-lit arcade corner of a race paddock at night, a row of cabinet screens showing race maps, karts parked in the shadows.",
+    "target": "Generator target: general AI image generator."
+  },
+  "sliceable": false,
+  "style": "cinematic 3D render, night city racing, same look as the existing CRL hero panels",
+  "transparent": false
+}

@@ -1,0 +1,226 @@
+{
+  "title": "Split Solo into Campaign and Arcade, with a Destiny Wheel draw",
+  "references": [
+    "AGENTS.md",
+    "LOGICS.md",
+    "logics/instructions.md",
+    "apps/web/src/app/SetupViews.tsx",
+    "apps/web/src/app/SetupGate.tsx",
+    "apps/web/src/app/setupContext.ts",
+    "apps/web/src/app/soloStorage.ts",
+    "apps/web/src/app/circuits.ts",
+    "apps/web/src/features/ReplayView.tsx",
+    "packages/shared/src/simulation/simulateRace.ts",
+    "packages/shared/src/domain/circuits.ts",
+    "packages/shared/src/domain/race.ts",
+    "Current diagnostic: `simulateRace` is a pure function taking participants, a circuit and a seed, and returning a RaceResult. It needs no LeagueState, no API and no league engine.",
+    "Current diagnostic: `ReplayView` requires only `result`, `circuit` and `teamLiveries`. Every plan, decision, tower-report and payoff prop is optional, so passing none of them already yields a replay without plan or stats. No change to ReplayView is needed.",
+    "Current diagnostic: `circuitIdentityForRound`, `raceInputFromCircuit`, `trackZonesForCircuit` and `trackSpeedProfileForCircuit` are all exported from the shared package and are what `resolveGrandPrix` itself uses to build a race.",
+    "Current diagnostic: `RaceParticipant` needs teamId, teamName, kind, standingsRank and a decision; a neutral decision with no card is a valid input, so a draw needs no card economy.",
+    "Current diagnostic: the domain already caps a grid at 16 (`MAX_PLAYERS_LIMIT` in apps/api/src/features/leagues/constants.ts), which is the natural ceiling for a draw rather than a new invented limit.",
+    "Current diagnostic: solo persistence is three campaign slots under `cr-league-solo-slot-v1-*` with a light index. Arcade holds no league state, so it must not consume a slot.",
+    "Current diagnostic: `SetupEntryMode` is `choice | multiplayer | solo` and SetupGate branches on it before the profile branch; a new sub-mode fits that existing shape.",
+    "Current diagnostic: 122 board icons already exist under apps/web/public/assets/crl/icons; none reads as arcade, campaign or wheel, so three are genuinely missing. The result screens can reuse `standings-board` and `podium-result`, and an empty participant list can reuse `empty-card-slot`.",
+    "Current diagnostic: each choice screen has its own hero backdrop, referenced from layout.css (`.setup-entry-hero-panel` uses league-arrival.webp) behind a left-dark gradient, so a new hero must keep its left half quiet for the composited title.",
+    "docs/board-icon-assets-runbook.md",
+    "logics/design/arcade-destiny-wheel-icons/prompt.md",
+    "logics/design/arcade-destiny-wheel-hero/prompt.md"
+  ],
+  "request": {
+    "complexity": "Medium",
+    "theme": "Solo modes",
+    "needs": [
+      "Split Solo into two sub-modes so the existing season play has a name of its own and is not the only thing Solo can be.",
+      "Open an Arcade catalogue that lists short self-contained games, with room for more than the first one.",
+      "Offer a first Arcade game that draws an order between named participants by racing them.",
+      "Keep the draw local, quick to set up, and free of the campaign's cards, points and progression."
+    ],
+    "context": [
+      "Solo currently goes straight from the entry screen to a campaign save slot, so there is no surface on which to offer anything else.",
+      "The race simulation is a pure function and the replay only needs a result, a circuit and liveries, so a game outside the league costs no engine work.",
+      "The draw is the race: participants are entered by name, the finishing order is the answer. There is no spinning wheel before it.",
+      "Participants are entered as names only; colours and cars are assigned automatically so setting up a draw stays quick.",
+      "The result is not kept: the participants persist so a draw can be replayed, the finishing order does not."
+    ],
+    "acceptance_criteria": [
+      "AC1: Solo offers Campaign and Arcade; Campaign reaches the existing save slots unchanged.",
+      "AC2: Arcade opens a catalogue of mini games listing only games that exist, built so another can be added without reshaping the screen.",
+      "AC3: The Destiny Wheel asks for participants by name, and the list persists locally when it is validated.",
+      "AC4: Launching runs a generated Grand Prix through the existing race simulation, without cards, plan, qualifying, points or credits.",
+      "AC5: The race plays on the existing circuit map and its replay, with the plan and stats surfaces absent rather than disabled.",
+      "AC6: The finishing order is shown as the result of the draw, and the draw can be run again with the same participants.",
+      "AC7: Arcade never reads or writes a campaign save slot.",
+      "AC8: The three new board icons and the arcade hero exist as committed assets in the app's formats, and the icon existence test covers them.",
+      "AC9: Lint, typecheck, build, unit tests and the e2e suite pass."
+    ]
+  },
+  "product": {
+    "title": "Solo Arcade Product Brief",
+    "overview": "Give Solo a second door: beside the campaign season, a catalogue of short games that use the racing the game already has for something other than a championship. The first one turns a race into a way to settle who goes first.",
+    "goals": [
+      "Name the existing solo play Campaign, and put it beside a second sub-mode rather than under it.",
+      "Make the Arcade catalogue a place a second game can be added to cheaply.",
+      "Turn the race into a draw between people, set up in seconds.",
+      "Reuse the simulation and the replay as they are, rather than forking them."
+    ],
+    "non_goals": [
+      "No spinning wheel animation: the race is the draw.",
+      "No colour or car picker per participant in this slice.",
+      "No history of past draws, no scores, no arcade progression.",
+      "No change to the campaign, to multiplayer, or to the race simulation itself."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Produce the arcade board icons and hero",
+      "priority": "High",
+      "complexity": "Low",
+      "theme": "Solo modes",
+      "request_acs": [
+        "AC8"
+      ],
+      "problem": [
+        "None of the 122 existing board icons reads as arcade, campaign or wheel, so the two new choice cards and the catalogue entry have nothing to show.",
+        "Every choice screen has its own hero backdrop; the arcade catalogue would otherwise borrow the entry screen's and read as the same place."
+      ],
+      "scope_in": [
+        "Generate the three icons from the prompt below as one transparent sheet, then follow docs/board-icon-assets-runbook.md: extract cells, convert to 128px WebP, commit only the WebP.",
+        "Generate the arcade hero from the prompt below and commit it as WebP alongside the other hero panels.",
+        "Declare the icons in BoardIconName so the existing icon existence test covers them.",
+        "Reuse standings-board, podium-result and empty-card-slot rather than generating more."
+      ],
+      "scope_out": [
+        "No new icon for the result screen or the participant list.",
+        "No per-participant avatar or portrait.",
+        "Do not commit the raw generated sheets; they belong in logics/external/."
+      ],
+      "acceptance_criteria": [
+        "AC1: solo-campaign, arcade and destiny-wheel exist as 128px WebP under apps/web/public/assets/crl/icons and are declared in BoardIconName.",
+        "AC2: The arcade hero exists as WebP and keeps its left half quiet enough for the composited title to stay readable.",
+        "AC3: The icon existence test passes for the new names, and no raw sheet is committed."
+      ],
+      "generated_prompts": {
+        "icons": "Create 3 icon sheet asset(s) for: CRL board icons for the new Solo sub-modes and the first arcade mini game.\nGenerator target: general AI image generator.\nCanvas: 2x2 grid, 512x512 total with 256x256 cells; transparent background PNG; one asset per cell, centered, with generous padding and no bleed between cells. Fill left-to-right, then top-to-bottom.\nAssets, in fill order:\n1. solo-campaign: a road stretching to a horizon with a season banner arch over it, suggesting a long championship\n2. arcade: a chunky retro arcade cabinet with a racing wheel controller, screen glowing\n3. destiny-wheel: a spinning fortune wheel whose segments are racing pennants, one segment highlighted\nClean silhouettes, consistent lighting and perspective, readable at 24px, 32px and 48px.\nExclude: text, letters, numbers, labels, grid lines, watermarks, background decoration, any opaque or gradient background, drop shadows cast onto the transparent background, cropped or clipped assets.",
+        "hero": "Create 1 hero image asset(s) for: Arcade catalogue hero panel for CR League: a neon-lit arcade corner of a race paddock at night, a row of cabinet screens showing race maps, karts parked in the shadows.\nGenerator target: general AI image generator.\nCanvas: one full-bleed image, 1600x600; opaque background. No cells, no panels, no padding between elements.\nReserved zone: keep the left half low in detail and free of subject matter; text is composited there.\nPalette: near-black #100e12, orange #ff6a1f and teal #248276. Do not introduce colours outside it.\nStyle: cinematic 3D render, night city racing, same look as the existing CRL hero panels.\nCinematic composition and lighting.\nExclude: text, letters, numbers, logos, watermarks, UI chrome, sponsor decals.",
+        "note": "Generated with logics-manager design prompt; the exact commands are recorded in logics/design/arcade-destiny-wheel-icons/ and -hero/. Paste as-is into the image generator, then follow docs/board-icon-assets-runbook.md. The last two sheets came back with an opaque background despite the instruction, so plan for the rembg pass."
+      }
+    },
+    {
+      "title": "Split Solo into Campaign and Arcade",
+      "priority": "High",
+      "complexity": "Low",
+      "theme": "Solo modes",
+      "request_acs": [
+        "AC1",
+        "AC2"
+      ],
+      "problem": [
+        "Solo leads straight to campaign save slots, so a second kind of solo play has nowhere to live.",
+        "The Arcade needs a catalogue that stays readable when it holds one game and when it holds several."
+      ],
+      "scope_in": [
+        "Add an Arcade sub-mode beside Campaign on the Solo step, reusing the existing choice-step treatment.",
+        "Keep Campaign's path to the save slots exactly as it is, including the skip when no slot holds a game.",
+        "Add a catalogue screen listing the games that exist.",
+        "Cover the navigation with tests: Campaign still reaches the slots, Arcade reaches the catalogue."
+      ],
+      "scope_out": [
+        "No locked or coming-soon entries in the catalogue.",
+        "No change to the multiplayer entry path.",
+        "No arcade game implementation in this item."
+      ],
+      "acceptance_criteria": [
+        "AC1: Solo shows Campaign and Arcade, and Campaign behaves exactly as Solo did before.",
+        "AC2: Arcade opens a catalogue listing the games that exist and nothing else.",
+        "AC3: Back from either sub-mode returns to the Solo step, and back from Solo to the entry choice."
+      ]
+    },
+    {
+      "title": "Enter and keep the Destiny Wheel participants",
+      "priority": "High",
+      "complexity": "Low",
+      "theme": "Solo modes",
+      "request_acs": [
+        "AC3",
+        "AC7"
+      ],
+      "problem": [
+        "A draw needs the people in it, and typing them again on every run would defeat the point of a quick tool.",
+        "Arcade holds no league, so it must not borrow a campaign save slot to store anything."
+      ],
+      "scope_in": [
+        "Add a participant list with add and remove, entered as names only.",
+        "Assign a livery and a car to each participant automatically, from the palette the game already uses.",
+        "Persist the list under its own key when the draw is validated, and restore it on the next visit.",
+        "Bound the list by the grid ceiling the domain already states, and require at least two.",
+        "Cover storage with unit tests, including that campaign slot keys are untouched."
+      ],
+      "scope_out": [
+        "No colour or car picker.",
+        "No reordering, import or export of the list.",
+        "No named or multiple saved participant lists."
+      ],
+      "acceptance_criteria": [
+        "AC1: A validated list is restored on the next visit to the game.",
+        "AC2: The list cannot be launched below two participants and cannot exceed the grid ceiling.",
+        "AC3: Each participant gets distinguishable colours without the player choosing them.",
+        "AC4: No campaign slot key is read or written by the arcade."
+      ]
+    },
+    {
+      "title": "Race the Destiny Wheel draw and show the order",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Solo modes",
+      "request_acs": [
+        "AC4",
+        "AC5",
+        "AC6",
+        "AC9"
+      ],
+      "problem": [
+        "The draw has to produce an order, and the race the game already simulates is what produces it.",
+        "The replay was built for a championship race and carries plan, cards and payoff surfaces that mean nothing in a draw.",
+        "Running the same participants twice must not always give the same order, or it is not a draw."
+      ],
+      "scope_in": [
+        "Build the race directly from the shared simulation with a circuit, neutral decisions and no cards.",
+        "Vary the seed per launch so a second draw with the same participants gives a different order.",
+        "Play it through the existing replay, passing none of its plan, decision or payoff inputs so those surfaces are absent.",
+        "Show the finishing order as the result, with a way to draw again and a way back to the catalogue.",
+        "Cover the draw with tests: two participants minimum, a different order across launches, and no league state created."
+      ],
+      "scope_out": [
+        "Do not modify the race simulation or the replay component.",
+        "No points, credits, cards, qualifying or standings.",
+        "No sharing or exporting of a result."
+      ],
+      "acceptance_criteria": [
+        "AC1: A launch produces a finishing order over all entered participants.",
+        "AC2: Two launches with the same participants can give different orders.",
+        "AC3: The replay shows the map without plan, cards, qualifying or payoff surfaces.",
+        "AC4: The result screen offers drawing again with the same participants.",
+        "AC5: No LeagueState is created and no campaign save is written.",
+        "AC6: Lint, typecheck, build, unit tests and the e2e suite pass."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Orchestrate the Solo Arcade and its Destiny Wheel",
+    "plan": [
+      "Confirm on the running app that a replay given only a result, a circuit and liveries renders without plan or stats, before building anything around that assumption.",
+      "Generate the icons and the hero from the prompts held in the asset backlog item, and land them through the runbook before the screens that use them.",
+      "Split the Solo step into Campaign and Arcade first, and verify the campaign path is untouched, including the skip when no slot holds a game.",
+      "Add the participant list and its storage, with tests, before any race is run.",
+      "Build the draw on the shared simulation without touching the simulation or the replay.",
+      "Verify on a rendered screen, not only through unit tests: the catalogue, an empty and a filled participant list, the replay without plan surfaces, and the final order.",
+      "Verify the upgrade path for an existing player: a campaign save must still open through Campaign, and arcade must not have touched it.",
+      "Run lint, typecheck, build, unit tests and the e2e suite, and record the results."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/arcade-destiny-wheel.json",
+    "mode": "summary-only",
+    "profile": "normal"
+  }
+}

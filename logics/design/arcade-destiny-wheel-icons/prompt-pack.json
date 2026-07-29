@@ -1,0 +1,34 @@
+{
+  "asset_kind": "icon-sheet",
+  "cell_size": "256x256",
+  "cells": [
+    "solo-campaign: a road stretching to a horizon with a season banner arch over it, suggesting a long championship",
+    "arcade: a chunky retro arcade cabinet with a racing wheel controller, screen glowing",
+    "destiny-wheel: a spinning fortune wheel whose segments are racing pennants, one segment highlighted"
+  ],
+  "count": 3,
+  "generator_target": "general AI image generator",
+  "kind": "logics-design-prompt-pack",
+  "layout": "2x2 grid",
+  "machining": [
+    "slice grid cells before resizing",
+    "trim transparent padding only after slicing",
+    "name files 01-name.png, 02-name.png, ..."
+  ],
+  "ok": true,
+  "palette": "",
+  "prompt": "Create 3 icon sheet asset(s) for: CRL board icons for the new Solo sub-modes and the first arcade mini game.\nGenerator target: general AI image generator.\nCanvas: 2x2 grid, 512x512 total with 256x256 cells; transparent background PNG; one asset per cell, centered, with generous padding and no bleed between cells. Fill left-to-right, then top-to-bottom.\nAssets, in fill order:\n1. solo-campaign: a road stretching to a horizon with a season banner arch over it, suggesting a long championship\n2. arcade: a chunky retro arcade cabinet with a racing wheel controller, screen glowing\n3. destiny-wheel: a spinning fortune wheel whose segments are racing pennants, one segment highlighted\nClean silhouettes, consistent lighting and perspective, readable at 24px, 32px and 48px.\nExclude: text, letters, numbers, labels, grid lines, watermarks, background decoration, any opaque or gradient background, drop shadows cast onto the transparent background, cropped or clipped assets.",
+  "ref": "",
+  "safe_area": "",
+  "sections": {
+    "canvas": "Canvas: 2x2 grid, 512x512 total with 256x256 cells; transparent background PNG; one asset per cell, centered, with generous padding and no bleed between cells. Fill left-to-right, then top-to-bottom.",
+    "cells": "Assets, in fill order:\n1. solo-campaign: a road stretching to a horizon with a season banner arch over it, suggesting a long championship\n2. arcade: a chunky retro arcade cabinet with a racing wheel controller, screen glowing\n3. destiny-wheel: a spinning fortune wheel whose segments are racing pennants, one segment highlighted",
+    "exclude": "Exclude: text, letters, numbers, labels, grid lines, watermarks, background decoration, any opaque or gradient background, drop shadows cast onto the transparent background, cropped or clipped assets.",
+    "quality": "Clean silhouettes, consistent lighting and perspective, readable at 24px, 32px and 48px.",
+    "subject": "Create 3 icon sheet asset(s) for: CRL board icons for the new Solo sub-modes and the first arcade mini game.",
+    "target": "Generator target: general AI image generator."
+  },
+  "sliceable": true,
+  "style": "",
+  "transparent": true
+}

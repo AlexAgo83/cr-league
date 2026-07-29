@@ -104,6 +104,7 @@
 | [prod_083_solo_multiplayer_entry_and_local_solo_mode_product_brief](product/prod_083_solo_multiplayer_entry_and_local_solo_mode_product_brief.md) | Solo / Multiplayer Entry And Local Solo Mode Product Brief | Settled |  |  | product/prod_083_solo_multiplayer_entry_and_local_solo_mode_product_brief.md |
 | [prod_084_race_replay_driver_emotes_product_brief](product/prod_084_race_replay_driver_emotes_product_brief.md) | Race Replay Driver Emotes Product Brief | Settled |  |  | product/prod_084_race_replay_driver_emotes_product_brief.md |
 | [prod_085_solo_save_slots_product_brief](product/prod_085_solo_save_slots_product_brief.md) | Solo Save Slots Product Brief | Proposed |  |  | product/prod_085_solo_save_slots_product_brief.md |
+| [prod_086_solo_arcade_product_brief](product/prod_086_solo_arcade_product_brief.md) | Solo Arcade Product Brief | Proposed |  |  | product/prod_086_solo_arcade_product_brief.md |
 
 ## Roadmaps
 
@@ -250,6 +251,7 @@
 | [req_131_solo_and_multiplayer_entry_split_with_local_solo_mode](request/req_131_solo_and_multiplayer_entry_split_with_local_solo_mode.md) | Solo and multiplayer entry split with local solo mode | Done |  |  | request/req_131_solo_and_multiplayer_entry_split_with_local_solo_mode.md |
 | [req_132_pop_driver_reaction_emotes_above_cars_during_the_replay](request/req_132_pop_driver_reaction_emotes_above_cars_during_the_replay.md) | Pop driver reaction emotes above cars during the replay | Done |  |  | request/req_132_pop_driver_reaction_emotes_above_cars_during_the_replay.md |
 | [req_133_offer_three_solo_save_slots_with_readable_state](request/req_133_offer_three_solo_save_slots_with_readable_state.md) | Offer three solo save slots with readable state | Done |  |  | request/req_133_offer_three_solo_save_slots_with_readable_state.md |
+| [req_134_split_solo_into_campaign_and_arcade_with_a_destiny_wheel_draw](request/req_134_split_solo_into_campaign_and_arcade_with_a_destiny_wheel_draw.md) | Split Solo into Campaign and Arcade, with a Destiny Wheel draw | Draft |  |  | request/req_134_split_solo_into_campaign_and_arcade_with_a_destiny_wheel_draw.md |
 
 ## Backlog
 
@@ -610,6 +612,10 @@
 | [item_353_bound_what_a_solo_save_costs_in_storage](backlog/item_353_bound_what_a_solo_save_costs_in_storage.md) | Bound what a solo save costs in storage | Done |  | 100 | backlog/item_353_bound_what_a_solo_save_costs_in_storage.md |
 | [item_354_store_solo_games_in_three_slots_with_a_light_index](backlog/item_354_store_solo_games_in_three_slots_with_a_light_index.md) | Store solo games in three slots with a light index | Done |  | 100 | backlog/item_354_store_solo_games_in_three_slots_with_a_light_index.md |
 | [item_355_pick_a_solo_slot_from_the_entry_screen](backlog/item_355_pick_a_solo_slot_from_the_entry_screen.md) | Pick a solo slot from the entry screen | Done |  | 100 | backlog/item_355_pick_a_solo_slot_from_the_entry_screen.md |
+| [item_356_produce_the_arcade_board_icons_and_hero](backlog/item_356_produce_the_arcade_board_icons_and_hero.md) | Arcade catalogue hero | Ready |  | 0% | backlog/item_356_produce_the_arcade_board_icons_and_hero.md |
+| [item_357_split_solo_into_campaign_and_arcade](backlog/item_357_split_solo_into_campaign_and_arcade.md) | Split Solo into Campaign and Arcade | Ready |  | 0% | backlog/item_357_split_solo_into_campaign_and_arcade.md |
+| [item_358_enter_and_keep_the_destiny_wheel_participants](backlog/item_358_enter_and_keep_the_destiny_wheel_participants.md) | Enter and keep the Destiny Wheel participants | Ready |  | 0% | backlog/item_358_enter_and_keep_the_destiny_wheel_participants.md |
+| [item_359_race_the_destiny_wheel_draw_and_show_the_order](backlog/item_359_race_the_destiny_wheel_draw_and_show_the_order.md) | Race the Destiny Wheel draw and show the order | Ready |  | 0% | backlog/item_359_race_the_destiny_wheel_draw_and_show_the_order.md |
 
 ## Tasks
 
@@ -749,3 +755,4 @@
 | [task_132_orchestrate_solo_multiplayer_entry_and_local_solo_mode](tasks/task_132_orchestrate_solo_multiplayer_entry_and_local_solo_mode.md) | Orchestrate Solo / Multiplayer entry and local solo mode | Done | codex | 100% | tasks/task_132_orchestrate_solo_multiplayer_entry_and_local_solo_mode.md |
 | [task_133_orchestrate_race_replay_driver_emotes](tasks/task_133_orchestrate_race_replay_driver_emotes.md) | Orchestrate race replay driver emotes | Done |  | 100% | tasks/task_133_orchestrate_race_replay_driver_emotes.md |
 | [task_134_orchestrate_solo_save_slots](tasks/task_134_orchestrate_solo_save_slots.md) | Orchestrate solo save slots | Done |  | 100 | tasks/task_134_orchestrate_solo_save_slots.md |
+| [task_135_orchestrate_the_solo_arcade_and_its_destiny_wheel](tasks/task_135_orchestrate_the_solo_arcade_and_its_destiny_wheel.md) | Orchestrate the Solo Arcade and its Destiny Wheel | Ready |  | 0% | tasks/task_135_orchestrate_the_solo_arcade_and_its_destiny_wheel.md |

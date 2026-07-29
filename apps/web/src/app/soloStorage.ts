@@ -1,4 +1,5 @@
 import { safeStorage } from "./appStorage.js";
+import type { TeamLivery } from "@cr-league/shared";
 import type { LeagueState } from "./types.js";
 
 /** Single-slot key kept only so an existing game can be migrated once. */
@@ -34,6 +35,7 @@ export type SoloSave = {
 export type SoloSlotSummary = {
   slot: SoloSlot;
   teamName: string;
+  livery?: TeamLivery;
   season: number;
   round: number;
   maxRounds: number;
@@ -80,6 +82,7 @@ export function summarizeSoloSave(slot: SoloSlot, save: SoloSave): SoloSlotSumma
   return {
     slot,
     teamName: player?.name ?? "",
+    livery: player?.livery,
     season: state.currentGrandPrix.season,
     round: state.currentGrandPrix.round,
     maxRounds: state.league.maxGrandPrixPerSeason,

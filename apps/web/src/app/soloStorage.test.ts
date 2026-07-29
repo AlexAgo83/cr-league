@@ -53,6 +53,14 @@ describe("soloStorage slots", () => {
     expect(loadSoloSlot(2)).toBeNull();
   });
 
+  it("summarises the team colours the picker paints the slot with", () => {
+    saveSoloSlot(0, state);
+
+    const summary = listSoloSlots()[0];
+
+    expect(summary?.livery).toEqual(state.teams.find((team) => team.id === state.player?.teamId)?.livery);
+  });
+
   it("keeps createdAt across writes to the same slot", () => {
     saveSoloSlot(0, state, new Date("2026-01-02T03:04:05.000Z"));
     const save = saveSoloSlot(0, { ...state, league: { ...state.league, name: "Solo League" } }, new Date("2026-03-04T05:06:07.000Z"));

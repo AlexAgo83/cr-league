@@ -3,6 +3,7 @@ import { useT } from "../i18n/index.js";
 import { ConfirmActionModal } from "./AppModals.js";
 import { BoardIcon, type BoardIconName } from "../features/VisualIcon.js";
 import { PendingFeedback } from "../features/PendingFeedback.js";
+import { LiveryPlate } from "../features/LiveryPlate.js";
 import type { FormState } from "./types.js";
 import type { SoloSlotSummary } from "./soloStorage.js";
 import type { StoredPlayerClaim } from "./appStorage.js";
@@ -10,6 +11,16 @@ import type { StoredPlayerClaim } from "./appStorage.js";
 function formatDate(iso: string) {
   const date = new Date(iso);
   return Number.isNaN(date.getTime()) ? "" : date.toLocaleDateString();
+}
+
+/** An info line reads faster with the icon the rest of the game already uses for that idea. */
+function SaveLine({ icon, children }: { icon: BoardIconName; children: string }) {
+  return (
+    <small className="save-line">
+      <BoardIcon className="save-line-icon" name={icon} />
+      {children}
+    </small>
+  );
 }
 
 export type ProfileMode = "choice" | "create" | "recover";
@@ -109,15 +120,19 @@ export function SoloSlotsView({
                 disabled={status === "loading"}
                 onClick={() => onOpenSlot(index)}
               >
-                <BoardIcon className="setup-choice-icon" name={slot ? "stand-drive" : "empty-card-slot"} />
+                {slot?.livery ? (
+                  <LiveryPlate className="setup-choice-icon save-livery-plate" livery={slot.livery} name={slot.teamName} />
+                ) : (
+                  <BoardIcon className="setup-choice-icon" name={slot ? "stand-drive" : "empty-card-slot"} />
+                )}
                 <span className="setup-choice-copy">
                   <small className="solo-slot-index">{tt("solo_slot_label", { slot: index + 1 })}</small>
                   <strong>{slot ? slot.teamName : tt("solo_slot_empty")}</strong>
                   {slot ? (
                     <>
-                      <small>{tt("save_progress", { season: slot.season, round: slot.round, rounds: slot.maxRounds })}</small>
-                      <small>{tt("save_meta", { races: slot.resolvedGrandPrix, points: slot.points })}</small>
-                      <small className="solo-slot-date">{tt("save_last_played", { date: formatDate(slot.updatedAt) })}</small>
+                      <SaveLine icon="circuits">{tt("save_progress", { season: slot.season, round: slot.round, rounds: slot.maxRounds })}</SaveLine>
+                      <SaveLine icon="standings">{tt("save_meta", { races: slot.resolvedGrandPrix, points: slot.points })}</SaveLine>
+                      <SaveLine icon="chrono">{tt("save_last_played", { date: formatDate(slot.updatedAt) })}</SaveLine>
                     </>
                   ) : (
                     <small>{tt("solo_slot_empty_hint")}</small>
@@ -461,19 +476,24 @@ export function LeagueSetupView({
                   const claim = savedClaims[savedLeagueIndex] ?? savedClaims[0]!;
                   return (
                     <button type="button" className="profile-menu-action saved-league-card" onClick={() => onSwitchLeague(claim.teamId)} disabled={status === "loading"}>
-                      <strong>{claim.leagueName}</strong>
-                      <small>
-                        {claim.teamName}
-                        {claim.leagueCode ? ` · ${claim.leagueCode}` : ""}
-                      </small>
+                      <span className="saved-league-head">
+                        {claim.livery ? <LiveryPlate className="save-livery-plate" livery={claim.livery} name={claim.teamName} /> : null}
+                        <span>
+                          <strong>{claim.leagueName}</strong>
+                          <small>
+                            {claim.teamName}
+                            {claim.leagueCode ? ` · ${claim.leagueCode}` : ""}
+                          </small>
+                        </span>
+                      </span>
                       {/* Claims stored before the card carried progress have none of this. */}
                       {claim.season && claim.round && claim.maxRounds ? (
-                        <small>{tt("save_progress", { season: claim.season, round: claim.round, rounds: claim.maxRounds })}</small>
+                        <SaveLine icon="circuits">{tt("save_progress", { season: claim.season, round: claim.round, rounds: claim.maxRounds })}</SaveLine>
                       ) : null}
                       {claim.resolvedGrandPrix !== undefined && claim.points !== undefined ? (
-                        <small>{tt("save_meta", { races: claim.resolvedGrandPrix, points: claim.points })}</small>
+                        <SaveLine icon="standings">{tt("save_meta", { races: claim.resolvedGrandPrix, points: claim.points })}</SaveLine>
                       ) : null}
-                      {claim.updatedAt ? <small className="saved-league-date">{tt("save_last_played", { date: formatDate(claim.updatedAt) })}</small> : null}
+                      {claim.updatedAt ? <SaveLine icon="chrono">{tt("save_last_played", { date: formatDate(claim.updatedAt) })}</SaveLine> : null}
                     </button>
                   );
                 })()}

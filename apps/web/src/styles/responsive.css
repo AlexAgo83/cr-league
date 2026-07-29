@@ -71,14 +71,11 @@
   .map-screen .map-qualifying-times,
   .map-screen .map-qualifying-toggle,
   .map-screen .map-final-classification,
-  .map-screen .replay-map-controls,
-  .wheel-race .replay-map-controls {
+  .map-screen .replay-map-controls {
     top: 68px;
   }
 
-  /* Sits just under the controls; the generic 176px below is for a tower over a boxed map. */
-  .map-screen .replay-tower,
-  .wheel-race .replay-tower {
+  .map-screen .replay-tower {
     top: 114px;
   }
 
@@ -224,12 +221,25 @@
   }
 
   .game-shell .drive-map-panel,
-  .game-shell .replay-map-panel,
-  .wheel-race .replay-map-panel {
+  .game-shell .replay-map-panel {
     margin-left: 0;
     margin-right: 0;
     min-height: 100dvh;
     width: 100%;
+  }
+
+  /* Same treatment, minus the topbar the setup shell already reserves above it: a full 100dvh
+     here pushed the bottom of the stage, and its timeline, past the fold. */
+  .wheel-race .replay-map-panel {
+    margin-left: 0;
+    margin-right: 0;
+    min-height: calc(100dvh - var(--setup-topbar-height));
+    width: 100%;
+  }
+
+  /* Right under the controls. The generic 176px is meant for a tower over a boxed map. */
+  .wheel-race .replay-tower {
+    top: 60px;
   }
 
   .game-shell .drive-map-panel .circuit-map-stage,
@@ -600,8 +610,7 @@
     top: 176px;
   }
 
-  .map-screen .replay-map-panel .replay-tower,
-  .wheel-race .replay-map-panel .replay-tower {
+  .map-screen .replay-map-panel .replay-tower {
     top: 116px;
   }
 

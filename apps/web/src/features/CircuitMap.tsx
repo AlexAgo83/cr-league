@@ -34,16 +34,15 @@ const CHEVRON_DOWN = "m6 9 6 6 6-6";
 export const MAP_LIST_COLLAPSED_ROWS = 6;
 
 /**
- * The chevron points where the click sends the panel, not at some abstract open/closed state.
- * `grows` says which way the panel grows: the plan panel is anchored to the bottom of the map and
- * opens upwards, a list under a header opens downwards.
+ * Every one of these sits directly above what it folds, so the chevron points at that content:
+ * down when it is hidden, up when it is showing. The panel's own anchoring is not what a reader
+ * sees — only the list under the arrow is.
  */
 export function MapStatsToggle({
   className = "map-plan-stats-toggle",
   collapseKey = "action_collapse_stats",
   expandKey = "action_expand_stats",
   expanded,
-  grows = "down",
   onToggle
 }: {
   className?: string;
@@ -51,13 +50,10 @@ export function MapStatsToggle({
   collapseKey?: TranslationKey;
   expandKey?: TranslationKey;
   expanded: boolean;
-  grows?: "up" | "down";
   onToggle: (expanded: boolean) => void;
 }) {
   const tt = useT();
   const label = tt(expanded ? collapseKey : expandKey);
-  const opening = grows === "up" ? CHEVRON_UP : CHEVRON_DOWN;
-  const closing = grows === "up" ? CHEVRON_DOWN : CHEVRON_UP;
   return (
     <button
       className={className}
@@ -68,7 +64,7 @@ export function MapStatsToggle({
       onClick={() => onToggle(!expanded)}
     >
       <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-        <path d={expanded ? closing : opening} />
+        <path d={expanded ? CHEVRON_UP : CHEVRON_DOWN} />
       </svg>
     </button>
   );

@@ -1,0 +1,172 @@
+{
+  "title": "Offer three solo save slots with readable state",
+  "references": [
+    "AGENTS.md",
+    "LOGICS.md",
+    "logics/instructions.md",
+    "apps/web/src/app/soloStorage.ts",
+    "apps/web/src/app/soloLeague.ts",
+    "apps/web/src/app/App.tsx",
+    "apps/web/src/app/SetupViews.tsx",
+    "apps/web/src/app/appStorage.ts",
+    "apps/web/src/features/ReplayView.tsx",
+    "Current diagnostic: solo persistence is a single slot under `cr-league-solo-save-v1`, holding schemaVersion, createdAt, updatedAt and the whole LeagueState.",
+    "Current diagnostic: a measured 4 Grand Prix solo save weighs 557 KB. Replay traces of already-resolved Grand Prix account for 344 KB of it, the current Grand Prix trace for another 86 KB, and teams plus league metadata for 1 KB.",
+    "Current diagnostic: each resolved Grand Prix adds roughly 86 KB of trace and a season is six Grand Prix, so a save grows without bound. Three slots at five seasons each would be about 7.8 MB, past the usual 5 MB localStorage quota.",
+    "Current diagnostic: `safeStorage.set` swallows quota errors by design (appStorage.ts), so an over-quota save fails silently while React state stays correct. The player only discovers the loss on reload.",
+    "Current diagnostic: `RaceResult.replayTrace` is already optional and `ReplayView` reads `result.replayTrace ?? []`. A result stripped of its trace drops from 100 KB to 14 KB and keeps classification, events and replayFacts.",
+    "Current diagnostic: everything a slot needs to display already exists in the save — team name in `state.teams`, season/round/status in `state.currentGrandPrix`, resolved count in `state.grandPrixHistory`, and both timestamps on the save envelope."
+  ],
+  "request": {
+    "complexity": "Medium",
+    "theme": "Solo persistence",
+    "needs": [
+      "Let a player keep several solo runs instead of one, so a new attempt does not overwrite an existing season.",
+      "Show, for each slot that holds a game, the team name, how far the season has gone, and when it was last played.",
+      "Keep the first-run experience direct: a player with no saved game should not have to pick an empty slot before playing.",
+      "Keep solo entirely local, with no profile and no network call."
+    ],
+    "context": [
+      "Solo currently launches straight into the single save when the player picks Solo from the entry screen.",
+      "The save format already carries every field a slot needs to display, so this is a storage and navigation change rather than a data model change.",
+      "The blocking constraint is size: the save is 99% replay traces and grows with every resolved Grand Prix, so three slots of it would run into the browser storage quota.",
+      "Historical replay of a past Grand Prix reads the stored trace, so trimming traces trades storage against how far back a replay stays precise.",
+      "The entry flow was recently shortened, and adding a mandatory slot picker in front of a first-time player would give that back."
+    ],
+    "acceptance_criteria": [
+      "AC1: Solo offers three independent save slots; starting a game in one never overwrites another.",
+      "AC2: A slot holding a game shows the team name, the season and round progress, and the last played date; an empty slot reads as empty and offers to start there.",
+      "AC3: The slot picker reads slot metadata without parsing every stored game state.",
+      "AC4: A player with no saved game goes straight into a new game rather than through the picker; the picker appears once at least one slot holds a game.",
+      "AC5: The existing single-slot save is migrated into a slot rather than orphaned or deleted.",
+      "AC6: Stored size per slot is bounded so that three full slots stay well inside the browser storage quota, and the bound is asserted by a test.",
+      "AC7: A slot can be deleted from the picker with a confirmation, and deleting one leaves the others intact.",
+      "AC8: Lint, typecheck, build, unit tests and the e2e suite pass."
+    ]
+  },
+  "product": {
+    "title": "Solo Save Slots Product Brief",
+    "overview": "Turn solo from one overwritable game into three parallel runs a player can recognise at a glance, without making the first run longer or pushing local storage past its limit.",
+    "goals": [
+      "Let several solo seasons coexist on one device.",
+      "Make each slot self-describing: whose team, how far along, how recently played.",
+      "Keep the shortest path to a first race unchanged.",
+      "Bound what a solo game costs in storage so slots stay safe to add."
+    ],
+    "non_goals": [
+      "No cloud sync, no cross-device solo, no profile requirement for solo.",
+      "No slot renaming, import, export or duplication in this slice.",
+      "No change to multiplayer saved leagues or their storage.",
+      "No change to the race simulation or its output shape."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Bound what a solo save costs in storage",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Solo persistence",
+      "request_acs": ["AC6"],
+      "problem": [
+        "A 4 Grand Prix save is 557 KB, of which 344 KB is replay traces of Grand Prix already resolved.",
+        "Each resolved Grand Prix adds about 86 KB, so a save grows without bound and three slots would reach the storage quota.",
+        "`safeStorage.set` swallows quota failures, so hitting the limit loses progress silently rather than reporting it."
+      ],
+      "scope_in": [
+        "Keep the replay trace only for the most recent resolved Grand Prix and drop it from older history entries when persisting.",
+        "Verify a trace-less history entry still renders its replay in a degraded but working form, since `replayTrace` is already optional.",
+        "Add a test asserting a long solo game stays under a stated size budget.",
+        "Decide and record what happens when a save still cannot be written."
+      ],
+      "scope_out": [
+        "Do not compress or re-encode the state.",
+        "Do not move solo persistence to IndexedDB in this slice.",
+        "Do not change the simulation output or the RaceResult shape."
+      ],
+      "acceptance_criteria": [
+        "AC1: A solo save's size stops growing once the trace budget is reached, asserted by a test over several simulated seasons.",
+        "AC2: A history entry without a trace still opens a replay without throwing.",
+        "AC3: Three full slots fit well inside a 5 MB budget, shown by the same test."
+      ]
+    },
+    {
+      "title": "Store solo games in three slots with a light index",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Solo persistence",
+      "request_acs": ["AC1", "AC3", "AC5", "AC7"],
+      "problem": [
+        "Solo storage is a single key, so a second run overwrites the first.",
+        "Reading three full games to render a picker would parse hundreds of kilobytes to show a few words per slot.",
+        "Players already have a game under the current single-slot key and must not lose it."
+      ],
+      "scope_in": [
+        "Store each slot under its own key and keep a separate small index holding the per-slot display metadata.",
+        "Write the index in the same operation as the state so the two cannot drift.",
+        "Migrate an existing `cr-league-solo-save-v1` save into the first free slot on first read.",
+        "Support deleting one slot without touching the others.",
+        "Cover load, save, migration and delete with unit tests."
+      ],
+      "scope_out": [
+        "No slot renaming, copying or export.",
+        "No change to multiplayer claim or profile storage.",
+        "No UI work in this item."
+      ],
+      "acceptance_criteria": [
+        "AC1: Three slots persist independently; writing one leaves the others byte-identical.",
+        "AC2: The index exposes team name, season, round, resolved count and timestamps without reading any slot state.",
+        "AC3: A legacy single-slot save is migrated once and remains playable.",
+        "AC4: Deleting a slot clears its state and its index entry only."
+      ]
+    },
+    {
+      "title": "Pick a solo slot from the entry screen",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Solo persistence",
+      "request_acs": ["AC2", "AC4", "AC7", "AC8"],
+      "problem": [
+        "Solo currently launches straight into the game, so there is no surface on which to choose a run.",
+        "A first-time player has nothing to choose between, and the entry flow was recently shortened on purpose.",
+        "A slot that holds a game has to be recognisable without opening it."
+      ],
+      "scope_in": [
+        "Add a slot picker reached from Solo, reusing the existing choice-step treatment rather than inventing a new panel style.",
+        "Show team name, season and round progress, resolved Grand Prix count and last played date on a slot that holds a game.",
+        "Show an empty slot as empty with a start action.",
+        "Skip the picker entirely when no slot holds a game, and start a new game directly.",
+        "Offer deletion behind the existing destructive confirmation, with the shared danger visual.",
+        "Cover the picker with tests: it appears once a slot exists, it is skipped when none does, and it opens the right slot."
+      ],
+      "scope_out": [
+        "No new modal system or animation.",
+        "No slot picker for multiplayer leagues.",
+        "No settings toggle to force the picker."
+      ],
+      "acceptance_criteria": [
+        "AC1: With no saved game, Solo starts a game without showing the picker.",
+        "AC2: With at least one saved game, Solo shows three slots and opens the chosen one.",
+        "AC3: A slot holding a game shows the team, progress and last played date; an empty one reads as empty.",
+        "AC4: Deleting a slot asks for confirmation and leaves the other slots playable.",
+        "AC5: Lint, typecheck, build, unit tests and the e2e suite pass."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Orchestrate solo save slots",
+    "plan": [
+      "Measure the current save before changing anything: build a solo fixture, resolve several Grand Prix, and record the size split between traces, history and state.",
+      "Bound the save size first, because the slot count depends on it; verify a trace-less history entry still replays.",
+      "Move storage to per-slot keys plus a light index, with the legacy save migrated into a slot, and cover it with unit tests before any UI.",
+      "Add the picker to the entry flow, reusing the choice-step panel treatment and the existing destructive confirmation.",
+      "Keep the no-save path direct: verify a first-time player still reaches a race without an extra screen.",
+      "Verify on a rendered screen, not only through unit tests: a populated slot, an empty slot, and the skip path.",
+      "Run lint, typecheck, build, unit tests and the e2e suite, and record the results."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/solo-save-slots.json",
+    "mode": "summary-only",
+    "profile": "normal"
+  }
+}

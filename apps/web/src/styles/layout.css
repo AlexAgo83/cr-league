@@ -4561,6 +4561,56 @@ label small {
   z-index: 6;
 }
 
+.replay-finish-recap {
+  animation: replay-flag-pop 260ms ease-out both;
+  left: 50%;
+  max-width: calc(100% - 32px);
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(560px, 100%);
+  z-index: 7;
+}
+
+.replay-finish-recap .replay-finish-flag {
+  animation: none;
+  height: 48px;
+  left: auto;
+  position: relative;
+  top: auto;
+  transform: none;
+  width: 58px;
+  z-index: auto;
+}
+
+.replay-finish-recap-panel {
+  align-items: center;
+  background: rgb(16 14 18 / 0.92);
+  border: 1px solid color-mix(in srgb, var(--color-accent) 38%, transparent);
+  border-radius: 6px;
+  box-shadow: 0 12px 34px rgb(0 0 0 / 0.32);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  justify-content: center;
+  margin: 0;
+  min-width: 0;
+  padding: 7px 14px;
+  width: 100%;
+}
+
+.replay-finish-recap-panel > .race-payoff-recap {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  padding: 0;
+}
+
+.replay-finish-recap-panel .race-payoff-recap dl > div:last-child {
+  flex-basis: 100%;
+  justify-content: center;
+}
+
 .replay-pole-flash {
   position: absolute;
   inset: 0;
@@ -4595,7 +4645,8 @@ label small {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .replay-finish-flag { animation: none; }
+  .replay-finish-flag,
+  .replay-finish-recap { animation: none; }
 }
 
 .replay-moment-notification {

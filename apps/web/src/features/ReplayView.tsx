@@ -431,7 +431,14 @@ export function ReplayView({
             overlay={
               <>
               <ReplayStartLights signal={startSignal} />
-              <ReplayFinishFlag show={currentRaceProgress >= 1} pole={replayMode === "qualifying"} />
+              {afterMapContent && replayComplete ? (
+                <div className="replay-finish-recap">
+                  <div className="replay-finish-recap-panel">
+                    <ReplayFinishFlag show pole={replayMode === "qualifying"} />
+                    {afterMapContent}
+                  </div>
+                </div>
+              ) : <ReplayFinishFlag show={currentRaceProgress >= 1} pole={replayMode === "qualifying"} />}
               <ReplayStageOverlay
                 circuit={circuit}
                 liveLap={live.lap}
@@ -486,7 +493,7 @@ export function ReplayView({
                 {tt("action_skip_to_result")}
               </button>
             </section>
-          ) : afterMapContent}
+          ) : null}
           {showIntro && !copyDismissed ? (
             <section className="panel race-context-panel replay-copy-panel">
               <h2>{tt(titleKey)}</h2>

@@ -1,5 +1,5 @@
 import { expect, type Page, test } from "@playwright/test";
-import { APP_VERSION } from "../../packages/shared/src/index.js";
+import { APP_VERSION, DEMO_RACE_INPUT, simulateRace, type RaceInput } from "../../packages/shared/src/index.js";
 import { circuitForRound } from "../../apps/web/src/app/circuits.js";
 import { t } from "../../apps/web/src/i18n/index.js";
 
@@ -30,7 +30,13 @@ test.beforeEach(() => {
   reminder = { sentAt: null, sentCount: 0, skippedCount: 0, season: null };
 });
 
-async function mockLeagueApi(page: Page) {
+type LeagueStatePayload = ReturnType<typeof leagueState>;
+
+async function mockLeagueApi(page: Page, override?: (state: LeagueStatePayload) => LeagueStatePayload) {
+  const state = (result: ReturnType<typeof resultForRound> | null = null) => {
+    const base = leagueState(result);
+    return override ? override(base) : base;
+  };
   await page.route(/http:\/\/(?:localhost|127\.0\.0\.1):4874\/.*/, async (route) => {
     const request = route.request();
     const url = new URL(request.url());
@@ -55,42 +61,42 @@ async function mockLeagueApi(page: Page) {
     }
     if (path === "/leagues") {
       variableShop = Boolean((request.postDataJSON() as { variableShop?: boolean } | null)?.variableShop);
-      return route.fulfill({ json: leagueState() });
+      return route.fulfill({ json: state() });
     }
     if (path === "/leagues/league_1/reminders/plan") {
-      if (reminder.sentAt) return route.fulfill({ json: { ...leagueState(), reminder: { alreadySent: true, sentCount: 0, skippedCount: 0 } } });
+      if (reminder.sentAt) return route.fulfill({ json: { ...state(), reminder: { alreadySent: true, sentCount: 0, skippedCount: 0 } } });
       reminder = { sentAt: new Date().toISOString(), sentCount: 1, skippedCount: 1, season: 1 };
-      return route.fulfill({ json: { ...leagueState(), reminder: { alreadySent: false, sentCount: 1, skippedCount: 1 } } });
+      return route.fulfill({ json: { ...state(), reminder: { alreadySent: false, sentCount: 1, skippedCount: 1 } } });
     }
     if (path === "/leagues/league_1/settings") {
       cadence = "weekly";
-      return route.fulfill({ json: leagueState() });
+      return route.fulfill({ json: state() });
     }
     if (path === "/leagues/league_1/decisions") {
       hasDecision = true;
-      return route.fulfill({ json: leagueState() });
+      return route.fulfill({ json: state() });
     }
     if (path === "/leagues/league_1/resolve") {
       currentStatus = "resolved";
       credits += 150;
       points += 25;
       cards = cards.filter((cardId) => cardId !== "rain_grip");
-      return route.fulfill({ json: leagueState(resultForRound(round)) });
+      return route.fulfill({ json: state(resultForRound(round)) });
     }
     if (path === "/leagues/league_1/cards/buy") {
       credits -= 100;
       cards = [...cards, "launch_boost"];
-      return route.fulfill({ json: leagueState(resultForRound(round)) });
+      return route.fulfill({ json: state(resultForRound(round)) });
     }
     if (path === "/leagues/league_1/teams/livery") {
       livery = (request.postDataJSON() as { livery: { primary: string; secondary: string } }).livery;
-      return route.fulfill({ json: leagueState(currentStatus === "resolved" ? resultForRound(round) : null) });
+      return route.fulfill({ json: state(currentStatus === "resolved" ? resultForRound(round) : null) });
     }
     if (path === "/leagues/league_1/next-grand-prix") {
       round += 1;
       currentStatus = "briefing";
       hasDecision = false;
-      return route.fulfill({ json: leagueState() });
+      return route.fulfill({ json: state() });
     }
     if (path === "/leagues/league_1/restart") {
       round = 1;
@@ -100,7 +106,7 @@ async function mockLeagueApi(page: Page) {
       points = 0;
       cards = ["rain_grip"];
       livery = { primary: "#16c784", secondary: "#38bdf8" };
-      return route.fulfill({ json: leagueState() });
+      return route.fulfill({ json: state() });
     }
 
     return route.fulfill({ status: 404, json: { message: "Unhandled mock route" } });
@@ -407,6 +413,73 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
   });
   await hideReadmeNoise(page);
   await page.screenshot({ path: testInfo.outputPath("replay-layout-mobile.png"), fullPage: true });
+});
+
+test("keeps driver connectors pointing at cars on the stage across focus toggles", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  // The shared mock runs two cars that share a position for the whole replay, which is exactly the
+  // case the bug cannot happen in. This one needs a real field spread around the circuit.
+  const race = simulateRace({ ...(DEMO_RACE_INPUT as RaceInput), seed: "connector-focus" });
+  await mockLeagueApi(page, (state) => ({
+    ...state,
+    currentGrandPrix: { ...state.currentGrandPrix, result: currentStatus === "resolved" ? race : null },
+    teams: race.classification.map((entry, index) => ({
+      id: entry.teamId,
+      name: entry.teamName,
+      kind: index === 0 ? "human" : "bot",
+      points: 0,
+      credits: 0,
+      cards: index === 0 ? cards : [],
+      livery: { primary: ["#16c784", "#38bdf8", "#f97316", "#a855f7", "#ef4444", "#eab308"][index]!, secondary: "#38bdf8" },
+      ready: index === 0 ? hasDecision : false
+    })),
+    actionState: {
+      ...state.actionState,
+      submittedTeamIds: hasDecision ? [race.classification[0]!.teamId] : [],
+      missingTeamIds: currentStatus === "resolved" ? [] : [race.classification[0]!.teamId]
+    },
+    player: { ...player, teamId: race.classification[0]!.teamId },
+    decisions: hasDecision ? [{ teamId: race.classification[0]!.teamId, approach: "balanced", preparation: "weather", cardId: null, rivalTeamId: null }] : []
+  }));
+  await page.goto("/");
+  await createProfile(page);
+  await createLeague(page);
+  await page.getByTestId("nav-drive").click();
+  await dismissOnboarding(page);
+  await page.getByRole("button", { name: "Send plan" }).click();
+  await page.getByTestId("dialog-send-plan").getByTestId("modal-confirm").click();
+  await page.getByRole("button", { name: "Launch GP" }).click();
+  await page.getByTestId("dialog-launch-gp").getByTestId("modal-confirm").click();
+  await expect(page.getByRole("heading", { name: "Race replay" })).toBeVisible();
+
+  const mapPanel = page.locator(".replay-map-panel");
+  const focusButton = mapPanel.locator(".replay-map-controls").getByRole("button", { name: "Focus driver" });
+  // The cars start stacked on the grid, where the focus zoom keeps them all on screen. The bug needs
+  // them spread around the circuit, so run the replay at ×8 first.
+  await mapPanel.locator(".replay-map-controls").getByRole("button", { name: /Speed/ }).click();
+  await mapPanel.locator(".replay-speed-options").getByRole("button", { name: "×8" }).click();
+  await page.waitForTimeout(2500);
+  // A connector whose car has been zoomed off the stage used to keep drawing, shooting off past the
+  // corner instead of pointing at a car. Toggling focus is what made it visible.
+  const strayConnectors = async () =>
+    page.evaluate(() => {
+      const svg = document.querySelector(".replay-driver-connectors");
+      const stage = svg?.parentElement?.getBoundingClientRect();
+      if (!svg || !stage) return -1;
+      return Array.from(svg.querySelectorAll<SVGLineElement>("line[data-team-id]")).filter((line) => {
+        if (line.style.opacity === "0") return false;
+        const x = Number(line.getAttribute("x2") ?? 0);
+        const y = Number(line.getAttribute("y2") ?? 0);
+        return x < -20 || y < -20 || x > stage.width + 20 || y > stage.height + 20;
+      }).length;
+    });
+
+  for (let toggle = 0; toggle < 4; toggle += 1) {
+    await expect.poll(strayConnectors, { timeout: 4000 }).toBe(0);
+    await focusButton.click();
+    await page.waitForTimeout(400);
+  }
+  await expect.poll(strayConnectors, { timeout: 4000 }).toBe(0);
 });
 
 test("keeps first-click commands animated and result shortcuts wired", async ({ page }) => {

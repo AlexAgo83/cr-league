@@ -485,8 +485,6 @@
   "reaction_strong": "the position was defended and it held.",
   "reaction_empty-battery": "the battery is going critical.",
   "reaction_warning": "one step away from a penalty.",
-  "replay_result_locked_title": "Result locked",
-  "replay_result_locked_body": "Watch the replay or skip deliberately to reveal the payoff.",
   "replay_moment_boost": "boost",
   "replay_moment_position": "pos",
   "replay_director_title": "Race director",

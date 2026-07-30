@@ -498,12 +498,6 @@ export function ReplayView({
               </>
             }
           />
-          {afterMapContent && !replayComplete ? (
-            <section className="panel race-context-panel replay-result-gate">
-              <h2>{tt("replay_result_locked_title")}</h2>
-              <p>{tt("replay_result_locked_body")}</p>
-            </section>
-          ) : null}
           {showIntro && !copyDismissed ? (
             <section className="panel race-context-panel replay-copy-panel">
               <h2>{tt(titleKey)}</h2>

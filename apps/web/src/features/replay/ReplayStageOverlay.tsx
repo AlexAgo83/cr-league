@@ -289,6 +289,12 @@ export function ReplayStageOverlay({
   );
 }
 
+export function centerInside(rect: { left: number; top: number; width: number; height: number }, bounds: { left: number; top: number; width: number; height: number }) {
+  const x = rect.left + rect.width / 2;
+  const y = rect.top + rect.height / 2;
+  return x >= bounds.left && x <= bounds.left + bounds.width && y >= bounds.top && y <= bounds.top + bounds.height;
+}
+
 function ReplayDriverConnectors({ entries, teamLiveries }: { entries: ReplayTowerEntry[]; teamLiveries: Record<string, TeamLivery> }) {
   const ref = useRef<SVGSVGElement>(null);
 
@@ -296,9 +302,6 @@ function ReplayDriverConnectors({ entries, teamLiveries }: { entries: ReplayTowe
     const svg = ref.current;
     const stage = svg?.parentElement;
     if (!svg || !stage) return;
-    const cars = new Map(Array.from(stage.querySelectorAll<SVGGElement>(".map-car[data-car-id]")).map((car) => [car.dataset.carId, car]));
-    const badges = new Map(Array.from(stage.querySelectorAll<HTMLElement>(".replay-tower-livery[data-team-id]")).map((badge) => [badge.dataset.teamId, badge]));
-    const lines = Array.from(svg.querySelectorAll<SVGLineElement>("line[data-team-id]"));
     let lastUpdate = 0;
     let frame = 0;
     const update = (now: number) => {
@@ -307,6 +310,12 @@ function ReplayDriverConnectors({ entries, teamLiveries }: { entries: ReplayTowe
         return;
       }
       lastUpdate = now;
+      // Queried per tick, not once: focus mode re-renders the car layer, and holding onto the old
+      // nodes left connectors pointing at where a car used to be. querySelectorAll costs nothing
+      // here, unlike the rect reads below.
+      const cars = new Map(Array.from(stage.querySelectorAll<SVGGElement>(".map-car[data-car-id]")).map((car) => [car.dataset.carId, car]));
+      const badges = new Map(Array.from(stage.querySelectorAll<HTMLElement>(".replay-tower-livery[data-team-id]")).map((badge) => [badge.dataset.teamId, badge]));
+      const lines = Array.from(svg.querySelectorAll<SVGLineElement>("line[data-team-id]"));
       // Read every rect first, then write. Interleaving them made each measurement flush the
       // layout dirtied by the previous line: 2 forced layouts per driver, 20 times a second.
       const stageRect = stage.getBoundingClientRect();
@@ -318,7 +327,9 @@ function ReplayDriverConnectors({ entries, teamLiveries }: { entries: ReplayTowe
         return { line, badgeRect: badge.getBoundingClientRect(), carRect: car.getBoundingClientRect() };
       });
       for (const { line, badgeRect, carRect } of measured) {
-        if (!badgeRect || !carRect) {
+        // The focus camera zooms the map, which pushes most cars outside the stage: a connector to
+        // one of them would shoot off past the edge instead of pointing at anything on screen.
+        if (!badgeRect || !carRect || !centerInside(carRect, stageRect)) {
           line.style.opacity = "0";
           continue;
         }

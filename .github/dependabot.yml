@@ -20,6 +20,15 @@ updates:
       - dependency-name: "@eslint/js"
         update-types:
           - version-update:semver-major
+      # A Playwright major broke every e2e lane once already: project references stopped accepting a
+      # directory and had to name their tsconfig.json. TypeScript majors land the same way, across
+      # every workspace at once. Both are migrations, not updates — raise them deliberately.
+      - dependency-name: "@playwright/test"
+        update-types:
+          - version-update:semver-major
+      - dependency-name: typescript
+        update-types:
+          - version-update:semver-major
   - package-ecosystem: github-actions
     directory: /
     schedule:

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { botApproach, botCard, botCardPurchase, botDecision, botPreparation, botQualifyingDecision, wetRisk } from "./botBrain.js";
+import { botApproach, botCard, botCardPurchase, botDecision, botPitStrategy, botPreparation, botQualifyingDecision, wetRisk } from "./botBrain.js";
 import type { LeagueState } from "./league.js";
 import type { RaceDecision } from "./race.js";
 
@@ -17,7 +17,7 @@ const team = (overrides: Partial<LeagueState["teams"][number]> = {}): LeagueStat
   ...overrides
 });
 
-const state = (overrides: { forecast?: LeagueState["currentGrandPrix"]["forecast"]; round?: number; maxRounds?: number; teams?: LeagueState["teams"] } = {}): LeagueState => ({
+const state = (overrides: { forecast?: LeagueState["currentGrandPrix"]["forecast"]; round?: number; maxRounds?: number; teams?: LeagueState["teams"]; primaryTrait?: LeagueState["currentGrandPrix"]["primaryTrait"] } = {}): LeagueState => ({
   league: {
     id: "league-1",
     name: "L",
@@ -42,7 +42,7 @@ const state = (overrides: { forecast?: LeagueState["currentGrandPrix"]["forecast
     season: 1,
     round: overrides.round ?? 1,
     status: "briefing",
-    primaryTrait: "fast",
+    primaryTrait: overrides.primaryTrait ?? "fast",
     secondaryTrait: "weather_sensitive",
     trackLengthMeters: 5000,
     forecast: overrides.forecast ?? { dry: 90, light_rain: 10, heavy_rain: 0 },
@@ -151,5 +151,28 @@ describe("bot chrono attempts", () => {
     expect(plans[0]).toBe("prudent/reliability");
     expect(plans[1]).not.toBe(plans[0]);
     expect(plans[2]).toBe(plans[0]);
+  });
+});
+
+describe("bot pit strategy", () => {
+  // Lived in an API test that resolved eight races over HTTP to observe it, which cost five seconds
+  // under coverage. The strategy is chosen here, so it is checked here: same eight rounds, no races.
+  it("reads the circuit rather than repeating one plan down the calendar", () => {
+    const chosen = new Set<string>();
+    for (let round = 1; round <= 8; round += 1) {
+      for (const preparation of ["speed", "reliability"] as const) {
+        for (const approach of ["aggressive", "prudent", "balanced"] as const) {
+          chosen.add(botPitStrategy(state({ round, primaryTrait: "technical" }), team(), { approach, preparation }));
+        }
+      }
+    }
+
+    expect([...chosen].sort()).toEqual(["heavy_pack", "mini_pack", "standard"]);
+  });
+
+  it("keeps everyone on a standard pack when the rain is heavy enough to decide the race", () => {
+    const downpour = state({ round: 3, primaryTrait: "technical", forecast: { dry: 0, light_rain: 0, heavy_rain: 100 } });
+
+    expect(botPitStrategy(downpour, team(), { approach: "aggressive", preparation: "speed" })).toBe("standard");
   });
 });

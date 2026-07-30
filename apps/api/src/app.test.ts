@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createMemoryDb } from "./testMemoryDb.js";
-import { CARD_PRICE, CARD_PRICES, CAR_ASSET_PRICES, circuitIdentityForRound, circuitSeasonSeed, raceInputFromCircuit } from "@cr-league/shared";
+import { CARD_PRICE, CARD_PRICES, CAR_ASSET_PRICES, PIT_STRATEGIES, circuitIdentityForRound, circuitSeasonSeed, raceInputFromCircuit } from "@cr-league/shared";
 import { createTestApp } from "./app.testHelpers.js";
 import type { RecoveryMailer } from "./mailer.js";
 
@@ -97,7 +97,10 @@ describe("api app", () => {
     expect(revealedAfterRace.json().teams[0].result).toMatchObject({ position: expect.any(Number), points: expect.any(Number), credits: expect.any(Number) });
   });
 
-  it("varies default bot pit strategies across circuit identities", async () => {
+  it("reveals a real pit strategy for every bot opponent", async () => {
+    // Two rounds, not eight: which strategy the circuit calls for is the brain's business and is
+    // tested there. What the route owes is a valid, revealed strategy per bot — under coverage the
+    // eight-race version spent five seconds proving something a pure test proves in milliseconds.
     const app = await createTestApp(createMemoryDb());
     const createResponse = await app.inject({
       method: "POST",
@@ -107,10 +110,8 @@ describe("api app", () => {
     const created = createResponse.json();
     const leagueId = created.league.id;
     const claim = created.player;
-    const pitStrategies = new Set<string>();
-    const signatures = new Set<string>();
 
-    for (let round = 0; round < 8; round += 1) {
+    for (let round = 0; round < 2; round += 1) {
       await app.inject({
         method: "POST",
         url: `/leagues/${leagueId}/decisions`,
@@ -122,17 +123,14 @@ describe("api app", () => {
         payload: { teamId: claim.teamId, claimCode: claim.claimCode }
       });
       const configs = revealed.json().teams as Array<{ teamName: string; pitStrategy: string }>;
-      configs.forEach((config) => pitStrategies.add(config.pitStrategy));
-      signatures.add(configs.map((config) => `${config.teamName}:${config.pitStrategy}`).join("|"));
+      expect(configs.length).toBeGreaterThan(0);
+      for (const config of configs) expect(PIT_STRATEGIES).toContain(config.pitStrategy);
 
       await app.inject({ method: "POST", url: `/leagues/${leagueId}/resolve`, payload: { teamId: claim.teamId, claimCode: claim.claimCode } });
-      if (round < 7) await app.inject({ method: "POST", url: `/leagues/${leagueId}/next-grand-prix`, payload: { teamId: claim.teamId, claimCode: claim.claimCode } });
+      if (round < 1) await app.inject({ method: "POST", url: `/leagues/${leagueId}/next-grand-prix`, payload: { teamId: claim.teamId, claimCode: claim.claimCode } });
     }
 
     await app.close();
-
-    expect([...pitStrategies].sort()).toEqual(["heavy_pack", "mini_pack", "standard"]);
-    expect(signatures.size).toBeGreaterThan(1);
   });
 
   it("keeps the fixed shop for default leagues and a frozen deterministic 6-card shop for variable-shop leagues", async () => {

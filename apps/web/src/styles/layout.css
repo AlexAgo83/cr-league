@@ -4948,12 +4948,12 @@ label small {
   color: rgb(255 255 255 / 0.72);
 }
 
+/* No explicit row: the focus chip takes the top when it is there, and the gaps follow the kicker. */
 .replay-player-gaps {
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
   grid-column: 2;
-  grid-row: 1;
   justify-content: flex-end;
 }
 
@@ -5091,6 +5091,8 @@ label small {
   z-index: 3;
 }
 
+/* Flush in the top-right of the race-tracking panel: its own row, so it never fights the gap pills
+   for the corner. */
 .replay-focus-chip {
   align-items: center;
   background: rgb(248 243 232 / 0.08);
@@ -5100,6 +5102,8 @@ label small {
   font-size: 0.64rem;
   font-weight: 800;
   gap: 2px;
+  grid-column: 1 / -1;
+  justify-self: end;
   margin-bottom: 2px;
   max-width: 100%;
   padding: 1px 7px 1px 1px;
@@ -5879,17 +5883,48 @@ label small {
   margin: 0;
 }
 
+/* Both tanks sit over the map, where the cars they describe are. Absolute inside the stage, like
+   every other map overlay. */
 .duel-tanks {
   display: grid;
-  gap: 8px;
+  gap: 10px;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  margin-bottom: 12px;
+  left: 10px;
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  z-index: 3;
+}
+
+.duel-tank {
+  background: rgb(16 14 18 / 0.62);
+  border: 1px solid rgb(255 255 255 / 0.12);
+  border-radius: 6px;
+  padding: 5px 8px 6px;
+}
+
+/* Bottom-right of the map, the corner a map keeps for its own action. */
+.duel-again-button {
+  bottom: 12px;
+  position: absolute;
+  right: 12px;
+  z-index: 3;
+}
+
+/* An attack with nothing in the tank is closed, not offered. */
+.duel-call:disabled {
+  cursor: not-allowed;
+  opacity: 0.42;
 }
 
 .duel-tank small {
   color: var(--color-muted);
   display: block;
+  font-size: 0.68rem;
   margin-bottom: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .duel-tank-pips {
@@ -5951,41 +5986,6 @@ label small {
   color: rgb(248 243 232 / 0.6);
   font-size: 0.66rem;
   font-style: normal;
-}
-
-.duel-reveal {
-  align-items: center;
-  background: rgb(16 14 18 / 0.5);
-  border: 1px solid var(--color-border);
-  display: grid;
-  gap: 10px;
-  grid-template-columns: 30px minmax(0, 1fr);
-  margin: 0 0 12px;
-  padding: 9px 11px;
-}
-
-.duel-reveal.gain {
-  border-color: rgb(22 199 132 / 0.5);
-}
-
-.duel-reveal.loss {
-  border-color: rgb(248 113 113 / 0.5);
-}
-
-.duel-reveal b {
-  margin-left: 6px;
-}
-
-.duel-reveal em {
-  color: #fecaca;
-  font-size: 0.72rem;
-  font-style: normal;
-  grid-column: 2;
-}
-
-.duel-reveal-icon {
-  height: 30px;
-  width: 30px;
 }
 
 .duel-history h2 {

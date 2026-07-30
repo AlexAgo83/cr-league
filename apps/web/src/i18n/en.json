@@ -1042,8 +1042,6 @@
   "duel_call_cover_hint": "Beats a driver attacking. Wasted on one managing.",
   "duel_call_cost": "Costs {cost} engagement",
   "duel_call_refill": "Gives engagement back",
-  "duel_reveal": "{rival} chose {call}.",
-  "duel_overreach": "Nothing left in the tank — the lap cost you.",
   "duel_history_title": "How the duel went",
   "duel_win_title": "You beat him",
   "duel_lose_title": "He held you off",

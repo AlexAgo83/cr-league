@@ -139,7 +139,6 @@ export function DuelView({ onBack }: { onBack: () => void }) {
   }
 
   const finished = duelOver(duel);
-  const last = duel.rounds.at(-1);
   const cost = attackCost(duel.weather);
   const driving = Boolean(lap);
   const cars: MapCar[] = [
@@ -165,42 +164,40 @@ export function DuelView({ onBack }: { onBack: () => void }) {
         showHeading={false}
         framed={false}
         showTraits={false}
-        camera={{ enabled: true, car: cars[0], zoom: 1.5 }}
+        // Closer than a race map: this one lives in a panel, and two cars trading a second of gap
+        // are the whole picture.
+        camera={{ enabled: true, car: cars[0], zoom: 3.4 }}
+        overlay={
+          <>
+            <div className="duel-tanks">
+              <EngagementBar label={tt("duel_engagement_you")} value={duel.playerEngagement} />
+              <EngagementBar label={rival.name} value={duel.rivalEngagement} />
+            </div>
+            {finished ? (
+              <button type="button" className="primary-button duel-again-button" onClick={again}>
+                {tt("duel_again")}
+              </button>
+            ) : null}
+          </>
+        }
       />
 
       <div className="panel setup-main-panel setup-form-panel setup-choice-panel">
-        <div className="duel-tanks">
-          <EngagementBar label={tt("duel_engagement_you")} value={duel.playerEngagement} />
-          <EngagementBar label={rival.name} value={duel.rivalEngagement} />
-        </div>
-
-        {last ? (
-          <p className={last.swing > 0 ? "duel-reveal gain" : last.swing < 0 ? "duel-reveal loss" : "duel-reveal"} role="status">
-            <BoardIcon className="duel-reveal-icon" name={CALL_ICONS[last.rivalCall]} />
-            <span>
-              {tt("duel_reveal", { rival: rival.name, call: tt(`duel_call_${last.rivalCall}` as TranslationKey) })}
-              <b>{`${last.swing > 0 ? "+" : ""}${last.swing.toFixed(1)}s`}</b>
-            </span>
-            {last.overreach && last.overreach !== "rival" ? <em>{tt("duel_overreach")}</em> : null}
-          </p>
-        ) : null}
-
-        {finished ? (
-          <div className="actions">
-            <button type="button" className="primary-button" onClick={again}>
-              {tt("duel_again")}
-            </button>
-          </div>
-        ) : (
+        {finished ? null : (
           <div className="duel-calls">
-            {DUEL_CALLS.map((option) => (
-              <button key={option} type="button" className="duel-call" disabled={driving} onClick={() => call(option)}>
-                <BoardIcon className="duel-call-icon" name={CALL_ICONS[option]} />
-                <strong>{tt(`duel_call_${option}` as TranslationKey)}</strong>
-                <small>{tt(`duel_call_${option}_hint` as TranslationKey)}</small>
-                <em>{option === "attack" ? tt("duel_call_cost", { cost }) : tt("duel_call_refill")}</em>
-              </button>
-            ))}
+            {DUEL_CALLS.map((option) => {
+              // Attacking on an empty tank only ever cost time, so the call is closed rather than
+              // offered as a trap.
+              const spent = option === "attack" && duel.playerEngagement < cost;
+              return (
+                <button key={option} type="button" className="duel-call" disabled={driving || spent} onClick={() => call(option)}>
+                  <BoardIcon className="duel-call-icon" name={CALL_ICONS[option]} />
+                  <strong>{tt(`duel_call_${option}` as TranslationKey)}</strong>
+                  <small>{tt(`duel_call_${option}_hint` as TranslationKey)}</small>
+                  <em>{option === "attack" ? tt("duel_call_cost", { cost }) : tt("duel_call_refill")}</em>
+                </button>
+              );
+            })}
           </div>
         )}
 

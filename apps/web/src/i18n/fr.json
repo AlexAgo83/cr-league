@@ -1042,8 +1042,6 @@
   "duel_call_cover_hint": "Bat celui qui attaque. Perdu face à celui qui gère.",
   "duel_call_cost": "Coûte {cost} d'engagement",
   "duel_call_refill": "Rend de l'engagement",
-  "duel_reveal": "{rival} a choisi {call}.",
-  "duel_overreach": "Plus rien dans le réservoir — le tour t'a coûté.",
   "duel_history_title": "Le déroulé du duel",
   "duel_win_title": "Tu l'as battu",
   "duel_lose_title": "Il t'a contenu",

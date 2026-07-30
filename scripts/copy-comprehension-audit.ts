@@ -81,7 +81,10 @@ function dirname(path: string) {
 }
 
 function table(headers: string[], rows: Array<Array<string | number>>) {
-  return [`| ${headers.join(" | ")} |`, `| ${headers.map(() => "---").join(" | ")} |`, ...rows.map((items) => `| ${items.map((item) => String(item).replace(/\|/g, "\\|")).join(" | ")} |`)].join("\n");
+  // Backslash first, then the pipe: escaping only the pipe left `\|` in a cell reading as an escaped
+  // backslash followed by a column break, which splits the row.
+  const cell = (value: string | number) => String(value).replace(/[\\|]/g, "\\$&");
+  return [`| ${headers.join(" | ")} |`, `| ${headers.map(() => "---").join(" | ")} |`, ...rows.map((items) => `| ${items.map(cell).join(" | ")} |`)].join("\n");
 }
 
 function escapeRegExp(value: string) {

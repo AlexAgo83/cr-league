@@ -3096,37 +3096,55 @@ label small {
 }
 
 /* The curtain is one pre-rendered tile of streaks rather than a gradient per drop: one layer to
-   rasterise instead of four, decoded once and blitted. Measured against the same replay with the
-   layer hidden, the effect costs nothing detectable — it moves by transform alone, on its own
-   layer, so the compositor carries it. */
-.map-rain::before {
-  animation: map-rain-fall-160 0.9s linear infinite;
-  background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22120%22%20height%3D%22160%22%3E%3Cg%20stroke%3D%22%23e2f0ff%22%20stroke-opacity%3D%220.5%22%20stroke-width%3D%221%22%20stroke-linecap%3D%22round%22%3E%3Cline%20x1%3D%2214%22%20y1%3D%228%22%20x2%3D%2214%22%20y2%3D%2220%22%2F%3E%3Cline%20x1%3D%2261%22%20y1%3D%2252%22%20x2%3D%2261%22%20y2%3D%2264%22%2F%3E%3Cline%20x1%3D%2297%22%20y1%3D%2224%22%20x2%3D%2297%22%20y2%3D%2236%22%2F%3E%3Cline%20x1%3D%2238%22%20y1%3D%22104%22%20x2%3D%2238%22%20y2%3D%22116%22%2F%3E%3Cline%20x1%3D%2281%22%20y1%3D%22128%22%20x2%3D%2281%22%20y2%3D%22140%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
-  content: "";
-  /* Enough overscan for an 11 degree tilt and one tile of travel, no more: this layer is the size of
+   rasterise instead of four, decoded once and blitted. Each streak is a soft ellipse that fades at
+   its edges, so it reads as a drop rather than a drawn line. Measured against the same replay with
+   the layer hidden, the effect costs nothing detectable — it moves by translate and rotate alone, on
+   its own layer, so the compositor carries it. */
+.map-rain-curtain {
+  /* Enough overscan for the wind's tilt and one tile of travel, no more: this layer is the size of
      the map, and every extra percent is surface the compositor has to hold. */
-  inset: -14% -10%;
+  animation: map-rain-wind 26s ease-in-out infinite;
+  inset: -20% -16%;
+  position: absolute;
+  will-change: rotate;
+}
+
+.map-rain-curtain::before {
+  animation: map-rain-fall-160 0.9s linear infinite;
+  background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22120%22%20height%3D%22160%22%3E%3Cdefs%3E%3CradialGradient%20id%3D%22s%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23e8f4ff%22%20stop-opacity%3D%220.34%22%2F%3E%3Cstop%20offset%3D%220.45%22%20stop-color%3D%22%23e8f4ff%22%20stop-opacity%3D%220.15%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23e8f4ff%22%20stop-opacity%3D%220%22%2F%3E%3C%2FradialGradient%3E%3C%2Fdefs%3E%3Cellipse%20cx%3D%2214%22%20cy%3D%2214%22%20rx%3D%221.6%22%20ry%3D%227.0%22%20fill%3D%22url%28%23s%29%22%2F%3E%3Cellipse%20cx%3D%2261%22%20cy%3D%2258%22%20rx%3D%221.6%22%20ry%3D%227.0%22%20fill%3D%22url%28%23s%29%22%2F%3E%3Cellipse%20cx%3D%2297%22%20cy%3D%2230%22%20rx%3D%221.6%22%20ry%3D%227.0%22%20fill%3D%22url%28%23s%29%22%2F%3E%3Cellipse%20cx%3D%2238%22%20cy%3D%22110%22%20rx%3D%221.6%22%20ry%3D%227.0%22%20fill%3D%22url%28%23s%29%22%2F%3E%3Cellipse%20cx%3D%2281%22%20cy%3D%22134%22%20rx%3D%221.6%22%20ry%3D%227.0%22%20fill%3D%22url%28%23s%29%22%2F%3E%3C%2Fsvg%3E");
+  content: "";
+  inset: 0;
   position: absolute;
   /* Its own layer, so falling rain never repaints the map underneath. */
-  will-change: transform;
+  will-change: translate;
 }
 
-.circuit-weather-heavy_rain .map-rain::before {
+.circuit-weather-heavy_rain .map-rain-curtain::before {
   animation: map-rain-fall-140 0.55s linear infinite;
-  background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2290%22%20height%3D%22140%22%3E%3Cg%20stroke%3D%22%23e2f0ff%22%20stroke-opacity%3D%220.55%22%20stroke-width%3D%221%22%20stroke-linecap%3D%22round%22%3E%3Cline%20x1%3D%229%22%20y1%3D%224%22%20x2%3D%229%22%20y2%3D%2221%22%2F%3E%3Cline%20x1%3D%2228%22%20y1%3D%2260%22%20x2%3D%2228%22%20y2%3D%2277%22%2F%3E%3Cline%20x1%3D%2247%22%20y1%3D%2220%22%20x2%3D%2247%22%20y2%3D%2237%22%2F%3E%3Cline%20x1%3D%2266%22%20y1%3D%2296%22%20x2%3D%2266%22%20y2%3D%22113%22%2F%3E%3Cline%20x1%3D%2281%22%20y1%3D%2244%22%20x2%3D%2281%22%20y2%3D%2261%22%2F%3E%3Cline%20x1%3D%2217%22%20y1%3D%22112%22%20x2%3D%2217%22%20y2%3D%22129%22%2F%3E%3Cline%20x1%3D%2257%22%20y1%3D%22128%22%20x2%3D%2257%22%20y2%3D%22145%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2290%22%20height%3D%22140%22%3E%3Cdefs%3E%3CradialGradient%20id%3D%22s%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23e8f4ff%22%20stop-opacity%3D%220.4%22%2F%3E%3Cstop%20offset%3D%220.45%22%20stop-color%3D%22%23e8f4ff%22%20stop-opacity%3D%220.18%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23e8f4ff%22%20stop-opacity%3D%220%22%2F%3E%3C%2FradialGradient%3E%3C%2Fdefs%3E%3Cellipse%20cx%3D%229%22%20cy%3D%2212%22%20rx%3D%221.6%22%20ry%3D%2210.0%22%20fill%3D%22url%28%23s%29%22%2F%3E%3Cellipse%20cx%3D%2228%22%20cy%3D%2266%22%20rx%3D%221.6%22%20ry%3D%2210.0%22%20fill%3D%22url%28%23s%29%22%2F%3E%3Cellipse%20cx%3D%2247%22%20cy%3D%2226%22%20rx%3D%221.6%22%20ry%3D%2210.0%22%20fill%3D%22url%28%23s%29%22%2F%3E%3Cellipse%20cx%3D%2266%22%20cy%3D%22100%22%20rx%3D%221.6%22%20ry%3D%2210.0%22%20fill%3D%22url%28%23s%29%22%2F%3E%3Cellipse%20cx%3D%2281%22%20cy%3D%2250%22%20rx%3D%221.6%22%20ry%3D%2210.0%22%20fill%3D%22url%28%23s%29%22%2F%3E%3Cellipse%20cx%3D%2217%22%20cy%3D%22118%22%20rx%3D%221.6%22%20ry%3D%2210.0%22%20fill%3D%22url%28%23s%29%22%2F%3E%3Cellipse%20cx%3D%2257%22%20cy%3D%22132%22%20rx%3D%221.6%22%20ry%3D%2210.0%22%20fill%3D%22url%28%23s%29%22%2F%3E%3C%2Fsvg%3E");
 }
 
-/* One set of keyframes per tile height, travelling exactly one tile so the loop never seams. A
-   custom property inside the transform would read better, but an animation whose value comes from a
-   variable cannot be composited, which is the whole point of this construction. */
+/* The gust: the whole curtain leans a few degrees over half a minute, so the rain never falls at the
+   same angle for long. Separate properties rather than one transform, because two animations on
+   `transform` would overwrite each other instead of composing. */
+@keyframes map-rain-wind {
+  0%, 100% { rotate: 7deg; }
+  30% { rotate: 15deg; }
+  55% { rotate: 9deg; }
+  80% { rotate: 13deg; }
+}
+
+/* One set of keyframes per tile height, travelling exactly one tile so the loop never seams. The
+   travel is down the curtain's own axis, which is why the wind can turn it without breaking the
+   loop. */
 @keyframes map-rain-fall-160 {
-  from { transform: rotate(11deg) translate3d(0, 0, 0); }
-  to { transform: rotate(11deg) translate3d(0, 160px, 0); }
+  from { translate: 0 0; }
+  to { translate: 0 160px; }
 }
 
 @keyframes map-rain-fall-140 {
-  from { transform: rotate(11deg) translate3d(0, 0, 0); }
-  to { transform: rotate(11deg) translate3d(0, 140px, 0); }
+  from { translate: 0 0; }
+  to { translate: 0 140px; }
 }
 
 /* Experiment: full-page maps at the widths that still use a panel — below 860px responsive.css
@@ -4801,7 +4819,8 @@ label small {
   /* The reaction still shows; only the motion stops. */
   .map-car .map-car-emote { animation: none; }
   /* The rain stays on screen, it just stops falling: the weather still reads at a glance. */
-  .map-rain::before { animation: none; }
+  .map-rain-curtain,
+  .map-rain-curtain::before { animation: none; }
 }
 
 @keyframes replay-flag-pop {

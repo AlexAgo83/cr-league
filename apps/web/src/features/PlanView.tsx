@@ -86,6 +86,7 @@ export function PlanView({
   const tt = useT();
   const planRecommendation = buildPlanRecommendationParts({ circuitTraits, forecastPick, tt });
   const playerRival = standingsRival(state, playerTeamId);
+  const playerRivalLivery = state.teams.find((team) => team.id === playerRival?.teamId)?.livery;
   const activeSubscreen = planSubscreen;
   const reportTitle = `${reportCircuit.city} ${tt(reportCircuit.layoutKey)}`;
   const chronoCardClass = (cardId?: CardId) => `chrono-session-choice type-card${isChronoCardRelevant(cardId, forecastPick) ? "" : " is-faded"}`;
@@ -278,6 +279,7 @@ export function PlanView({
           disabled={disabled}
           locked={locked}
           rival={playerRival}
+          rivalLivery={playerRivalLivery}
           onQualifying={() => {
             onSetGameView("drive");
             onOpenQualifyingRun();

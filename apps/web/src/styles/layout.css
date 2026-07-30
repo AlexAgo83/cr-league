@@ -1681,7 +1681,22 @@ label small {
 }
 
 .plan-recommendation .plan-rival-read {
+  align-items: center;
   border-color: rgb(251 191 36 / 0.42);
+  grid-template-columns: auto minmax(0, 1fr);
+}
+
+.plan-rival-helmet {
+  height: 34px;
+  position: relative;
+  width: 40px;
+}
+
+.plan-rival-helmet .replay-tower-helmet {
+  height: 36px;
+  left: 0;
+  top: -1px;
+  width: 40px;
 }
 
 .plan-recommendation strong {
@@ -5068,6 +5083,40 @@ label small {
 
 .replay-tower > header .map-plan-edit-button {
   z-index: 3;
+}
+
+.replay-focus-chip {
+  align-items: center;
+  background: rgb(248 243 232 / 0.08);
+  border: 1px solid rgb(248 243 232 / 0.18);
+  border-radius: 999px;
+  display: flex;
+  font-size: 0.64rem;
+  font-weight: 800;
+  gap: 2px;
+  margin-bottom: 2px;
+  max-width: 100%;
+  padding: 1px 7px 1px 1px;
+  width: fit-content;
+}
+
+.replay-focus-chip > span:last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.replay-focus-helmet {
+  height: 22px;
+  position: relative;
+  width: 28px;
+}
+
+.replay-focus-helmet .replay-tower-helmet {
+  height: 26px;
+  left: -1px;
+  top: -2px;
+  width: 31px;
 }
 
 .replay-tower ol {

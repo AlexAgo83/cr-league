@@ -11,7 +11,6 @@ import { AssetImage } from "./AssetImage.js";
 import { CircuitMap, analyzeCircuitRoute, type MapCar } from "./CircuitMap.js";
 import { carAssetForId } from "./carAssets.js";
 import { applyTrackSpeedProfile } from "./replay/replayMath.js";
-import { LiveryPlate } from "./LiveryPlate.js";
 import { TeamHelmet } from "./replay/ReplayTower.js";
 import { Modal } from "./Modal.js";
 import { PositionBadge } from "./PositionBadge.js";
@@ -416,7 +415,7 @@ function TeamProfileModal({
     <Modal label={tt("team_profile_title", { team: team.name })} testId="dialog-team-profile" className="panel modal team-profile-modal" closeLabel={tt("action_close")} showCloseButton onClose={onClose}>
       <div className="team-profile-hero">
         <ChampionshipCarBackdrop livery={team.livery} />
-        <LiveryPlate className="standings-livery-plate team-profile-livery" livery={team.livery} name={team.name} wins={seasonWins} />
+        <TeamHelmet className="standings-livery-plate team-profile-livery" livery={team.livery} />
         <div>
           <span className="section-kicker">{team.id === playerTeamId ? tt("team_you") : team.kind === "bot" ? tt("team_bot") : tt("team_player")}</span>
           <h3>{team.name}</h3>

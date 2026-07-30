@@ -1,6 +1,6 @@
 import { type CSSProperties, useState } from "react";
 import { useT } from "../i18n/index.js";
-import { APPROACH_DELTAS, PIT_STRATEGY_DELTAS, PREPARATION_DELTAS, type CardId, type DecisionDeltaKey, type DecisionDeltas } from "@cr-league/shared";
+import { APPROACH_DELTAS, PIT_STRATEGY_DELTAS, PREPARATION_DELTAS, type CardId, type DecisionDeltaKey, type DecisionDeltas, type TeamLivery } from "@cr-league/shared";
 import type { TranslationKey } from "../i18n/index.js";
 import { safeStorage } from "../app/appStorage.js";
 import { sortCardIdsByName, type CardFit, type StandingsRival, type Translator } from "../app/helpers.js";
@@ -12,6 +12,7 @@ import { CARD_BADGES, CardArtImage, CardStatBadges, StatBadges, type StatBadge }
 import { Modal } from "./Modal.js";
 import { ModalHero } from "./ModalHero.js";
 import { PlanRiskSummary } from "./PlanRiskSummary.js";
+import { TeamHelmet } from "./replay/ReplayTower.js";
 import { BoardIcon, type BoardIconName } from "./VisualIcon.js";
 
 type TraitStats = {
@@ -196,6 +197,7 @@ export function DirectivePanel({
   disabled,
   locked,
   rival,
+  rivalLivery,
   onQualifying,
   onOpenGarageShop,
   onSelectStep
@@ -217,6 +219,7 @@ export function DirectivePanel({
   disabled?: boolean;
   locked?: boolean;
   rival?: StandingsRival | null;
+  rivalLivery?: TeamLivery;
   onQualifying?: () => void;
   onOpenGarageShop?: () => void;
   onSelectStep: (step: DirectiveStep) => void;
@@ -293,8 +296,11 @@ export function DirectivePanel({
             ))}
             {rival ? (
               <section className="plan-rival-read">
-                <strong>{tt("rival_read_label")}</strong>
-                <p>{tt("rival_read_body", { rival: rival.teamName, gap: rival.pointsGap })}</p>
+                {rivalLivery ? <TeamHelmet className="plan-rival-helmet" livery={rivalLivery} /> : null}
+                <div>
+                  <strong>{tt("rival_read_label")}</strong>
+                  <p>{tt("rival_read_body", { rival: rival.teamName, gap: rival.pointsGap })}</p>
+                </div>
               </section>
             ) : null}
           </div>

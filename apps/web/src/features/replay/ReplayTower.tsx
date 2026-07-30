@@ -35,6 +35,8 @@ export function ReplayTower({
   onTeamFocus?: (teamId: string) => void;
 }) {
   const [expanded, setExpanded] = useState(false);
+  const focusedEntry = focusedTeamId ? entries.find((entry) => entry.teamId === focusedTeamId) : undefined;
+  const focusedLivery = focusedEntry ? teamLiveries[focusedEntry.teamId] : undefined;
   return (
     <section className={expanded ? "replay-tower" : "replay-tower map-list-collapsed"} aria-label={title}>
       <header>
@@ -48,6 +50,12 @@ export function ReplayTower({
           </button>
         ) : null}
       </header>
+      {focusedEntry && focusedLivery ? (
+        <div className="replay-focus-chip">
+          <TeamHelmet className="replay-focus-helmet" livery={focusedLivery} />
+          <span>{focusedEntry.teamName}</span>
+        </div>
+      ) : null}
       <ol>
         {entries.map((entry, index) => {
           const positionPop = positionPops[entry.teamId];

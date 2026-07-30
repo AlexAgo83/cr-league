@@ -860,6 +860,13 @@
   -webkit-text-stroke: 0;
 }
 
+.team-helmet.team-profile-livery .replay-tower-helmet {
+  height: 52px;
+  left: 5px;
+  top: -5px;
+  width: 54px;
+}
+
 .team-profile-hero > div {
   grid-column: 2;
   min-width: 0;

@@ -169,6 +169,37 @@ describe("api app", () => {
     await app.close();
   });
 
+  it("keeps replay traces out of older history and serves them on demand", async () => {
+    const app = await createTestApp(createMemoryDb());
+    const created = (await app.inject({ method: "POST", url: "/leagues", payload: { name: "Office League", teamName: "Volt Union" } })).json();
+    const leagueId = created.league.id;
+    const { teamId, claimCode } = created.player;
+
+    let state = created;
+    for (let round = 1; round <= 3; round += 1) {
+      await app.inject({ method: "POST", url: `/leagues/${leagueId}/decisions`, payload: { teamId, claimCode, approach: "balanced", preparation: "speed" } });
+      state = (await app.inject({ method: "POST", url: `/leagues/${leagueId}/resolve`, payload: { teamId, claimCode } })).json();
+      if (round < 3) state = (await app.inject({ method: "POST", url: `/leagues/${leagueId}/next-grand-prix`, payload: { teamId, claimCode } })).json();
+    }
+
+    const resolved = state.grandPrixHistory.filter((grandPrix: { result: unknown }) => grandPrix.result);
+    const withTrace = resolved.filter((grandPrix: { result: { replayTrace?: unknown[] } }) => grandPrix.result.replayTrace);
+    const oldest = resolved.at(-1);
+    const onDemand = await app.inject({ method: "GET", url: `/leagues/${leagueId}/grand-prix/${oldest.id}/result` });
+    const missing = await app.inject({ method: "GET", url: `/leagues/${leagueId}/grand-prix/gp_missing/result` });
+    await app.close();
+
+    expect(resolved).toHaveLength(3);
+    // Two most recent keep their trace; the third is served by the endpoint the replay calls.
+    expect(withTrace).toHaveLength(2);
+    expect(oldest.result.replayTrace).toBeUndefined();
+    expect(oldest.result.classification.length).toBeGreaterThan(0);
+    expect(onDemand.statusCode).toBe(200);
+    expect(onDemand.json().result.replayTrace.length).toBeGreaterThan(0);
+    expect(onDemand.json().result.seed).toBe(oldest.result.seed);
+    expect(missing.statusCode).toBe(404);
+  });
+
   it("creates, updates, and resolves a persisted demo league", async () => {
     const app = await createTestApp(createMemoryDb());
 

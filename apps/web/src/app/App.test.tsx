@@ -833,6 +833,32 @@ describe("App", () => {
     expect(window.location.pathname).toBe("/drive");
   });
 
+  it("pulls the replay trace on demand for a history race that ships without one", async () => {
+    saveProfile();
+    const trace = [
+      { progress: 0, lap: 1, segment: "start", distanceMeters: 0, order: ["team_1", "team_2"], times: {}, gaps: {}, cars: {} },
+      { progress: 1, lap: 2, segment: "finish", distanceMeters: 100, order: ["team_1", "team_2"], times: {}, gaps: {}, cars: {} }
+    ];
+    const historyResult = nextGrandPrixState.grandPrixHistory[0]?.result;
+    const fetch = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce(response(nextGrandPrixState))
+      .mockResolvedValueOnce(response({ result: { ...historyResult, replayTrace: trace } }));
+
+    render(<App />);
+    createLeagueFromSetup();
+    await screen.findByRole("button", { name: "Championship" });
+
+    fireEvent.click(screen.getByRole("button", { name: "Championship" }));
+    fireEvent.click(screen.getByRole("tab", { name: "Grand Prix history" }));
+    fireEvent.click(screen.getByRole("button", { name: /S1 R1/ }));
+
+    // The replay opens straight away on the trace-less result, then swaps the trace in.
+    expect(document.querySelector("#result-replay-panel")).toBeTruthy();
+    await waitFor(() => expect(fetch.mock.calls.some((call) => String(call[0]).endsWith("/grand-prix/gp_1/result"))).toBe(true));
+    expect(await screen.findByRole("button", { name: "Back to stand" })).toBeTruthy();
+  });
+
   it("plays through the demo league flow", async () => {
     saveProfile();
     const resolvedStateWithQualifying = {
@@ -842,15 +868,21 @@ describe("App", () => {
         qualifyingRuns: decidedStateWithQualifying.currentGrandPrix.qualifyingRuns
       }
     };
-    const fetch = vi
-      .spyOn(globalThis, "fetch")
-      .mockResolvedValueOnce(response(baseState))
-      .mockResolvedValueOnce(response({ state: qualifiedState, run: qualifyingRun, isBest: true }))
-      .mockResolvedValueOnce(response(decidedStateWithQualifying))
-      .mockResolvedValueOnce(response(resolvedStateWithQualifying))
-      .mockResolvedValueOnce(response(nextGrandPrixState))
-      .mockResolvedValueOnce(response(settingsState))
-      .mockResolvedValueOnce(response(baseState));
+    // The league calls are answered in order; the on-demand replay trace is answered by URL so
+    // opening a history replay does not shift that queue.
+    const queued = [
+      response(baseState),
+      response({ state: qualifiedState, run: qualifyingRun, isBest: true }),
+      response(decidedStateWithQualifying),
+      response(resolvedStateWithQualifying),
+      response(nextGrandPrixState),
+      response(settingsState),
+      response(baseState)
+    ];
+    const fetch = vi.spyOn(globalThis, "fetch").mockImplementation(async (input) => {
+      if (String(input).includes("/grand-prix/")) return response({ result: resolvedStateWithQualifying.currentGrandPrix.result });
+      return queued.shift() ?? response(baseState);
+    });
     vi.spyOn(window, "confirm").mockReturnValue(true);
 
     render(<App />);
@@ -1302,7 +1334,9 @@ describe("App", () => {
     fireEvent.change(screen.getByLabelText("Cadence"), { target: { value: "weekly" } });
     fireEvent.click(screen.getByRole("button", { name: "Update settings" }));
     expect(await screen.findByText("League settings updated.")).toBeTruthy();
-    expect(JSON.parse((fetch.mock.calls[5]?.[1] as RequestInit).body as string)).toMatchObject({ name: "Renamed League", cadence: "weekly" });
+    // By URL rather than by call index: replays fetch their own trace, which shifts the order.
+    const settingsCall = fetch.mock.calls.find((call) => String(call[0]).endsWith("/settings"));
+    expect(JSON.parse((settingsCall?.[1] as RequestInit).body as string)).toMatchObject({ name: "Renamed League", cadence: "weekly" });
     expect(localStorage.getItem("cr-league-player-claims")).toContain("Renamed League");
 
     fireEvent.click(screen.getByRole("button", { name: "Restart session" }));
@@ -1314,7 +1348,9 @@ describe("App", () => {
     expect(screen.getAllByText("Team claim forgotten.").length).toBeGreaterThan(0);
     expect(localStorage.getItem("cr-league-player-claims")).toBe("[]");
     expect(localStorage.getItem("cr-league-active-player-claim")).toBe(null);
-    expect(fetch).toHaveBeenCalledTimes(7);
+    // Seven league calls plus the one replay trace pulled in for the history race.
+    expect(fetch).toHaveBeenCalledTimes(8);
+    expect(fetch.mock.calls.filter((call) => String(call[0]).includes("/grand-prix/"))).toHaveLength(1);
   }, 20_000);
 
   it("keeps the current player attached when action responses omit player", async () => {

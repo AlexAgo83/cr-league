@@ -17,7 +17,7 @@ export type {
 } from "./types.js";
 export { createProfile, requestRecoveryCode, recoverProfile } from "./profiles.js";
 export { createDemoLeague, joinLeagueByCode, rejoinLeague, startNextGrandPrix, restartLeague } from "./lifecycle.js";
-export { getLeagueState } from "./leagueState.js";
+export { getGrandPrixResult, getLeagueState } from "./leagueState.js";
 export { publicLeagueState, withPlayer } from "./visibility.js";
 export { updateLeagueSettings, updateTeamLivery, updateTeamName } from "./teamAdmin.js";
 export { sendPlanReminders } from "./reminders.js";

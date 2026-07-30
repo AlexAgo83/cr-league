@@ -421,10 +421,10 @@ export function createMemoryDb(): PrismaClient {
         grandPrixes.push(grandPrix);
         return grandPrix;
       },
-      findFirst: async ({ where, select }: { where: { leagueId: string }; select?: SelectShape<GrandPrixRow> }) => {
+      findFirst: async ({ where, select }: { where: { leagueId: string; id?: string }; select?: SelectShape<GrandPrixRow> }) => {
         const grandPrix =
           grandPrixes
-            .filter((candidate) => candidate.leagueId === where.leagueId)
+            .filter((candidate) => candidate.leagueId === where.leagueId && (where.id === undefined || candidate.id === where.id))
             .sort((left, right) => right.season - left.season || right.round - left.round)[0] ?? null;
         return grandPrix && applySelect(grandPrix, select);
       },

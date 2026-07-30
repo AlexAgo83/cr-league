@@ -24,6 +24,12 @@ function withoutOldTraces<T extends { status: string; result: unknown }>(history
   });
 }
 
+/** The trace the history payload leaves out, fetched only when a player opens that replay. */
+export async function getGrandPrixResult(db: Db, leagueId: string, grandPrixId: string): Promise<RaceResult | null> {
+  const grandPrix = await db.grandPrix.findFirst({ where: { id: grandPrixId, leagueId }, select: { result: true } });
+  return (grandPrix?.result as RaceResult | null) ?? null;
+}
+
 export async function getLeagueState(db: Db, leagueId: string, options: { includeInviteCode?: boolean } = {}): Promise<LeagueState | null> {
   // ponytail: fetch only the current GP with its decisions; past GPs pulled decisions + result/
   // qualifying/forecast JSON blobs for nothing (history only needs id/name/season/round/status/result),

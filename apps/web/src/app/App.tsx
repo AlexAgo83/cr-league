@@ -8,6 +8,7 @@ import {
   startNextGrandPrix as startSoloNextGrandPrixState,
   submitDecision as submitSoloDecision,
   type QualifyingRun,
+  type RaceResult,
   updateTeamLivery as updateSoloTeamLivery,
   updateTeamName as updateSoloTeamName
 } from "@cr-league/shared";
@@ -20,6 +21,7 @@ import { ONBOARDING_HELP_KEYS, SCREEN_ONBOARDING_HELP_TOPICS, type OnboardingHel
 import { clearStoredUiPreferences, LEAGUE_SCOPED_HELP_TOPICS } from "./appPreferences.js";
 import {
   ApiError,
+  api,
   getActiveClaim,
   loadPlayerClaims,
   loadProfileEmail,
@@ -440,6 +442,25 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
     setResultOpen(true);
     setGameView("drive");
   }, [historyReplay, leagueState, routeReplayGrandPrixId, setGameView, setHistoryReplay, setResultOpen, setResultTab, setRouteReplayGrandPrixId]);
+
+  // League state carries replay traces for the two most recent races only, so an older replay opens
+  // on the interpolated fallback and pulls its own trace in. Both entry points (the history list and
+  // a deep link) land here, and the swap happens during the 3s grid hold, where every car is still
+  // on its starting slot: nothing visible moves.
+  useEffect(() => {
+    const grandPrix = historyReplay;
+    if (soloMode || !leagueState || !grandPrix?.result || grandPrix.result.replayTrace) return;
+    let cancelled = false;
+    void api<{ result: RaceResult }>(`/leagues/${leagueState.league.id}/grand-prix/${grandPrix.id}/result`, { method: "GET" })
+      .then(({ result }) => {
+        if (!cancelled && result.replayTrace) setHistoryReplay({ ...grandPrix, result });
+      })
+      // A trace-less replay still plays from the classification, so this is not worth surfacing.
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [historyReplay, leagueState, setHistoryReplay, soloMode]);
 
   useEffect(() => {
     if (!leagueState || onboardingHelp) return;

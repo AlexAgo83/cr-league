@@ -7,6 +7,7 @@ import {
   buyCard,
   createDemoLeague,
   createProfile,
+  getGrandPrixResult,
   getLeagueState,
   getOpponentConfigComparison,
   joinLeagueByCode,
@@ -124,6 +125,14 @@ export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClien
     const state = await getLeagueState(db, request.params.leagueId);
     if (!state) return reply.code(404).send({ error: "Not Found", message: "League not found." });
     return publicLeagueState(state);
+  });
+
+  // League state ships replay traces for the two most recent races only, so opening an older
+  // replay fetches that one result on demand instead of every state read carrying all of them.
+  app.get<{ Params: { leagueId: string; grandPrixId: string } }>("/leagues/:leagueId/grand-prix/:grandPrixId/result", async (request, reply) => {
+    const result = await getGrandPrixResult(db, request.params.leagueId, request.params.grandPrixId);
+    if (!result) return reply.code(404).send({ error: "Not Found", message: "Grand Prix result not found." });
+    return { result };
   });
 
   app.post<{ Params: { leagueId: string } }>("/leagues/:leagueId/opponent-configs", WRITE_RATE_LIMIT, jsonRoute({

@@ -706,15 +706,17 @@
     padding: 7px 8px;
   }
 
+  /* Race and chrono tracking hugs the left edge: pinned right it sat on top of the timeline
+     markers and the event dots. */
   .replay-info-stack {
-    align-items: flex-end;
+    align-items: flex-start;
     bottom: 64px;
     display: flex;
     flex-direction: column-reverse;
     gap: 8px;
+    left: 8px;
     pointer-events: none;
     position: absolute;
-    right: 8px;
     width: min(260px, calc(100% - 24px));
     z-index: 3;
   }

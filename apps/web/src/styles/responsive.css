@@ -849,3 +849,23 @@
     font-size: 0.78rem;
   }
 }
+
+/* Narrower than this, the four nav labels plus the Menu label push the header onto a second line,
+   which doubles its height — and in the full-page map layout that drops the header over the map
+   overlays. Icons carry the meaning; the nav buttons keep their aria-label, and the Menu label is
+   hidden the accessible way so its button keeps a name. */
+@media (max-width: 1000px) {
+  .topbar .nav-label-full {
+    display: none;
+  }
+
+  .topbar .topbar-pill-label {
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    height: 1px;
+    overflow: hidden;
+    position: absolute;
+    white-space: nowrap;
+    width: 1px;
+  }
+}

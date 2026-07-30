@@ -3060,21 +3060,73 @@ label small {
   opacity: 1;
 }
 
-.circuit-weather-light_rain .circuit-map-stage::after,
-.circuit-weather-heavy_rain .circuit-map-stage::after {
-  animation: map-rain-drift 4.8s ease-in-out infinite;
-  background:
-    linear-gradient(112deg, transparent 0 30%, rgb(219 234 254 / 0.1) 42%, transparent 54%),
-    linear-gradient(112deg, transparent 0 58%, rgb(125 211 252 / 0.08) 68%, transparent 78%);
-  filter: blur(10px);
-  inset: -26%;
-  opacity: 0.38;
-  transform: translate3d(-4%, -6%, 0);
+/* Rain on the screen: one element, three composited layers — droplets sitting on the lens, and two
+   curtains falling behind them. Everything moves by transform alone, so the compositor carries it and
+   the main thread pays nothing. It replaced a full-stage blur(10px), which is why it costs less than
+   the mood effect it succeeds. */
+.map-rain {
+  inset: 0;
+  opacity: 0;
+  overflow: hidden;
+  pointer-events: none;
+  position: absolute;
+  transition: opacity 900ms ease;
+  z-index: 1;
 }
 
-.circuit-weather-heavy_rain .circuit-map-stage::after {
-  animation-duration: 3.6s;
-  opacity: 0.52;
+/* Drops on the lens do not fall and do not follow the camera: they sit where they landed. */
+.circuit-weather-light_rain .map-rain,
+.circuit-weather-heavy_rain .map-rain {
+  background-image:
+    radial-gradient(ellipse 3px 4px at 18% 24%, rgb(233 244 255 / 0.5), transparent),
+    radial-gradient(ellipse 2px 3px at 63% 12%, rgb(233 244 255 / 0.42), transparent),
+    radial-gradient(ellipse 4px 5px at 82% 41%, rgb(233 244 255 / 0.46), transparent),
+    radial-gradient(ellipse 2px 3px at 34% 63%, rgb(233 244 255 / 0.38), transparent),
+    radial-gradient(ellipse 3px 4px at 71% 78%, rgb(233 244 255 / 0.44), transparent),
+    radial-gradient(ellipse 2px 2px at 9% 82%, rgb(233 244 255 / 0.36), transparent),
+    radial-gradient(ellipse 3px 4px at 46% 34%, rgb(233 244 255 / 0.34), transparent);
+}
+
+.circuit-weather-light_rain .map-rain {
+  opacity: 0.55;
+}
+
+.circuit-weather-heavy_rain .map-rain {
+  opacity: 1;
+}
+
+/* The curtain is one pre-rendered tile of streaks rather than a gradient per drop: one layer to
+   rasterise instead of four, decoded once and blitted. Measured against the same replay with the
+   layer hidden, the effect costs nothing detectable — it moves by transform alone, on its own
+   layer, so the compositor carries it. */
+.map-rain::before {
+  animation: map-rain-fall-160 0.9s linear infinite;
+  background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22120%22%20height%3D%22160%22%3E%3Cg%20stroke%3D%22%23e2f0ff%22%20stroke-opacity%3D%220.5%22%20stroke-width%3D%221%22%20stroke-linecap%3D%22round%22%3E%3Cline%20x1%3D%2214%22%20y1%3D%228%22%20x2%3D%2214%22%20y2%3D%2220%22%2F%3E%3Cline%20x1%3D%2261%22%20y1%3D%2252%22%20x2%3D%2261%22%20y2%3D%2264%22%2F%3E%3Cline%20x1%3D%2297%22%20y1%3D%2224%22%20x2%3D%2297%22%20y2%3D%2236%22%2F%3E%3Cline%20x1%3D%2238%22%20y1%3D%22104%22%20x2%3D%2238%22%20y2%3D%22116%22%2F%3E%3Cline%20x1%3D%2281%22%20y1%3D%22128%22%20x2%3D%2281%22%20y2%3D%22140%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+  content: "";
+  /* Enough overscan for an 11 degree tilt and one tile of travel, no more: this layer is the size of
+     the map, and every extra percent is surface the compositor has to hold. */
+  inset: -14% -10%;
+  position: absolute;
+  /* Its own layer, so falling rain never repaints the map underneath. */
+  will-change: transform;
+}
+
+.circuit-weather-heavy_rain .map-rain::before {
+  animation: map-rain-fall-140 0.55s linear infinite;
+  background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2290%22%20height%3D%22140%22%3E%3Cg%20stroke%3D%22%23e2f0ff%22%20stroke-opacity%3D%220.55%22%20stroke-width%3D%221%22%20stroke-linecap%3D%22round%22%3E%3Cline%20x1%3D%229%22%20y1%3D%224%22%20x2%3D%229%22%20y2%3D%2221%22%2F%3E%3Cline%20x1%3D%2228%22%20y1%3D%2260%22%20x2%3D%2228%22%20y2%3D%2277%22%2F%3E%3Cline%20x1%3D%2247%22%20y1%3D%2220%22%20x2%3D%2247%22%20y2%3D%2237%22%2F%3E%3Cline%20x1%3D%2266%22%20y1%3D%2296%22%20x2%3D%2266%22%20y2%3D%22113%22%2F%3E%3Cline%20x1%3D%2281%22%20y1%3D%2244%22%20x2%3D%2281%22%20y2%3D%2261%22%2F%3E%3Cline%20x1%3D%2217%22%20y1%3D%22112%22%20x2%3D%2217%22%20y2%3D%22129%22%2F%3E%3Cline%20x1%3D%2257%22%20y1%3D%22128%22%20x2%3D%2257%22%20y2%3D%22145%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+}
+
+/* One set of keyframes per tile height, travelling exactly one tile so the loop never seams. A
+   custom property inside the transform would read better, but an animation whose value comes from a
+   variable cannot be composited, which is the whole point of this construction. */
+@keyframes map-rain-fall-160 {
+  from { transform: rotate(11deg) translate3d(0, 0, 0); }
+  to { transform: rotate(11deg) translate3d(0, 160px, 0); }
+}
+
+@keyframes map-rain-fall-140 {
+  from { transform: rotate(11deg) translate3d(0, 0, 0); }
+  to { transform: rotate(11deg) translate3d(0, 140px, 0); }
 }
 
 /* Experiment: full-page maps at the widths that still use a panel — below 860px responsive.css
@@ -4748,6 +4800,8 @@ label small {
   .solo-slot-recent { animation: none; }
   /* The reaction still shows; only the motion stops. */
   .map-car .map-car-emote { animation: none; }
+  /* The rain stays on screen, it just stops falling: the weather still reads at a glance. */
+  .map-rain::before { animation: none; }
 }
 
 @keyframes replay-flag-pop {
@@ -5164,12 +5218,6 @@ label small {
 @keyframes route-flow {
   to {
     stroke-dashoffset: -148;
-  }
-}
-
-@keyframes map-rain-drift {
-  50% {
-    transform: translate3d(4%, 6%, 0);
   }
 }
 

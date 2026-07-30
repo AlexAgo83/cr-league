@@ -677,6 +677,9 @@ function CircuitMapInner({
             </g>
           </g>
         </svg>
+        {/* Rain sits on the screen, not in the world: it is a sibling of the map rather than a layer
+            inside it, so it never pans, rotates or zooms with the camera. */}
+        <div className="map-rain" aria-hidden="true" />
         <MapFpsReadout />
         <small className="map-attribution">© OSM · CARTO</small>
         {showHeading || showTraits ? (

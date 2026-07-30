@@ -19,6 +19,7 @@ export { CITY_CIRCUIT_IDENTITIES, circuitIdentityForRound, circuitSeasonSeed, pi
 export { safeHex } from "./domain/colors.js";
 export { APPROACH_DELTAS, CARD_DELTAS, PIT_STRATEGY_DELTAS, PREPARATION_DELTAS, type DecisionDeltaKey, type DecisionDeltas } from "./domain/decisionDeltas.js";
 export type { LeagueState, ProfileSession, SeasonSummary } from "./domain/league.js";
+export { botApproach, botCard, botDecision, botPitStrategy, botPreparation, normalizePitStrategy, wetRisk } from "./domain/botBrain.js";
 export { buyCard, buyCarAsset, qualifyingCardForTeam, resolveGrandPrix, runQualifying, sellCard, startNextGrandPrix, submitDecision, updateTeamLivery, updateTeamName, validateDecisionValues, SharedLeagueRuleError, type BuyCardInput, type BuyCarAssetInput, type ResolveGrandPrixInput, type RunQualifyingInput, type SellCardInput, type SubmitDecisionInput, type TeamScopedInput, type UpdateTeamLiveryInput, type UpdateTeamNameInput } from "./domain/leagueEngine.js";
 export * from "./domain/race.js";
 export { seasonStandings, standingsRival, type SeasonStanding, type StandingsRival } from "./domain/standings.js";

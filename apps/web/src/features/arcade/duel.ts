@@ -66,7 +66,7 @@ export function duelOutcome(duel: Duel): DuelOutcome {
 }
 
 export function attackCost(weather: Weather) {
-  return weather === "heavy_rain" ? 3 : 2;
+  return weather === "heavy_rain" ? 4 : 2;
 }
 
 /**
@@ -79,7 +79,7 @@ export function duelSwing(playerCall: DuelCall, rivalCall: DuelCall, weather: We
   const wet = weather === "heavy_rain" ? 2 : weather === "light_rain" ? 1 : 0;
   const attackReward = 0.8 - wet * 0.15;
   const coverReward = 0.6 + wet * 0.15;
-  const manageReward = 0.4;
+  const manageReward = 0.65;
   if (playerCall === "attack") return rivalCall === "manage" ? attackReward : -coverReward;
   if (playerCall === "manage") return rivalCall === "cover" ? manageReward : -attackReward;
   return rivalCall === "attack" ? coverReward : -manageReward;
@@ -117,33 +117,100 @@ function nextEngagement(current: number, call: DuelCall, cost: number) {
   return Math.max(0, Math.min(DUEL_MAX_ENGAGEMENT, next));
 }
 
+/** Which call answers the one given. */
+export function counterCall(call: DuelCall): DuelCall {
+  return call === "attack" ? "cover" : call === "cover" ? "manage" : "attack";
+}
+
+/**
+ * How hard each rival studies the driver next to him. Reading is a tint on the archetype, never a
+ * replacement: an opponent who only ever played the counter would be unreadable, and reading him
+ * back is the whole game.
+ */
+const CUNNING: Record<BotArchetype, number> = {
+  opportunist: 0.7,
+  prudent: 0.5,
+  mechanic: 0.45,
+  rain_specialist: 0.4,
+  sprinter: 0.3,
+  gambler: 0.15
+};
+
+/**
+ * How erratic each one is. A driver who answers the same way every time is not a personality, he is
+ * a lock: the gambler covering nothing at all lost every duel to an opponent who simply covered.
+ */
+const NOISE: Record<BotArchetype, number> = {
+  gambler: 28,
+  sprinter: 20,
+  rain_specialist: 16,
+  opportunist: 14,
+  mechanic: 12,
+  prudent: 10
+};
+
+/** The habit the player has fallen into lately, if he has one. */
+export function playerHabit(rounds: DuelRound[], window = 4): DuelCall | null {
+  const recent = rounds.slice(-window);
+  if (recent.length < 2) return null;
+  const counts = new Map<DuelCall, number>();
+  for (const round of recent) counts.set(round.playerCall, (counts.get(round.playerCall) ?? 0) + 1);
+  const [call, count] = [...counts.entries()].sort((left, right) => right[1] - left[1])[0]!;
+  return count / recent.length >= 0.5 && count >= 2 ? call : null;
+}
+
 /**
  * The rival plays his archetype, which is what makes him readable across a few duels: the sprinter
- * throws everything in early, the mechanic hoards. A seeded slice of laps breaks the pattern, so
- * reading him is a habit rather than a solved sequence.
+ * throws everything in early, the mechanic hoards. On top of that he plays the end of the race, and
+ * he answers a habit when he sees one — how often depending on how much of a student he is. A seeded
+ * slice of laps still breaks the pattern, so he is a driver rather than a solved sequence.
  */
 export function rivalDuelCall(duel: Duel): DuelCall {
   const roll = hash(`${duel.seed}:${duel.lap}`) % 100;
   const cost = attackCost(duel.weather);
   const canAttack = duel.rivalEngagement >= cost;
   const leads = duel.gap < 0;
-  const early = duel.lap <= Math.ceil(duel.laps / 3);
-  if (roll < 18) return DUEL_CALLS[roll % DUEL_CALLS.length]!;
+  const lapsLeft = duel.laps - duel.rounds.length;
+  const noise = NOISE[duel.rival];
+  if (roll < noise) return DUEL_CALLS[roll % DUEL_CALLS.length]!;
 
+  // Last lap, and the flag will not save him: there is nothing left to conserve.
+  if (lapsLeft <= 1 && !leads) return canAttack ? "attack" : "manage";
+  // A lead worth protecting is protected, whoever he is.
+  if (leads && lapsLeft <= 2 && Math.abs(duel.gap) > 0.4) return "cover";
+  // Running out of laps while losing: even the patient ones have to come forward.
+  if (!leads && lapsLeft <= 3 && Math.abs(duel.gap) > 0.5 && canAttack) return "attack";
+
+  const habit = playerHabit(duel.rounds);
+  if (habit && roll < noise + CUNNING[duel.rival] * 60) {
+    const answer = counterCall(habit);
+    // He still cannot attack on an empty tank, whatever he has read.
+    if (answer !== "attack" || canAttack) return answer;
+  }
+
+  return archetypeCall(duel, canAttack, leads, roll);
+}
+
+function archetypeCall(duel: Duel, canAttack: boolean, leads: boolean, roll: number): DuelCall {
+  const early = duel.lap <= Math.ceil(duel.laps / 3);
+  // A driver with nothing left to spend does not simply manage every time: he would be free food for
+  // anyone attacking on repeat. He rebuilds most laps and shuts the door on the others — and leans
+  // harder on rebuilding in the wet, where attacks are rare and a door nobody is trying costs him.
+  const hold: DuelCall = roll % 100 < (duel.weather === "dry" ? 55 : 78) ? "manage" : "cover";
   switch (duel.rival) {
     case "sprinter":
-      return canAttack && early ? "attack" : leads ? "cover" : "manage";
+      return canAttack && early ? "attack" : leads ? "cover" : hold;
     case "gambler":
-      return canAttack ? "attack" : "manage";
+      return canAttack ? "attack" : hold;
     case "prudent":
-      return leads ? "cover" : canAttack && duel.rivalEngagement >= DUEL_MAX_ENGAGEMENT - 1 ? "attack" : "manage";
+      return leads ? "cover" : canAttack && duel.rivalEngagement >= DUEL_MAX_ENGAGEMENT - 1 ? "attack" : hold;
     case "mechanic":
-      return duel.rivalEngagement >= DUEL_MAX_ENGAGEMENT ? "attack" : leads ? "cover" : "manage";
+      return duel.rivalEngagement >= DUEL_MAX_ENGAGEMENT ? "attack" : leads ? "cover" : hold;
     case "rain_specialist":
-      return duel.weather !== "dry" && canAttack ? "attack" : leads ? "cover" : "manage";
+      return duel.weather !== "dry" && canAttack ? "attack" : leads ? "cover" : hold;
     default:
       // The opportunist waits for an empty tank opposite, then jumps.
-      return duel.playerEngagement < cost && canAttack ? "attack" : leads ? "cover" : "manage";
+      return duel.playerEngagement < attackCost(duel.weather) && canAttack ? "attack" : leads ? "cover" : hold;
   }
 }
 

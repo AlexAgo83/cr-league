@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
 import {
   attackCost,
+  counterCall,
   duelGapDuring,
+  playerHabit,
   createDuel,
   duelOutcome,
   duelOver,
@@ -104,6 +106,38 @@ describe("a duel", () => {
   it("gives a dead heat to the rival, since he is the one to beat", () => {
     expect(duelOutcome({ ...createDuel("x", "prudent"), gap: 0 })).toBe("rival");
     expect(duelOutcome({ ...createDuel("x", "prudent"), gap: 0.1 })).toBe("player");
+  });
+});
+
+describe("what the rival has learned", () => {
+  const round = (playerCall: DuelCall, lap: number) => ({ lap, playerCall, rivalCall: "manage" as const, swing: 0, overreach: null });
+
+  it("spots a habit only when there is one", () => {
+    expect(playerHabit([round("attack", 1), round("attack", 2), round("manage", 3), round("attack", 4)])).toBe("attack");
+    expect(playerHabit([round("attack", 1), round("cover", 2), round("manage", 3)])).toBe(null);
+    expect(playerHabit([round("attack", 1)])).toBe(null);
+  });
+
+  it("answers a habit, the student harder than the reckless one", () => {
+    const attacking = [round("attack", 1), round("attack", 2), round("attack", 3)];
+    const seeds = Array.from({ length: 40 }, (_, index) => `read-${index}`);
+    const countered = (rival: "opportunist" | "gambler") =>
+      seeds.filter((seed) => rivalDuelCall({ ...createDuel(seed, rival), lap: 4, rounds: attacking }) === counterCall("attack")).length;
+
+    expect(countered("opportunist")).toBeGreaterThan(countered("gambler"));
+    expect(countered("opportunist")).toBeGreaterThan(seeds.length / 2);
+  });
+
+  it("comes forward when the flag is close and he is losing", () => {
+    const losing = { ...createDuel("late-1", "prudent"), lap: 8, gap: 1.2, rounds: Array.from({ length: 7 }, (_, index) => round("manage", index + 1)) };
+
+    expect(rivalDuelCall(losing)).toBe("attack");
+  });
+
+  it("shuts the door on a lead worth keeping", () => {
+    const leading = { ...createDuel("late-2", "gambler"), lap: 8, gap: -1.2, rounds: Array.from({ length: 7 }, (_, index) => round("manage", index + 1)) };
+
+    expect(rivalDuelCall(leading)).toBe("cover");
   });
 });
 

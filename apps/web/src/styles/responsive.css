@@ -530,7 +530,7 @@
   }
 
   .map-qualifying-times li {
-    grid-template-columns: 22px 27px minmax(0, 1fr) 41px;
+    grid-template-columns: 28px 27px minmax(0, 1fr) 41px;
   }
 
   .map-qualifying-times .chrono-team-name {
@@ -743,9 +743,20 @@
   }
 
   .replay-tower-livery {
-    font-size: 0.46rem;
-    height: 13px;
-    width: 13px;
+    height: 18px;
+    width: 24px;
+  }
+
+  .replay-tower-helmet {
+    height: 24px;
+    left: -2px;
+    top: -4px;
+    width: 29px;
+  }
+
+  .replay-tower-rank {
+    height: 9px;
+    width: 9px;
   }
 
   .replay-tower-team {

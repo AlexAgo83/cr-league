@@ -53,9 +53,11 @@ export function ReplayTower({
           const positionPop = positionPops[entry.teamId];
           const positionDelta = positionPop?.delta ?? 0;
           const badgeClass = `replay-tower-livery position-badge${index < 3 ? ` top-${index + 1}` : ""}`;
+          const primary = safeHex(teamLiveries[entry.teamId]?.primary, "#38bdf8");
+          const secondary = safeHex(teamLiveries[entry.teamId]?.secondary, "#16c784");
           const badgeStyle = {
-            "--livery-primary": safeHex(teamLiveries[entry.teamId]?.primary, "#38bdf8"),
-            "--livery-secondary": safeHex(teamLiveries[entry.teamId]?.secondary, "#16c784")
+            "--livery-primary": primary,
+            "--livery-secondary": secondary
           } as CSSProperties & Record<string, string>;
           return (
             <li
@@ -77,11 +79,13 @@ export function ReplayTower({
                   style={badgeStyle}
                   onClick={() => onTeamFocus(entry.teamId)}
                 >
-                  {index + 1}
+                  <HelmetToken />
+                  <span className="replay-tower-rank">{index + 1}</span>
                 </button>
               ) : (
                 <span className={badgeClass} data-team-id={entry.teamId} aria-label={`P${index + 1}`} style={badgeStyle}>
-                  {index + 1}
+                  <HelmetToken />
+                  <span className="replay-tower-rank">{index + 1}</span>
                 </span>
               )}
               {entry.decision ? <ReplayPlanAsset decision={entry.decision} /> : <span className="replay-tower-plan-placeholder" aria-hidden="true" />}
@@ -94,6 +98,22 @@ export function ReplayTower({
       </ol>
       <MapStatsToggle className="map-list-toggle" collapseKey="action_collapse_list" expandKey="action_expand_list" expanded={expanded} onToggle={setExpanded} />
     </section>
+  );
+}
+
+export function HelmetToken() {
+  return (
+    <span className="replay-tower-helmet" aria-hidden="true">
+      <img src="/assets/crl/helmet-token-primary.png" alt="" />
+    </span>
+  );
+}
+
+export function TeamHelmet({ className = "", livery }: { className?: string; livery: TeamLivery }) {
+  return (
+    <span className={`team-helmet ${className}`.trim()} style={{ "--livery-primary": safeHex(livery.primary, "#38bdf8"), "--livery-secondary": safeHex(livery.secondary, "#16c784") } as CSSProperties & Record<string, string>}>
+      <HelmetToken />
+    </span>
   );
 }
 

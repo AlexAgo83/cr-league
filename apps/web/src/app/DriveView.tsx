@@ -1,4 +1,4 @@
-import { DEMO_RACE_INPUT, RACE_SEGMENTS, type RaceDecision, type RaceResult, type RaceSegment, type TeamLivery, type Weather } from "@cr-league/shared";
+import { DEMO_RACE_INPUT, RACE_SEGMENTS, safeHex, type RaceDecision, type RaceResult, type RaceSegment, type TeamLivery, type Weather } from "@cr-league/shared";
 import { useT } from "../i18n/index.js";
 import type { TranslationKey } from "../i18n/index.js";
 import { circuitDistanceLabel, type CityCircuit } from "./circuits.js";
@@ -9,11 +9,11 @@ import { MapPlanPanel } from "../features/MapPlanPanel.js";
 import { Modal } from "../features/Modal.js";
 import { RaceInfoDetails } from "../features/RaceInfoDetails.js";
 import { PositionBadge } from "../features/PositionBadge.js";
-import { ReplayTower } from "../features/replay/ReplayTower.js";
+import { HelmetToken, ReplayTower } from "../features/replay/ReplayTower.js";
 import { BoardIcon, CountryBadge, VisualIcon, type BoardIconName } from "../features/VisualIcon.js";
 import type { PlanSubscreen } from "./routes.js";
 import { useMapInfoExpanded, useMapStatsExpanded } from "./viewPreferences.js";
-import { lazy, Suspense, useState } from "react";
+import { lazy, Suspense, useState, type CSSProperties } from "react";
 
 const ReplayView = lazy(() => import("../features/ReplayView.js").then((module) => ({ default: module.ReplayView })));
 
@@ -110,6 +110,7 @@ export function DriveView({
                     replay
                     entries={qualifyingLeaderboard}
                     playerTeamId={playerTeam?.id}
+                    teamLiveries={teamLiveries}
                     attemptsUsed={qualifyingAttemptsUsed}
                     attemptLimit={qualifyingAttemptLimit}
                     onReport={() => {
@@ -224,6 +225,7 @@ export function DriveView({
                   <QualifyingTimesPanel
                     entries={qualifyingLeaderboard}
                     playerTeamId={playerTeam?.id}
+                    teamLiveries={teamLiveries}
                     attemptsUsed={qualifyingAttemptsUsed}
                     attemptLimit={qualifyingAttemptLimit}
                     onReport={() => {
@@ -272,6 +274,7 @@ function RaceWeatherModal({ result, forecastWeather, onClose }: { result: RaceRe
 function QualifyingTimesPanel({
   entries,
   playerTeamId,
+  teamLiveries,
   attemptsUsed,
   attemptLimit,
   replay = false,
@@ -279,6 +282,7 @@ function QualifyingTimesPanel({
 }: {
   entries: QualifyingEntry[];
   playerTeamId?: string;
+  teamLiveries: Record<string, TeamLivery>;
   attemptsUsed: number;
   attemptLimit: number;
   replay?: boolean;
@@ -311,7 +315,16 @@ function QualifyingTimesPanel({
         <ol>
           {entries.map((run) => (
             <li key={`${run.teamId}-${run.attempts}-${run.lap ?? 0}-${run.createdAt}`} className={run.teamId === playerTeamId ? "player" : undefined}>
-              <span className="chrono-rank">#{run.position}</span>
+              <span
+                className="chrono-rank replay-tower-livery"
+                style={{
+                  "--livery-primary": safeHex(teamLiveries[run.teamId]?.primary, "#38bdf8"),
+                  "--livery-secondary": safeHex(teamLiveries[run.teamId]?.secondary, "#16c784")
+                } as CSSProperties & Record<string, string>}
+              >
+                <HelmetToken />
+                <span className="replay-tower-rank">{run.position}</span>
+              </span>
               <ChronoPlanAsset decision={run.decision} />
               <span className="chrono-team-name">{run.teamName}</span>
               {run.attempts ? (

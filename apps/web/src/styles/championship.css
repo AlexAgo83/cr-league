@@ -709,6 +709,22 @@
   width: 42px;
 }
 
+.team-helmet.standings-livery-plate {
+  background: transparent;
+  border: 0;
+  display: inline-flex;
+  overflow: visible;
+  position: relative;
+  transform: none;
+}
+
+.team-helmet.standings-livery-plate .replay-tower-helmet {
+  height: 34px;
+  left: 2px;
+  top: -3px;
+  width: 40px;
+}
+
 .livery-plate-text {
   -webkit-text-stroke: 0.55px var(--livery-primary);
   paint-order: stroke fill;
@@ -740,6 +756,13 @@
   flex: 0 0 auto;
   height: 24px;
   width: 36px;
+}
+
+.team-helmet.standings-livery-plate.leader-livery-plate .replay-tower-helmet {
+  height: 28px;
+  left: 1px;
+  top: -2px;
+  width: 34px;
 }
 
 .standings-team {
@@ -1192,7 +1215,7 @@
 }
 
 .season-standings-list li {
-  grid-template-columns: 34px minmax(0, 1fr) minmax(84px, auto);
+  grid-template-columns: 34px 42px minmax(0, 1fr) minmax(84px, auto);
 }
 
 .season-podium-list li.current-team,
@@ -1339,7 +1362,7 @@
   }
 
   .season-standings-list li {
-    grid-template-columns: 36px minmax(0, 1fr) auto;
+    grid-template-columns: 36px 36px minmax(0, 1fr) auto;
   }
 
   .palmares-button {

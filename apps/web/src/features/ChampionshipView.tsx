@@ -12,6 +12,7 @@ import { CircuitMap, analyzeCircuitRoute, type MapCar } from "./CircuitMap.js";
 import { carAssetForId } from "./carAssets.js";
 import { applyTrackSpeedProfile } from "./replay/replayMath.js";
 import { LiveryPlate } from "./LiveryPlate.js";
+import { TeamHelmet } from "./replay/ReplayTower.js";
 import { Modal } from "./Modal.js";
 import { PositionBadge } from "./PositionBadge.js";
 import { RewardValue } from "./RewardValue.js";
@@ -126,7 +127,7 @@ export function ChampionshipView({
             <span>{tt("dashboard_leader")}</span>
             {leader ? (
               <strong className="leader-team-line">
-                <LiveryPlate className="standings-livery-plate leader-livery-plate" livery={leader.livery} name={leader.name} wins={seasonWins.get(leader.id) ?? 0} />
+                <TeamHelmet className="standings-livery-plate leader-livery-plate" livery={leader.livery} />
                 <span>{leader.name}</span>
               </strong>
             ) : (
@@ -161,7 +162,7 @@ export function ChampionshipView({
                   <ChampionshipCarBackdrop livery={team.livery} />
                   <PositionBadge position={index + 1} className="standings-rank" />
                   <button type="button" className="standings-profile-button" aria-label={tt("team_profile_open", { team: team.name })} onClick={() => setProfileTeamId(team.id)}>
-                    <LiveryPlate className="standings-livery-plate" livery={team.livery} name={team.name} wins={seasonWins.get(team.id) ?? 0} />
+                    <TeamHelmet className="standings-livery-plate" livery={team.livery} />
                     <span className="standings-team">
                       {team.name}
                       <small>{team.id === playerTeamId ? tt("team_you") : team.kind === "bot" ? tt("team_bot") : tt("team_player")}</small>
@@ -328,7 +329,7 @@ export function ChampionshipView({
                   >
                     <ChampionshipCarBackdrop livery={season.champion.livery} />
                     <span className="palmares-season-badge">S{season.season}</span>
-                    {season.champion.livery ? <LiveryPlate className="standings-livery-plate" livery={season.champion.livery} name={season.champion.teamName} wins={seasonWins.get(season.champion.teamId) ?? 1} /> : <span />}
+                    {season.champion.livery ? <TeamHelmet className="standings-livery-plate" livery={season.champion.livery} /> : <span />}
                     <span className="standings-team">
                       {season.champion.teamName}
                       <small>{tt("season_champion")}</small>

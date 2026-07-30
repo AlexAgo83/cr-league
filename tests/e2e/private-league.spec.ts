@@ -335,7 +335,12 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
   const replayMap = mapPanel;
 
   await expect(mapPanel.locator(".circuit-map-stage")).toBeVisible();
-  await expect(mapPanel.locator(".circuit-map-stage")).toHaveCSS("border-top-width", "1px");
+  // The map is the page now, not a framed panel on it: no border, and edge to edge.
+  await expect(mapPanel.locator(".circuit-map-stage")).toHaveCSS("border-top-width", "0px");
+  expect(await mapPanel.locator(".circuit-map-stage").evaluate((stage) => {
+    const rect = stage.getBoundingClientRect();
+    return { left: Math.round(rect.left), width: Math.round(rect.width) };
+  })).toEqual({ left: 0, width: 1440 });
   await expect(replayMap).toHaveClass(/circuit-map-unframed/);
   await expect(replayMap).toHaveCSS("padding", "0px");
   await expect(replayMap).toHaveCSS("border-top-width", "0px");
@@ -363,9 +368,11 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
   await expect(mapPanel.locator(".replay-speed-options")).toBeVisible();
   await mapPanel.locator(".replay-speed-options").getByRole("button", { name: "×1" }).click();
   await expect(page.locator(".replay-moments-panel")).toHaveCount(0);
+  // The zones no longer share a width: the map is the page, the copy is a column under it.
   await expect
-    .poll(async () => mapPanel.evaluate((element) => element.getBoundingClientRect().width))
-    .toBeCloseTo(await copyPanel.evaluate((element) => element.getBoundingClientRect().width), 0);
+    .poll(async () => mapPanel.evaluate((element) => Math.round(element.getBoundingClientRect().width)))
+    .toBe(1440);
+  expect(await copyPanel.evaluate((element) => element.getBoundingClientRect().width)).toBeLessThan(1440);
   await expect(mapPanel.locator(".replay-progress")).toBeVisible();
   await mapPanel.locator(".replay-marker:not(.director)").click();
   await expect(mapPanel.locator(".replay-moment-notification")).toContainText("Rain Grip");
@@ -378,10 +385,11 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
     const copyPanel = document.querySelector(".replay-copy-panel")?.getBoundingClientRect();
     return {
       noMomentsPanel: !document.querySelector(".replay-moments-panel"),
-      mapSameWidthAsCopy: Boolean(mapPanel && copyPanel && Math.abs(mapPanel.width - copyPanel.width) < 2)
+      mapSpansViewport: Boolean(mapPanel && Math.round(mapPanel.left) === 0 && Math.round(mapPanel.width) === window.innerWidth),
+      copyStaysAColumn: Boolean(copyPanel && mapPanel && copyPanel.width < mapPanel.width && copyPanel.top >= mapPanel.bottom - 1)
     };
   });
-  expect(desktop).toEqual({ noMomentsPanel: true, mapSameWidthAsCopy: true });
+  expect(desktop).toEqual({ noMomentsPanel: true, mapSpansViewport: true, copyStaysAColumn: true });
   await hideReadmeNoise(page);
   await page.screenshot({ path: testInfo.outputPath("replay-layout-desktop.png"), fullPage: true });
 
@@ -431,8 +439,8 @@ test("shows the FPS readout on every map in the same corner", async ({ page }) =
         const rect = readout.getBoundingClientRect();
         return {
           missing: false,
-          left: Math.round(rect.left - stageRect.left),
-          bottom: Math.round(stageRect.bottom - rect.bottom),
+          left: rect.left - stageRect.left,
+          bottom: stageRect.bottom - rect.bottom,
           text: (readout.textContent ?? "").replace(/\d+/, "n")
         };
       })
@@ -445,7 +453,11 @@ test("shows the FPS readout on every map in the same corner", async ({ page }) =
     await expect.poll(async () => (await readouts()).filter((readout) => readout.text === "n FPS").length, { timeout: 5000, message: `${screen}: no map with a live readout` }).toBeGreaterThan(0);
     for (const readout of await readouts()) {
       corner ??= readout;
-      expect(readout, screen).toEqual(corner);
+      expect({ missing: readout.missing, text: readout.text }, screen).toEqual({ missing: corner.missing, text: corner.text });
+      // Within a pixel rather than exactly: the attract map is drawn inside a scaled container, so
+      // its 3px inset measures 3.54 on screen. A pixel of drift is not a different corner.
+      expect(Math.abs(readout.left! - corner.left!), `${screen}: left`).toBeLessThanOrEqual(1);
+      expect(Math.abs(readout.bottom! - corner.bottom!), `${screen}: bottom`).toBeLessThanOrEqual(1);
     }
   };
 

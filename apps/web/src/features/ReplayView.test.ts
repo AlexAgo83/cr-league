@@ -47,8 +47,9 @@ const tt = ((key, params) => t(key, "en", params)) as import("../app/helpers.js"
 
 describe("ReplayView timing", () => {
   it("maps internal replay progress to the displayed circuit lap count", () => {
-    expect([0, 0.2, 0.5, 0.8, 1].map((progress) => displayLapAtProgress(progress, 4))).toEqual([1, 2, 3, 3, 4]);
-    expect([0, 0.2, 0.5, 0.8, 1].map((progress) => displayLapAtProgress(progress, 5))).toEqual([1, 2, 3, 4, 5]);
+    // Every lap owns an equal slice of the race, so a quarter into a four-lap race is still lap one.
+    expect([0, 0.2, 0.5, 0.8, 1].map((progress) => displayLapAtProgress(progress, 4))).toEqual([1, 1, 3, 4, 4]);
+    expect([0, 0.2, 0.5, 0.8, 1].map((progress) => displayLapAtProgress(progress, 5))).toEqual([1, 2, 3, 5, 5]);
     expect([0, 0.2, 0.5, 0.8, 1].map((progress) => displayLapAtProgress(progress, 6))).toEqual([1, 2, 4, 5, 6]);
   });
 
@@ -338,7 +339,8 @@ describe("ReplayView timing", () => {
     const beats = buildRaceDirectorBeats(resultWithFacts, [], buildReplayPlan(resultWithFacts, []), 3, "last");
 
     expect(beats.map((beat) => beat.id)).toEqual(["grid-start", "overtake-last-leader-0.333", "final-pressure"]);
-    expect(beats.map((beat) => beat.lap)).toEqual([1, 2, 3]);
+    // A third into a three-lap race is still the opening lap, on equal slices.
+    expect(beats.map((beat) => beat.lap)).toEqual([1, 1, 3]);
     expect(beats[1]?.type).toBe("player");
   });
 

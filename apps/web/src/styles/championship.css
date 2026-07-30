@@ -202,6 +202,10 @@
   --record-hero-image: url("/assets/crl/track-briefing.webp");
 }
 
+/* The calendar panel paints itself dark like its three siblings, so it needs their ink too: left out
+   of this list, everything inside it that reads --color-text came out near-black on near-black. The
+   pagination arrows were the visible casualty. */
+.championship-view .record-panel-calendar,
 .championship-view .record-panel-standings,
 .championship-view .record-panel-palmares,
 .championship-view .record-panel-history {

@@ -12,8 +12,15 @@ export function lapForSegment(segment: RaceSegment) {
   return SEGMENT_LAPS[segment];
 }
 
+/**
+ * Which lap the field is on. Every lap owns an equal slice of the race, so the counter turns over
+ * exactly when a car completes one. Rounding instead of flooring gave the first and last laps half a
+ * slice each: on a seven-lap race the board called lap two while the cars were 58% through lap one,
+ * and sat on lap seven for the last 8%.
+ */
 export function lapForProgress(progress: number, laps: number) {
-  return Math.max(1, Math.min(laps, Math.round(1 + Math.max(0, Math.min(1, progress)) * (laps - 1))));
+  const clamped = Math.max(0, Math.min(1, progress));
+  return Math.max(1, Math.min(laps, Math.floor(clamped * laps) + 1));
 }
 
 export function segmentOrderLap(segment: RaceSegment) {

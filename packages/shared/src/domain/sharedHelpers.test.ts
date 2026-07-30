@@ -27,6 +27,11 @@ describe("shared helpers", () => {
     expect(lapForProgress(0, 10)).toBe(1);
     expect(lapForProgress(0.5, 10)).toBe(6);
     expect(lapForProgress(1, 10)).toBe(10);
+    // Every lap owns the same slice, so the counter turns over where a car completes one.
+    expect(lapForProgress(0.09, 7)).toBe(1);
+    expect(lapForProgress(0.15, 7)).toBe(2);
+    expect(lapForProgress(6 / 7, 7)).toBe(7);
+    expect(lapForProgress(0.99, 7)).toBe(7);
   });
 
   it("keeps dry as the forecast tie fallback", () => {

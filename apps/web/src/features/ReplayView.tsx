@@ -302,7 +302,11 @@ export function ReplayView({
       emote: emotePops[entry.teamId]?.emote,
       emoteKey: emotePops[entry.teamId]?.key
   })), [circuit.speedProfile, emotePops, field, playerTeamId, positionPops, replayTimes.leader, replayTimes.times, snapshot.carProgress, snapshot.tower, teamLiveries]);
-  const playerCar = cars.find((car) => car.player) ?? cars[0];
+  // No player in the field — an arcade draw — so the camera follows whoever led away from the grid.
+  // Falling through to cars[0] followed the final classification, which is the winner: the shot gave
+  // the result away from the first lap.
+  const startingLeaderId = initialSnapshot.tower[0]?.teamId;
+  const playerCar = cars.find((car) => car.player) ?? cars.find((car) => car.id === startingLeaderId) ?? cars[0];
   const focusedCar = cars.find((car) => car.id === focusedCarId) ?? playerCar;
   const setReplayDriverFocus = (focused: boolean) => {
     setFocusedCarId(playerCar?.id);

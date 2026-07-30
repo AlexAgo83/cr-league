@@ -8,6 +8,7 @@ import { CircuitMap, MapStatsToggle, MapTraitsPanel, type MapTraitImpacts } from
 import { MapPlanPanel } from "../features/MapPlanPanel.js";
 import { Modal } from "../features/Modal.js";
 import { RaceInfoDetails } from "../features/RaceInfoDetails.js";
+import { PositionBadge } from "../features/PositionBadge.js";
 import { ReplayTower } from "../features/replay/ReplayTower.js";
 import { BoardIcon, CountryBadge, VisualIcon, type BoardIconName } from "../features/VisualIcon.js";
 import type { PlanSubscreen } from "./routes.js";
@@ -120,6 +121,14 @@ export function DriveView({
                 }
                 titleKey="qualifying_replay_title"
                 explainerKey="qualifying_replay_explainer"
+                afterMapContent={
+                  <ChronoPayoffPanel
+                    entries={qualifyingLeaderboard}
+                    playerTeamId={playerTeam?.id}
+                    attemptsUsed={qualifyingAttemptsUsed}
+                    attemptLimit={qualifyingAttemptLimit}
+                  />
+                }
                 initialLap={qualifyingReplayInitialLap}
                 preferencesResetSignal={preferencesResetSignal}
                 onClose={() => setQualifyingResult(null)}
@@ -399,6 +408,56 @@ function FinalClassification({
       reportLabel={tt("action_view_plan").split(" ")[0] ?? tt("result_tab_report")}
       teamLiveries={teamLiveries}
     />
+  );
+}
+
+/**
+ * The chrono half of the race payoff: a run ends on the same beat as a Grand Prix — flag, recap,
+ * what it earned you — instead of just stopping.
+ */
+function ChronoPayoffPanel({
+  entries,
+  playerTeamId,
+  attemptsUsed,
+  attemptLimit
+}: {
+  entries: QualifyingEntry[];
+  playerTeamId?: string;
+  attemptsUsed: number;
+  attemptLimit: number;
+}) {
+  const tt = useT();
+  const entry = entries.find((candidate) => candidate.teamId === playerTeamId);
+  if (!entry) return null;
+  const poleTime = entries[0]?.time ?? entry.time;
+  const gap = Math.max(0, entry.time - poleTime);
+  return (
+    <section className="panel race-payoff-recap chrono-payoff-recap" aria-label={tt("chrono_payoff_title")}>
+      <h2>
+        <span>{tt("chrono_payoff_kicker")}</span>
+        {tt("chrono_payoff_title")}
+      </h2>
+      <dl>
+        <div>
+          <dt>{tt("chrono_payoff_grid")}</dt>
+          <dd>
+            <PositionBadge position={entry.position} />
+          </dd>
+        </div>
+        <div>
+          <dt>{tt("chrono_payoff_best_lap")}</dt>
+          <dd>{formatSeconds(entry.time)}</dd>
+        </div>
+        <div>
+          <dt>{tt("chrono_payoff_gap")}</dt>
+          <dd>{entry.position === 1 ? tt("chrono_payoff_gap_pole") : `+${formatSeconds(gap, 1)}`}</dd>
+        </div>
+        <div>
+          <dt>{tt("chrono_payoff_attempts")}</dt>
+          <dd>{`${attemptsUsed}/${attemptLimit}`}</dd>
+        </div>
+      </dl>
+    </section>
   );
 }
 

@@ -3447,6 +3447,15 @@ label small {
   top: 3px;
 }
 
+.map-result-button {
+  gap: 4px;
+}
+
+.map-result-icon {
+  height: 14px;
+  width: 14px;
+}
+
 .map-plan-edit-icon {
   height: 20px;
   width: 20px;
@@ -4912,7 +4921,7 @@ label small {
 }
 
 .drive-map-panel.circuit-map > .circuit-map-stage > .replay-tower {
-  top: 12px;
+  top: var(--map-overlay-top);
 }
 
 /* The row count lives here rather than in the components: it differs per breakpoint, and the

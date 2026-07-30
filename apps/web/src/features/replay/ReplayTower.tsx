@@ -1,6 +1,7 @@
 import { useState, type CSSProperties } from "react";
 import { safeHex, type RaceDecision, type TeamLivery } from "@cr-league/shared";
 import { MapStatsToggle } from "../CircuitMap.js";
+import { BoardIcon } from "../VisualIcon.js";
 
 const CHRONO_PLAN_MARKERS = {
   approach: { prudent: 1, balanced: 2, aggressive: 3 },
@@ -38,10 +39,12 @@ export function ReplayTower({
     <section className={expanded ? "replay-tower" : "replay-tower map-list-collapsed"} aria-label={title}>
       <header>
         <strong>{title}</strong>
-        {/* Label only: the icon doubled the width of a button that overlays the map. */}
+        {/* The flag carries the meaning on its own, so narrow screens drop the label rather than
+            paying for a button twice as wide over the map. */}
         {onReport ? (
-          <button className="map-plan-edit-button" type="button" aria-label={reportLabel} title={title} onClick={onReport}>
-            {reportLabel}
+          <button className="map-plan-edit-button map-result-button" type="button" aria-label={reportLabel} title={title} onClick={onReport}>
+            <BoardIcon className="map-result-icon" name="finish-flag-icon" />
+            <span className="map-result-label">{reportLabel}</span>
           </button>
         ) : null}
       </header>

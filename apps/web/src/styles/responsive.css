@@ -871,3 +871,22 @@
     width: 1px;
   }
 }
+
+@media (max-width: 860px) {
+  /* Flag only: the label doubled the width of a button that sits over the map. The button keeps its
+     aria-label, so its name survives. */
+  .map-result-label {
+    display: none;
+  }
+
+  /* Sized so the flag-only button stays as short as the label it replaced: any taller and it
+     covers the leader's time in the row below. */
+  .replay-tower > header .map-result-button {
+    padding: 2px 4px;
+  }
+
+  .map-result-icon {
+    height: 11px;
+    width: 11px;
+  }
+}

@@ -86,6 +86,22 @@ export function createQualifyingRuns(input: {
   }));
 }
 
+/**
+ * A chrono is one car alone, so nothing happens *to* it — every lap was bookkeeping, and the map
+ * stayed silent for the whole run. The drama a chrono does have is the clock: the lap that beats
+ * everything before it, and the one that throws it away. Both already have an emote, so typing the
+ * lap event is all it takes for the car to react.
+ */
+export function qualifyingLapEvent(lapTimes: readonly number[], index: number): RaceEvent["type"] {
+  const time = lapTimes[index]!;
+  const earlier = lapTimes.slice(0, index);
+  if (!earlier.length) return "finish";
+  const best = Math.min(...earlier);
+  if (time < best) return "personal_record";
+  // A lap and a half off the best is a moment lost, not tyres going away.
+  return time > best + 1.5 ? "minor_error" : "finish";
+}
+
 function qualifyingWeatherAt(index: number, count: number, weather: Record<RaceSegment, Weather>) {
   const progress = count <= 1 ? 1 : index / (count - 1);
   const segment = RACE_SEGMENTS[Math.round((RACE_SEGMENTS.length - 1) * progress)] ?? "finish";
@@ -101,7 +117,7 @@ function createQualifyingResult(teamId: string, teamName: string, seed: string, 
     order: index,
     segment: RACE_SEGMENTS[Math.min(RACE_SEGMENTS.length - 1, Math.floor((index / lapTimes.length) * RACE_SEGMENTS.length))] ?? "finish",
     lap: index + 1,
-    type: "finish",
+    type: qualifyingLapEvent(lapTimes, index),
     traceProgress: (index + 1) / lapTimes.length,
     teamId,
     severity: "minor",

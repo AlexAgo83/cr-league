@@ -618,11 +618,15 @@ function CircuitMapInner({
       const stagedProgress = progressFromStart(progress, routeAnalysis.startProgress);
       const point = usesTrace ? memoizedPose(pointsRef.current, stagedProgress) : route.getPointAtLength(length * stagedProgress);
       let nearestCarDistance = Number.POSITIVE_INFINITY;
-      for (const other of carsRef.current) {
-        const otherProgress = carProgressRef?.current[other.id] ?? other.progress;
-        if (other.id === car.id || otherProgress === undefined) continue;
-        const otherPoint = memoizedPose(pointsRef.current, progressFromStart(otherProgress, routeAnalysis.startProgress));
-        nearestCarDistance = Math.min(nearestCarDistance, Math.hypot(otherPoint.x - point.x, otherPoint.y - point.y));
+      // A small field is never apart: in a two-car duel the rival is permanently "in traffic", so
+      // the adaptive zoom stopped dramatising anything and just pumped between 1.5x and 5x all race.
+      if (!smallField) {
+        for (const other of carsRef.current) {
+          const otherProgress = carProgressRef?.current[other.id] ?? other.progress;
+          if (other.id === car.id || otherProgress === undefined) continue;
+          const otherPoint = memoizedPose(pointsRef.current, progressFromStart(otherProgress, routeAnalysis.startProgress));
+          nearestCarDistance = Math.min(nearestCarDistance, Math.hypot(otherPoint.x - point.x, otherPoint.y - point.y));
+        }
       }
       if (zoomModeRef.current === "close") {
         if (nearestCarDistance > CLOSE_EXIT_DISTANCE) zoomModeRef.current = nearestCarDistance < TRAFFIC_EXIT_DISTANCE ? "traffic" : "normal";
@@ -651,7 +655,7 @@ function CircuitMapInner({
       cancelAnimationFrame(frame);
       cameraGroup.removeAttribute("transform");
     };
-  }, [camera?.enabled, camera?.car?.id, camera?.timeRef, camera?.zoom, carDomKey, carProgressRef, circuit.laps, circuit.speedProfile, memoizedPose, routeAnalysis.startProgress]);
+  }, [camera?.enabled, camera?.car?.id, camera?.timeRef, camera?.zoom, carDomKey, carProgressRef, circuit.laps, circuit.speedProfile, memoizedPose, routeAnalysis.startProgress, smallField]);
 
   return (
     <section
@@ -871,7 +875,7 @@ export function MapCarSprite({ asset = DEFAULT_CAR_ASSET, braking = false, maskI
           <stop offset="100%" className="map-car-livery-end" />
         </linearGradient>
         {geometry.frontLights.map(([x, y], index) => (
-          <linearGradient key={index} id={`${maskId}-headlight-${index}`} x1={x} y1={y} x2={x + 28} y2={y} gradientUnits="userSpaceOnUse">
+          <linearGradient key={index} id={`${maskId}-headlight-${index}`} x1={x} y1={y} x2={x + 28 * geometry.headlightBeam} y2={y} gradientUnits="userSpaceOnUse">
             <stop offset="0" className="map-car-headlight-start" />
             <stop offset="1" className="map-car-headlight-end" />
           </linearGradient>
@@ -888,10 +892,14 @@ export function MapCarSprite({ asset = DEFAULT_CAR_ASSET, braking = false, maskI
         <image className="map-car-detail" href={asset.top} x={image.x} y={image.y} width={image.width} height={image.height} />
       </g>
       <rect className="map-car-tint" x={bounds.x} y={bounds.y} width={bounds.width} height={bounds.height} mask={`url(#${maskId})`} fill={`url(#${maskId}-livery)`} />
+      {/* The beam strength rides a custom property so each screen keeps its own base brightness. */}
       {geometry.frontLights.map(([x, y], index) => (
-        <g key={index} className="map-car-headlight">
-          <path d={`M${x} ${y} L${x + 24} ${y - 5} L${x + 24} ${y + 5} Z`} fill={`url(#${maskId}-headlight-${index})`} />
-          <circle cx={x} cy={y} r="1.2" />
+        <g key={index} className="map-car-headlight" style={{ "--beam": geometry.headlightBeam } as CSSProperties}>
+          <path
+            d={`M${x} ${y} L${x + 24 * geometry.headlightBeam} ${y - 5 * geometry.headlightBeam} L${x + 24 * geometry.headlightBeam} ${y + 5 * geometry.headlightBeam} Z`}
+            fill={`url(#${maskId}-headlight-${index})`}
+          />
+          <circle cx={x} cy={y} r={1.2 * geometry.headlightBeam} />
         </g>
       ))}
       {geometry.rearLights.map(([x, y], index) => (

@@ -996,7 +996,8 @@ describe("App", () => {
     expect(document.querySelector(".map-qualifying-times")?.textContent).toContain("Chronos");
     expect(document.querySelector(".map-qualifying-times")?.textContent).toContain("Mika Blitz");
     expect(document.querySelector(".map-qualifying-times .position-badge")).toBe(null);
-    expect(document.querySelector(".map-qualifying-times")?.textContent).toContain("#1");
+    // The rank rides the helmet token now, so it is a bare number rather than "#1".
+    expect(document.querySelector(".map-qualifying-times .replay-tower-rank")?.textContent).toBe("1");
     expect(document.querySelector(".map-qualifying-times")?.textContent).toContain("E1T2");
     expect(document.querySelector(".map-qualifying-times")?.textContent).toContain("72.42s");
     expect(document.querySelector(".map-qualifying-times")?.textContent).not.toContain("75.18s");

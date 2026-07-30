@@ -426,6 +426,11 @@
     white-space: nowrap;
   }
 
+  /* The stacked bar is twice as tall here, so the toasts step higher. */
+  .app-shell.map-screen:has(.map-workflow-panel) > .notification-stack {
+    bottom: calc(106px + env(safe-area-inset-bottom));
+  }
+
   .map-workflow-panel {
     align-items: start;
     bottom: 8px;

@@ -633,7 +633,7 @@
 
 .circuit-detail-screen .map-car-headlight {
   mix-blend-mode: normal;
-  opacity: 0.72;
+  opacity: calc(0.72 * var(--beam, 1));
 }
 
 .circuit-detail-screen .map-car-headlight circle {

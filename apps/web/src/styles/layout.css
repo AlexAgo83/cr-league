@@ -2739,6 +2739,13 @@ label small {
   z-index: 60;
 }
 
+/* A full-page map puts its workflow bar exactly where the toasts land. Lifted by the bar's own
+   height plus a gap: it has no height CSS can read, so the number is measured (46px here, taller on
+   a phone where the bar stacks). Only when the bar is actually on screen — a replay has none. */
+.app-shell.map-screen:has(.map-workflow-panel) > .notification-stack {
+  bottom: calc(70px + env(safe-area-inset-bottom));
+}
+
 .setup-shell > .notification-stack {
   bottom: calc(16px + env(safe-area-inset-bottom));
   position: fixed;
@@ -3162,13 +3169,12 @@ label small {
   to { translate: 0 140px; }
 }
 
-/* Experiment: full-page maps at the widths that still use a panel — below 860px responsive.css
-   already does this, with overlay offsets tuned for the mobile header. */
+/* Full-page maps at the widths that still use a panel — below 860px responsive.css already does
+   this, with overlay offsets tuned for the mobile header. The map spans the viewport, the header
+   floats over its top, and the SVG is scaled to cover and centred, so a wide viewport crops the
+   route sides rather than letterboxing it. */
 @media (min-width: 861px) {
-  /* Flag: cr-league-fullbleed-map, or ?fullmap=1. The map spans the viewport, the header floats over
-     its top, and the SVG is scaled to cover and centred — so a wide viewport crops the route sides
-     rather than letterboxing it. */
-  .fullbleed-map .app-shell.map-screen {
+  .app-shell.map-screen {
     /* Enforced rather than assumed: the overlay clearance below is computed from it. */
     --fullbleed-topbar-height: 68px;
     --fullbleed-topbar-top: 12px;
@@ -3180,7 +3186,7 @@ label small {
 
   /* Out of flow, so the page reserves no band above the map and stays exactly one viewport tall.
      A sticky topbar keeps its flow space, which is the gap that pushed the page taller. */
-  .fullbleed-map .app-shell.map-screen > .topbar {
+  .app-shell.map-screen > .topbar {
     left: 0;
     min-height: var(--fullbleed-topbar-height);
     position: absolute;
@@ -3189,15 +3195,15 @@ label small {
     z-index: 60;
   }
 
-  .fullbleed-map .app-shell.map-screen .drive-map-panel,
-  .fullbleed-map .app-shell.map-screen .replay-map-panel {
+  .app-shell.map-screen .drive-map-panel,
+  .app-shell.map-screen .replay-map-panel {
     margin-left: calc(50% - 50vw);
     min-height: 100dvh;
     width: 100vw;
   }
 
-  .fullbleed-map .app-shell.map-screen .drive-map-panel .circuit-map-stage,
-  .fullbleed-map .app-shell.map-screen .replay-map-panel .circuit-map-stage {
+  .app-shell.map-screen .drive-map-panel .circuit-map-stage,
+  .app-shell.map-screen .replay-map-panel .circuit-map-stage {
     /* Below the floating header, by the same gap that separates any two panels. */
     --map-overlay-top: calc(var(--fullbleed-topbar-top) + var(--fullbleed-topbar-height) + 16px);
     border: 0;
@@ -3208,20 +3214,20 @@ label small {
   /* Arcade and onboarding race screens have no header card: a logo and the language pills float in
      the corners and stop well short of the game topbar, so the overlays owe them much less room.
      Enforced with a min-height, like the game topbar above, so the clearance stays true. */
-  .fullbleed-map .app-shell.setup-shell.map-screen {
+  .app-shell.setup-shell.map-screen {
     --fullbleed-setup-header: 50px;
   }
 
-  .fullbleed-map .app-shell.setup-shell.map-screen > .setup-topbar {
+  .app-shell.setup-shell.map-screen > .setup-topbar {
     min-height: var(--fullbleed-setup-header);
   }
 
-  .fullbleed-map .app-shell.setup-shell.map-screen .replay-map-panel .circuit-map-stage {
+  .app-shell.setup-shell.map-screen .replay-map-panel .circuit-map-stage {
     --map-overlay-top: calc(var(--fullbleed-setup-header) + 16px);
   }
 
-  .fullbleed-map .app-shell.map-screen .drive-map-panel .circuit-map-stage > svg,
-  .fullbleed-map .app-shell.map-screen .replay-map-panel .circuit-map-stage > svg {
+  .app-shell.map-screen .drive-map-panel .circuit-map-stage > svg,
+  .app-shell.map-screen .replay-map-panel .circuit-map-stage > svg {
     height: 100%;
     left: 50%;
     max-width: none;
@@ -5394,10 +5400,11 @@ label small {
   stroke-width: 1.45;
 }
 
-/* The glow lives in the gradient stops, not in a blur pass. */
+/* The glow lives in the gradient stops, not in a blur pass. `--beam` is the car's own strength,
+   set by the sprite: an open-wheeler carries markers, not headlamps. */
 .map-car-headlight {
   mix-blend-mode: normal;
-  opacity: 0.58;
+  opacity: calc(0.58 * var(--beam, 1));
   pointer-events: none;
 }
 

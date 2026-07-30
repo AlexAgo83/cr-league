@@ -185,7 +185,7 @@ function MenuGlyph() {
   );
 }
 
-export function SetupTopbar({ profileMenu, languageSwitcher, pendingMessage = null, onHome, onResumeGame, hideBrand = false, hideWordmark = false }: { profileMenu: ReactNode; languageSwitcher: ReactNode; pendingMessage?: string | null; onHome: () => void; /** Absent unless a game was left behind. It lives here rather than in the profile menu: a solo player has no profile, so no menu. */ onResumeGame?: () => void; hideBrand?: boolean; hideWordmark?: boolean }) {
+export function SetupTopbar({ profileMenu, languageSwitcher, pendingMessage = null, onHome, onResumeGame, onLeaveToMenu, hideBrand = false, hideWordmark = false }: { profileMenu: ReactNode; languageSwitcher: ReactNode; pendingMessage?: string | null; onHome: () => void; /** Absent unless a game was left behind. It lives here rather than in the profile menu: a solo player has no profile, so no menu. */ onResumeGame?: () => void; /** Inside an arcade game, where the way out matters more than a game left behind elsewhere. Takes the slot rather than sharing it. */ onLeaveToMenu?: () => void; hideBrand?: boolean; hideWordmark?: boolean }) {
   const tt = useT();
   return (
     <header className="setup-topbar">
@@ -199,7 +199,12 @@ export function SetupTopbar({ profileMenu, languageSwitcher, pendingMessage = nu
         </button>
       )}
       <div className="setup-topbar-actions">
-        {onResumeGame ? (
+        {onLeaveToMenu ? (
+          <button type="button" data-testid="setup-leave-to-menu" className="topbar-pill-button" aria-label={tt("menu_title")} onClick={onLeaveToMenu}>
+            <BoardIcon className="topbar-pill-icon" name="previous-action" />
+            <span className="topbar-pill-label">{tt("menu_title")}</span>
+          </button>
+        ) : onResumeGame ? (
           <button type="button" data-testid="setup-resume-game" className="topbar-pill-button" aria-label={tt("action_resume_game")} onClick={onResumeGame}>
             <BoardIcon className="topbar-pill-icon" name="stand-drive" />
             {/* Dropped on a phone, where the label pushed the language pills off the edge. */}

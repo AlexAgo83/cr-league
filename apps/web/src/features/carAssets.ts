@@ -15,6 +15,12 @@ type RawCarGeometry = {
   front: [CarAssetPoint, CarAssetPoint];
   rear: [CarAssetPoint, CarAssetPoint];
   lights: [CarAssetPoint, CarAssetPoint];
+  /**
+   * How much light this car throws, 1 being the touring-car reference. It belongs to the asset
+   * because it is a property of the body: an open-wheel car carries marker lights on the nose, not
+   * headlamps, and drawing it the same beam as a GT put two floodlights on a formula car.
+   */
+  beam?: number;
 };
 
 export type CarRenderGeometry = {
@@ -24,6 +30,8 @@ export type CarRenderGeometry = {
   rearWheels: [CarAssetPoint, CarAssetPoint];
   frontLights: [CarAssetPoint, CarAssetPoint];
   rearLights: [CarAssetPoint, CarAssetPoint];
+  /** Beam strength, 1 being the reference: scales how far, how wide and how brightly it throws. */
+  headlightBeam: number;
   wheelbase: number;
 };
 
@@ -38,9 +46,11 @@ const RAW_CAR_GEOMETRY: Record<CarAssetId, RawCarGeometry> = {
   "car-008": { size: [977, 523], front: [[209, 69], [209, 454]], rear: [[806, 70], [806, 453]], lights: [[60, 164], [53, 360]] },
   "car-009": { size: [997, 466], front: [[198, 50], [198, 418]], rear: [[837, 53], [837, 414]], lights: [[60, 138], [60, 324]] },
   "car-010": { size: [843, 424], front: [[152, 38], [152, 384]], rear: [[688, 38], [688, 384]], lights: [[64, 70], [63, 345]] },
-  "car-011": { size: [1214, 487], front: [[241, 30], [241, 457]], rear: [[958, 33], [958, 457]], lights: [[0, 91], [0, 406]] },
-  "car-012": { size: [1037, 501], front: [[162, 39], [162, 466]], rear: [[825, 30], [825, 471]], lights: [[60, 103], [66, 425]] },
-  "car-013": { size: [1155, 475], front: [[175, 197], [175, 273]], rear: [[924, 37], [924, 444]], lights: [[80, 113], [78, 370]] },
+  // The three open-wheelers: their light points sit out on the front-wing endplates, so a full beam
+  // put two floodlights where a formula car carries nothing but a marker.
+  "car-011": { size: [1214, 487], front: [[241, 30], [241, 457]], rear: [[958, 33], [958, 457]], lights: [[0, 91], [0, 406]], beam: 0.35 },
+  "car-012": { size: [1037, 501], front: [[162, 39], [162, 466]], rear: [[825, 30], [825, 471]], lights: [[60, 103], [66, 425]], beam: 0.35 },
+  "car-013": { size: [1155, 475], front: [[175, 197], [175, 273]], rear: [[924, 37], [924, 444]], lights: [[80, 113], [78, 370]], beam: 0.35 },
   "car-014": { size: [1104, 443], front: [[891, 31], [891, 413]], rear: [[223, 33], [223, 416]], lights: [[1103, 78], [1103, 372]] },
   "car-015": { size: [1178, 494], front: [[243, 32], [243, 463]], rear: [[942, 32], [942, 459]], lights: [[74, 121], [77, 378]] },
   "car-016": { size: [1214, 478], front: [[255, 35], [255, 439]], rear: [[979, 40], [979, 440]], lights: [[76, 134], [83, 334]] }
@@ -128,6 +138,7 @@ export function carRenderGeometryForId(id: string | undefined): CarRenderGeometr
     rearWheels: raw.rear.map(transformPoint) as [CarAssetPoint, CarAssetPoint],
     frontLights: raw.lights.map(transformPoint) as [CarAssetPoint, CarAssetPoint],
     rearLights: (RAW_REAR_LIGHTS[asset.id] ?? RAW_REAR_LIGHTS[DEFAULT_CAR_ASSET.id]!).map(transformPoint) as [CarAssetPoint, CarAssetPoint],
+    headlightBeam: raw.beam ?? 1,
     wheelbase
   };
   CAR_RENDER_GEOMETRY.set(asset.id, geometry);

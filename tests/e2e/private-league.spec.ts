@@ -476,7 +476,7 @@ test("shows the FPS readout on every map in the same corner", async ({ page }) =
   await check("replay map");
 });
 
-test("keeps driver connectors pointing at cars on the stage across focus toggles", async ({ page }) => {
+test("draws a driver connector for every listed team and for no one else", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   // The shared mock runs two cars that share a position for the whole replay, which is exactly the
   // case the bug cannot happen in. This one needs a real field spread around the circuit.
@@ -556,42 +556,21 @@ test("keeps driver connectors pointing at cars on the stage across focus toggles
           return teamId && !drawn.has(teamId);
         }).length;
     });
-  const strayConnectors = async () =>
-    page.evaluate(() => {
-      const svg = document.querySelector(".replay-driver-connectors");
-      const stage = svg?.parentElement?.getBoundingClientRect();
-      if (!svg || !stage) return -1;
-      return Array.from(svg.querySelectorAll<SVGLineElement>("line[data-team-id]")).filter((line) => {
-        if (line.style.opacity === "0") return false;
-        // Both ends: the standing end strays when its row is hidden, the car end when the camera
-        // zooms the car out of frame.
-        return (["1", "2"] as const).some((end) => {
-          const x = Number(line.getAttribute(`x${end}`) ?? 0);
-          const y = Number(line.getAttribute(`y${end}`) ?? 0);
-          return x < -20 || y < -20 || x > stage.width + 20 || y > stage.height + 20;
-        });
-      }).length;
-    });
-
+  // Focus on and off: the camera zooms most of the field out of frame, and those teams keep their
+  // connector — the line simply runs off the stage towards the car.
   for (let toggle = 0; toggle < 4; toggle += 1) {
-    await expect.poll(strayConnectors, { timeout: 4000 }).toBe(0);
     await expect.poll(listedTeamsWithoutConnector, { timeout: 4000 }).toBe(0);
+    await expect.poll(connectorsWithoutRow, { timeout: 4000 }).toBe(0);
     await focusButton.click();
     await page.waitForTimeout(400);
   }
-  await expect.poll(strayConnectors, { timeout: 4000 }).toBe(0);
 
   // Narrow enough to collapse the tower to four rows: the last two teams have no row to point at,
-  // and a hidden row measures 0x0 at the document origin. Focus off so every car is on the stage —
-  // otherwise the off-stage guard hides those same connectors and the hidden-row case never runs.
+  // and a hidden row measures 0x0 at the document origin, which used to draw a line into the corner.
   await page.setViewportSize({ width: 390, height: 844 });
-  await expect(focusButton).toHaveClass(/active/);
-  await focusButton.click();
-  await expect(focusButton).not.toHaveClass(/active/);
   await page.waitForTimeout(600);
   expect(await page.locator(".replay-tower.map-list-collapsed").count(), "tower is not collapsed, the hidden-row case is untested").toBe(1);
   expect(await page.locator(".replay-tower > ol > li").evaluateAll((rows) => rows.filter((row) => row.getBoundingClientRect().height === 0).length)).toBeGreaterThan(0);
-  await expect.poll(strayConnectors, { timeout: 4000 }).toBe(0);
   await expect.poll(connectorsWithoutRow, { timeout: 4000 }).toBe(0);
   await expect.poll(listedTeamsWithoutConnector, { timeout: 4000 }).toBe(0);
 });

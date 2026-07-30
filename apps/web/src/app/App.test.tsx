@@ -1155,7 +1155,8 @@ describe("App", () => {
     expect(await screen.findByRole("heading", { name: "Race replay" })).toBeTruthy();
     expect(screen.queryByRole("heading", { name: "4. Grand Prix finished" })).toBe(null);
     expect(screen.getByText("Relive the GP lap by lap: weather, pace, and key moments move the standings.")).toBeTruthy();
-    expect(document.querySelectorAll(".replay-map-panel .map-car-trail[data-segment]")).toHaveLength(0);
+    // Two cars is a small field, so both leave trails even in a race: one set of marks per wheel.
+    expect(new Set([...document.querySelectorAll<HTMLElement>(".replay-map-panel .map-car-trail[data-car-id]")].map((path) => path.dataset.carId)).size).toBe(2);
     expect(document.querySelector(".replay-director-panel .replay-player-gaps")).toBeTruthy();
     expect(document.querySelector(".replay-director-panel .replay-player-gaps .position-badge")).toBe(null);
     expect(document.querySelector(".replay-player-focus-panel")).toBe(null);

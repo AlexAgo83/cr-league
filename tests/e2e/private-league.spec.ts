@@ -476,7 +476,7 @@ test("shows the FPS readout on every map in the same corner", async ({ page }) =
   await check("replay map");
 });
 
-test("draws a driver connector for every listed team and for no one else", async ({ page }) => {
+test("connects the followed standing to its car, and only that one on a full grid", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   // The shared mock runs two cars that share a position for the whole replay, which is exactly the
   // case the bug cannot happen in. This one needs a real field spread around the circuit.
@@ -538,29 +538,21 @@ test("draws a driver connector for every listed team and for no one else", async
         (line) => line.style.opacity !== "0" && !listed.has(line.dataset.teamId)
       ).length;
     });
-  // The other direction of the same rule: a team on the list has a connector. Suppressing lines for
-  // cars the focus camera had zoomed out of frame left listed teams without one.
-  const listedTeamsWithoutConnector = async () =>
-    page.evaluate(() => {
-      const svg = document.querySelector(".replay-driver-connectors");
-      if (!svg) return -1;
-      const drawn = new Set(
-        Array.from(svg.querySelectorAll<SVGLineElement>("line[data-team-id]"))
-          .filter((line) => line.style.opacity !== "0")
-          .map((line) => line.dataset.teamId)
-      );
-      return Array.from(document.querySelectorAll(".replay-tower > ol > li"))
-        .filter((row) => row.getBoundingClientRect().height > 0)
-        .filter((row) => {
-          const teamId = row.querySelector<HTMLElement>("[data-team-id]")?.dataset.teamId;
-          return teamId && !drawn.has(teamId);
-        }).length;
-    });
-  // Focus on and off: the camera zooms most of the field out of frame, and those teams keep their
-  // connector — the line simply runs off the stage towards the car.
+  // On a six-car grid the only connector is the one to the standing being followed.
+  const drawnConnectors = async () =>
+    page.evaluate(() =>
+      Array.from(document.querySelectorAll<SVGLineElement>(".replay-driver-connectors line[data-team-id]"))
+        .filter((line) => line.style.opacity !== "0")
+        .map((line) => line.dataset.teamId ?? "")
+    );
+  const followedTeam = async () =>
+    page.evaluate(() => document.querySelector<HTMLElement>(".replay-tower li.focused [data-team-id]")?.dataset.teamId ?? null);
+  // Focus on and off: one line either way, pointing at the standing being followed.
   for (let toggle = 0; toggle < 4; toggle += 1) {
-    await expect.poll(listedTeamsWithoutConnector, { timeout: 4000 }).toBe(0);
+    await expect.poll(drawnConnectors, { timeout: 4000 }).toHaveLength(1);
     await expect.poll(connectorsWithoutRow, { timeout: 4000 }).toBe(0);
+    const followed = await followedTeam();
+    if (followed) expect(await drawnConnectors()).toEqual([followed]);
     await focusButton.click();
     await page.waitForTimeout(400);
   }
@@ -572,7 +564,7 @@ test("draws a driver connector for every listed team and for no one else", async
   expect(await page.locator(".replay-tower.map-list-collapsed").count(), "tower is not collapsed, the hidden-row case is untested").toBe(1);
   expect(await page.locator(".replay-tower > ol > li").evaluateAll((rows) => rows.filter((row) => row.getBoundingClientRect().height === 0).length)).toBeGreaterThan(0);
   await expect.poll(connectorsWithoutRow, { timeout: 4000 }).toBe(0);
-  await expect.poll(listedTeamsWithoutConnector, { timeout: 4000 }).toBe(0);
+  await expect.poll(drawnConnectors, { timeout: 4000 }).toHaveLength(1);
 });
 
 test("keeps first-click commands animated and result shortcuts wired", async ({ page }) => {

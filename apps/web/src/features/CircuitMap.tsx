@@ -418,7 +418,15 @@ function CircuitMapInner({
   const displayWeather = weather ?? circuit.likelyWeather;
   const sortedCars = useMemo(() => [...cars].sort((a, b) => Number(a.player) - Number(b.player)), [cars]);
   const carDomKey = sortedCars.map((car) => car.id).join("|");
-  const trailCars = useMemo(() => tireTrails ? sortedCars.filter((car) => car.player || car.id === camera?.car?.id || sortedCars.length <= 2) : [], [camera?.car?.id, sortedCars, tireTrails]);
+  // A small field can afford trails behind everyone, on any map: three cars leave three sets of
+  // marks, which is what the chrono map has always looked like. A full grid keeps them for the cars
+  // being watched.
+  const smallField = cars.length > 0 && cars.length < 4;
+  const showTrails = tireTrails || smallField;
+  const trailCars = useMemo(
+    () => (showTrails ? sortedCars.filter((car) => smallField || car.player || car.id === camera?.car?.id) : []),
+    [camera?.car?.id, showTrails, smallField, sortedCars]
+  );
   const trailCarDomKey = trailCars.map((car) => car.id).join("|");
   const trailCarIds = useMemo(() => new Set(trailCarDomKey.split("|").filter(Boolean)), [trailCarDomKey]);
   const tileLayer = useMemo(() => tiles.map((tile) => (
@@ -532,7 +540,7 @@ function CircuitMapInner({
           light.setAttribute("class", (car.braking ?? brakingAtProgress(progress, circuit.speedProfile)) ? "map-car-rear-light braking" : "map-car-rear-light");
         });
 
-        if (!tireTrails || !trailCarIds.has(car.id)) continue;
+        if (!trailCarIds.has(car.id)) continue;
         const geometry = carRenderGeometryForId(car.livery?.carAssetId);
         const scale = focusEnabled ? carScaleRef.current / zoomRef.current : markerScale;
         const radians = bodyAngle * Math.PI / 180;
@@ -576,7 +584,7 @@ function CircuitMapInner({
       cancelAnimationFrame(frame);
       tireMarks.clear();
     };
-  }, [carDomKey, carProgressRef, circuit.laps, circuit.speedProfile, focusEnabled, hasCars, markerScale, memoizedDrift, memoizedPose, reduceMotion, routeAnalysis.startProgress, tireTrails, trailCarDomKey, trailCarIds]);
+  }, [carDomKey, carProgressRef, circuit.laps, circuit.speedProfile, focusEnabled, hasCars, markerScale, memoizedDrift, memoizedPose, reduceMotion, routeAnalysis.startProgress, trailCarDomKey, trailCarIds]);
 
   useEffect(() => {
     const cameraGroup = cameraRef.current;

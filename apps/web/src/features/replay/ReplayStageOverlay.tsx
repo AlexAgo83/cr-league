@@ -257,7 +257,7 @@ export function ReplayStageOverlay({
         </div>
       ) : null}
       {overlayActions ? <div className="replay-overlay-stack"><div className="replay-overlay-actions">{overlayActions}</div></div> : null}
-      {!towerReplacement && replayMode === "race" ? <ReplayDriverConnectors entries={tower} teamLiveries={teamLiveries} /> : null}
+      {!towerReplacement && replayMode === "race" ? <ReplayDriverConnectors entries={tower} teamLiveries={teamLiveries} focusedTeamId={focusedTeamId} /> : null}
       {towerReplacement ?? (
         <ReplayTower
           entries={tower}
@@ -307,8 +307,23 @@ export function canDrawConnector<T extends { badgeRect?: Box; carRect?: Box }>(
   return badgeRect.width > 0 && badgeRect.height > 0;
 }
 
-function ReplayDriverConnectors({ entries, teamLiveries }: { entries: ReplayTowerEntry[]; teamLiveries: Record<string, TeamLivery> }) {
+/** Below this, every standing can carry a line without the map turning into a cat's cradle. */
+const CONNECTORS_FOR_ALL_BELOW = 4;
+
+function ReplayDriverConnectors({
+  entries,
+  teamLiveries,
+  focusedTeamId
+}: {
+  entries: ReplayTowerEntry[];
+  teamLiveries: Record<string, TeamLivery>;
+  focusedTeamId?: string;
+}) {
   const ref = useRef<SVGSVGElement>(null);
+  // One line, to the standing being watched — whichever display mode is on. A full grid drawing six
+  // of them said less than the one you are actually following.
+  const connected = entries.length < CONNECTORS_FOR_ALL_BELOW ? entries : entries.filter((entry) => entry.teamId === focusedTeamId);
+  const connectedKey = connected.map((entry) => entry.teamId).join("|");
 
   useEffect(() => {
     const svg = ref.current;
@@ -384,11 +399,11 @@ function ReplayDriverConnectors({ entries, teamLiveries }: { entries: ReplayTowe
     };
     frame = requestAnimationFrame(update);
     return () => cancelAnimationFrame(frame);
-  }, []);
+  }, [connectedKey]);
 
   return (
     <svg ref={ref} className="replay-driver-connectors" aria-hidden="true">
-      {entries.map((entry) => (
+      {connected.map((entry) => (
         <line
           key={entry.teamId}
           data-team-id={entry.teamId}

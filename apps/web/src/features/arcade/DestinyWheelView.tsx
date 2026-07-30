@@ -1,19 +1,22 @@
 import { lazy, Suspense, useEffect, useState } from "react";
-import { useT } from "../../i18n/index.js";
+import { useT, type TranslationKey } from "../../i18n/index.js";
 import { SetupBackButton } from "../../app/SetupViews.js";
+import { regionsWithCircuits, circuitsInRegion } from "../../app/circuits.js";
 import { BoardIcon } from "../VisualIcon.js";
 import { TeamCar } from "../TeamCar.js";
 import {
   addWheelParticipant,
   loadWheelParticipants,
+  loadWheelRegion,
   recolourWheelParticipant,
   removeWheelParticipant,
   saveWheelParticipants,
+  saveWheelRegion,
   WHEEL_MAX_PARTICIPANTS,
   WHEEL_MIN_PARTICIPANTS,
   type WheelParticipant
 } from "./arcadeStorage.js";
-import { drawDestinyWheel, wheelLivery, type WheelDraw } from "./destinyWheel.js";
+import { drawDestinyWheel, wheelLivery, type WheelDraw, type WheelRegion } from "./destinyWheel.js";
 
 const ReplayView = lazy(() => import("../ReplayView.js").then((module) => ({ default: module.ReplayView })));
 
@@ -25,6 +28,7 @@ export function DestinyWheelView({ onBack, onRacingChange }: { onBack: () => voi
   const tt = useT();
   const [participants, setParticipants] = useState<WheelParticipant[]>(() => loadWheelParticipants());
   const [name, setName] = useState("");
+  const [region, setRegion] = useState<WheelRegion>(() => loadWheelRegion());
   const [draw, setDraw] = useState<WheelDraw | null>(null);
   const [showOrder, setShowOrder] = useState(false);
   const canRace = participants.length >= WHEEL_MIN_PARTICIPANTS;
@@ -38,7 +42,8 @@ export function DestinyWheelView({ onBack, onRacingChange }: { onBack: () => voi
     // Persisted on launch, as the entry is validated by racing it.
     saveWheelParticipants(participants);
     // A new seed per launch, so the same names twice give two different orders.
-    setDraw(drawDestinyWheel(participants, `wheel-${Date.now()}-${participants.length}`));
+    saveWheelRegion(region);
+    setDraw(drawDestinyWheel(participants, `wheel-${Date.now()}-${participants.length}`, region));
     setShowOrder(false);
   }
 
@@ -169,6 +174,21 @@ export function DestinyWheelView({ onBack, onRacingChange }: { onBack: () => voi
             {tt("wheel_empty")}
           </p>
         )}
+
+        <label className="wheel-region">
+          <span>{tt("wheel_region_label")}</span>
+          <select
+            className="circuit-filter-region"
+            value={region}
+            onChange={(event) => setRegion(event.target.value as WheelRegion)}
+          >
+            <option value="all">{tt("circuit_region_all")}</option>
+            {regionsWithCircuits().map((option) => (
+              <option key={option} value={option}>{tt(`circuit_region_${option}` as TranslationKey)}</option>
+            ))}
+          </select>
+          <small>{tt("wheel_region_count", { count: circuitsInRegion(region).length })}</small>
+        </label>
 
         <div className="actions">
           <small className="wheel-count">{tt("wheel_count", { count: participants.length, max: WHEEL_MAX_PARTICIPANTS })}</small>

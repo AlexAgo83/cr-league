@@ -35,6 +35,27 @@ export const CITY_CIRCUITS = CITY_CIRCUIT_IDENTITIES.map((identity) => ({
 
 const CIRCUIT_BY_LAYOUT = new Map(CITY_CIRCUITS.map((circuit) => [circuit.layoutKey, circuit]));
 
+export type CircuitRegion = "europe" | "americas" | "asia" | "africa" | "oceania";
+export const REGION_ORDER: CircuitRegion[] = ["europe", "americas", "asia", "africa", "oceania"];
+// ponytail: flat ISO2 -> region map covers current + planned circuit countries; unknown codes simply won't match a region filter.
+export const COUNTRY_REGION: Record<string, CircuitRegion> = {
+  FR: "europe", NL: "europe", DE: "europe", IT: "europe", PT: "europe", ES: "europe", AT: "europe", MC: "europe", GB: "europe",
+  BE: "europe", CZ: "europe", DK: "europe", SE: "europe", TR: "europe", GR: "europe", HU: "europe", FI: "europe", MT: "europe", IS: "europe",
+  US: "americas", CA: "americas", BR: "americas", AR: "americas", MX: "americas",
+  JP: "asia", KR: "asia", SG: "asia", HK: "asia", CN: "asia", AE: "asia",
+  ZA: "africa", MA: "africa", EG: "africa", KE: "africa", RW: "africa", SN: "africa", TN: "africa", GH: "africa", ET: "africa", NG: "africa", MZ: "africa",
+  AU: "oceania", NZ: "oceania"
+};
+
+/** "all" is a region choice like any other, so callers never special-case it. */
+export function circuitsInRegion(region: "all" | CircuitRegion, circuits: readonly CityCircuit[] = CITY_CIRCUITS) {
+  return region === "all" ? circuits : circuits.filter((circuit) => COUNTRY_REGION[circuit.country] === region);
+}
+
+export function regionsWithCircuits(circuits: readonly CityCircuit[] = CITY_CIRCUITS) {
+  return REGION_ORDER.filter((region) => circuitsInRegion(region, circuits).length > 0);
+}
+
 // ponytail: returns a fresh circuit with the current cached route snapshot. A new object reference on
 // each call is deliberate: consumers memoize on [circuit], so once the lazy route cache fills and the
 // tree re-renders, the new reference makes their circuitScene/route memos recompute with the polyline.

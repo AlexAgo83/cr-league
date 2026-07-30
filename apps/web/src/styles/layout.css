@@ -5730,6 +5730,25 @@ label small {
   opacity: 0.72;
 }
 
+/* Same row shape as the name field above it, so the pool reads as part of the setup. */
+.wheel-region {
+  align-items: center;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  margin-bottom: 12px;
+}
+
+.wheel-region > span {
+  color: var(--color-muted);
+  font-size: 0.78rem;
+}
+
+.wheel-region > small {
+  opacity: 0.72;
+  white-space: nowrap;
+}
+
 .wheel-count {
   margin-right: auto;
   opacity: 0.72;

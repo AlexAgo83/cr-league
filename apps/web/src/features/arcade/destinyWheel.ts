@@ -1,5 +1,5 @@
 import { CITY_CIRCUIT_IDENTITIES, raceInputFromCircuit, simulateRace, type BotArchetype, type RaceResult, type TeamLivery } from "@cr-league/shared";
-import { CITY_CIRCUITS, withRoute, type CityCircuit } from "../../app/circuits.js";
+import { CITY_CIRCUITS, circuitsInRegion, withRoute, type CircuitRegion, type CityCircuit } from "../../app/circuits.js";
 import { DEFAULT_CAR_ASSET, CAR_ASSETS } from "../carAssets.js";
 import type { WheelParticipant } from "./arcadeStorage.js";
 
@@ -8,6 +8,8 @@ import type { WheelParticipant } from "./arcadeStorage.js";
  * `simulateRace` is pure and takes participants directly, so this needs no LeagueState and no
  * league engine — see the request diagnostics in req_134.
  */
+export type WheelRegion = "all" | CircuitRegion;
+
 export type WheelDraw = {
   circuit: CityCircuit;
   result: RaceResult;
@@ -48,16 +50,19 @@ export function wheelLivery(index: number, chosen?: Pick<WheelParticipant, "prim
  * Runs the draw. The seed varies per launch, so the same participants entered twice give two
  * different orders — a draw that always answered the same would not be one.
  */
-export function drawDestinyWheel(participants: WheelParticipant[], seed: string): WheelDraw {
+export function drawDestinyWheel(participants: WheelParticipant[], seed: string, region: WheelRegion = "all"): WheelDraw {
   if (participants.length < 2) {
     throw new Error("A draw needs at least two participants.");
   }
 
+  // The draw picks inside the chosen region. An empty region would be a dead wheel, so it falls back
+  // to the whole catalogue rather than throwing at the player.
+  const pool = circuitsInRegion(region);
+  const drawn = (pool.length ? pool : CITY_CIRCUITS)[hash(seed) % (pool.length || CITY_CIRCUITS.length)] ?? CITY_CIRCUITS[0];
+  const circuit = withRoute(drawn);
   // CITY_CIRCUITS is built by mapping over the identities, so the two stay index-aligned. The
   // identity is what `raceInputFromCircuit` types against; the circuit is what the map draws.
-  const index = hash(seed) % CITY_CIRCUIT_IDENTITIES.length;
-  const circuit = withRoute(CITY_CIRCUITS[index] ?? CITY_CIRCUITS[0]);
-  const identity = CITY_CIRCUIT_IDENTITIES[index] ?? CITY_CIRCUIT_IDENTITIES[0];
+  const identity = CITY_CIRCUIT_IDENTITIES[CITY_CIRCUITS.indexOf(drawn)] ?? CITY_CIRCUIT_IDENTITIES[0];
   const liveries: Record<string, TeamLivery> = {};
   participants.forEach((participant, index) => {
     liveries[participant.id] = wheelLivery(index, participant);

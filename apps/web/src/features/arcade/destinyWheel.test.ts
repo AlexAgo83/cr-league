@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { drawDestinyWheel, wheelLivery } from "./destinyWheel.js";
+import { circuitsInRegion, COUNTRY_REGION } from "../../app/circuits.js";
 import type { WheelParticipant } from "./arcadeStorage.js";
 
 const people = ["Alex", "Sam", "Robin", "Chris", "Jules"].map((name, index) => ({ id: `p${index}`, name })) as WheelParticipant[];
@@ -66,5 +67,32 @@ describe("destiny wheel draw", () => {
     expect(draw.circuit.layoutKey).toBeTruthy();
     expect(draw.circuit.trackZones.length).toBeGreaterThan(0);
     expect(Object.keys(draw.liveries)).toHaveLength(people.length);
+  });
+
+  it("draws only inside the chosen region", () => {
+    const seeds = Array.from({ length: 25 }, (_, index) => `region-${index}`);
+
+    for (const region of ["europe", "asia", "africa"] as const) {
+      const drawn = seeds.map((seed) => drawDestinyWheel(people, seed, region).circuit);
+      expect(drawn.every((circuit) => COUNTRY_REGION[circuit.country] === region), region).toBe(true);
+      // A region with several circuits must not always answer the same one.
+      if (circuitsInRegion(region).length > 1) expect(new Set(drawn.map((circuit) => circuit.layoutKey)).size, region).toBeGreaterThan(1);
+    }
+  });
+
+  it("reaches outside Europe when no region is chosen", () => {
+    const regions = new Set(
+      Array.from({ length: 40 }, (_, index) => COUNTRY_REGION[drawDestinyWheel(people, `all-${index}`, "all").circuit.country])
+    );
+
+    expect(regions.size).toBeGreaterThan(1);
+  });
+
+  it("races the drawn circuit, not another one", () => {
+    // The identity feeding the simulation has to be the circuit the map draws.
+    const draw = drawDestinyWheel(people, "identity-1", "asia");
+
+    expect(draw.result.grandPrixName).toBe(draw.circuit.city);
+    expect(draw.result.classification).toHaveLength(people.length);
   });
 });

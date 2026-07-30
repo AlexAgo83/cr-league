@@ -1,7 +1,10 @@
 import { safeStorage } from "../../app/appStorage.js";
+import { REGION_ORDER } from "../../app/circuits.js";
+import type { WheelRegion } from "./destinyWheel.js";
 
 /** Its own key: the arcade holds no league, so it must never touch a campaign save slot. */
 export const WHEEL_PARTICIPANTS_KEY = "cr-league-arcade-wheel-v1";
+export const WHEEL_REGION_KEY = "cr-league-arcade-wheel-region";
 
 /** The grid ceiling the domain already states (MAX_PLAYERS_LIMIT), reused rather than reinvented. */
 export const WHEEL_MAX_PARTICIPANTS = 16;
@@ -31,6 +34,16 @@ export function loadWheelParticipants(): WheelParticipant[] {
 
 export function saveWheelParticipants(participants: WheelParticipant[]) {
   safeStorage.set(WHEEL_PARTICIPANTS_KEY, JSON.stringify(participants.slice(0, WHEEL_MAX_PARTICIPANTS)));
+}
+
+/** Remembered like the participants: the same group usually wants the same corner of the world. */
+export function loadWheelRegion(): WheelRegion {
+  const saved = safeStorage.get(WHEEL_REGION_KEY);
+  return REGION_ORDER.some((region) => region === saved) ? (saved as WheelRegion) : "all";
+}
+
+export function saveWheelRegion(region: WheelRegion) {
+  safeStorage.set(WHEEL_REGION_KEY, region);
 }
 
 /** Ids are only needed to key a row and a car, so a counter beats crypto here. */

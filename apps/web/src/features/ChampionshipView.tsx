@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNod
 import { useT } from "../i18n/index.js";
 import { circuitStatsForTeam, type CircuitTeamStats, type TeamLivery } from "@cr-league/shared";
 import type { TranslationKey } from "../i18n/index.js";
-import { CITY_CIRCUITS, circuitsForSeason, withRoute, type CityCircuit } from "../app/circuits.js";
+import { CITY_CIRCUITS, circuitsForSeason, circuitsInRegion, regionsWithCircuits, withRoute, type CircuitRegion, type CityCircuit } from "../app/circuits.js";
 import { safeStorage } from "../app/appStorage.js";
 import { completedSeasonSummaries, standingsRival, seasonWinsByTeamId, statusLabel } from "../app/helpers.js";
 import type { LeagueState } from "../app/types.js";
@@ -17,19 +17,9 @@ import { PositionBadge } from "./PositionBadge.js";
 import { RewardValue } from "./RewardValue.js";
 import { BoardIcon, CountryBadge, VisualIcon, type BoardIconName } from "./VisualIcon.js";
 import { SectionSwitch, type SectionSwitchItem } from "./SectionSwitch.js";
+export { COUNTRY_REGION } from "../app/circuits.js";
 
-type CircuitRegion = "europe" | "americas" | "asia" | "africa" | "oceania";
 const CIRCUIT_PAGE_SIZE = 8;
-const REGION_ORDER: CircuitRegion[] = ["europe", "americas", "asia", "africa", "oceania"];
-// ponytail: flat ISO2 -> region map covers current + planned circuit countries; unknown codes simply won't match a region filter.
-export const COUNTRY_REGION: Record<string, CircuitRegion> = {
-  FR: "europe", NL: "europe", DE: "europe", IT: "europe", PT: "europe", ES: "europe", AT: "europe", MC: "europe", GB: "europe",
-  BE: "europe", CZ: "europe", DK: "europe", SE: "europe", TR: "europe", GR: "europe", HU: "europe", FI: "europe", MT: "europe", IS: "europe",
-  US: "americas", CA: "americas", BR: "americas", AR: "americas", MX: "americas",
-  JP: "asia", KR: "asia", SG: "asia", HK: "asia", CN: "asia", AE: "asia",
-  ZA: "africa", MA: "africa", EG: "africa", KE: "africa", RW: "africa", SN: "africa", TN: "africa", GH: "africa", ET: "africa", NG: "africa", MZ: "africa",
-  AU: "oceania", NZ: "oceania"
-};
 const RECORD_TAB_ICONS: Record<ChampionshipRecordTab, BoardIconName> = {
   calendar: "circuit-preview",
   standings: "standings-board",
@@ -74,9 +64,8 @@ export function ChampionshipView({
   const [circuitQuery, setCircuitQuery] = useState("");
   const [circuitRegion, setCircuitRegion] = useState<"all" | CircuitRegion>("all");
   const [circuitPage, setCircuitPage] = useState(0);
-  const availableRegions = REGION_ORDER.filter((region) => catalogCircuits.some((circuit) => COUNTRY_REGION[circuit.country] === region));
-  const filteredCircuits = catalogCircuits.filter((circuit) => {
-    if (circuitRegion !== "all" && COUNTRY_REGION[circuit.country] !== circuitRegion) return false;
+  const availableRegions = regionsWithCircuits(catalogCircuits);
+  const filteredCircuits = circuitsInRegion(circuitRegion, catalogCircuits).filter((circuit) => {
     const query = circuitQuery.trim().toLowerCase();
     return !query || circuit.city.toLowerCase().includes(query) || tt(circuit.layoutKey).toLowerCase().includes(query);
   });

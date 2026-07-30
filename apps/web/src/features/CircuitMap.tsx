@@ -1,4 +1,4 @@
-import { memo, useCallback, useEffect, useId, useMemo, useRef, type MouseEvent, type Ref, type RefObject } from "react";
+import { memo, useCallback, useEffect, useId, useMemo, useRef, useState, type MouseEvent, type Ref, type RefObject } from "react";
 import { useT } from "../i18n/index.js";
 import type { CSSProperties } from "react";
 import type { DecisionDeltaKey, TeamLivery, TrackSpeedProfile, Weather } from "@cr-league/shared";
@@ -103,6 +103,9 @@ const TIRE_MARK_SAMPLE_DISTANCE = 0.45;
 const TIRE_MARK_SEGMENTS = 18;
 const TIRE_MARK_RESET_DISTANCE = 80;
 const ROUTE_FIT_PADDING = 58;
+/** The stage a desktop panel gives the map, and the width above which a stage counts as desktop. */
+const PANEL_STAGE_HEIGHT = 650;
+const WIDE_STAGE_WIDTH = 900;
 const ROUTE_STROKES = {
   glow: 22,
   asphalt: 12,
@@ -386,12 +389,16 @@ function CircuitMapInner({
   const clockRef = useRef(0);
   const zoomRef = useRef(FOCUS_ZOOM);
   const zoomModeRef = useRef<CameraZoomMode>("normal");
+  const stageRef = useRef<HTMLDivElement>(null);
   const tireMarksRef = useRef(new Map<string, TireMarks>());
   // The car loop and the camera loop ask for the same poses every frame. poseOnRoute is pure in
   // (points, progress), so one memo serves both without any frame ordering to get right.
   const poseMemo = useRef({ points: points as RoutePoint[], poses: new Map<string, RoutePose>() });
   const focusEnabled = Boolean(camera?.enabled && camera.car);
-  const markerScale = focusEnabled ? 1 / FOCUS_ZOOM : 0.62;
+  const carScaleRef = useRef(1);
+  const [carScale, setCarScale] = useState(1);
+  carScaleRef.current = carScale;
+  const markerScale = (focusEnabled ? 1 / FOCUS_ZOOM : 0.62) * carScale;
   const hasCars = cars.length > 0;
   // Same condition the animation loop below bails on: when it does not run, React owns positions.
   const animatesCars = hasCars && (!reduceMotion || Boolean(carProgressRef));
@@ -475,6 +482,22 @@ function CircuitMapInner({
     if (car) onCarClick(car);
   }, [onCarClick]);
 
+  // Cars are drawn in viewBox units, so a stage covering the whole page draws them about 40% bigger
+  // than a panel does. Past the desktop panel size they scale back to the size they have there; a
+  // phone-width stage is left alone, since that layout shipped that way.
+  useEffect(() => {
+    const stage = stageRef.current;
+    if (!stage || typeof ResizeObserver === "undefined") return;
+    const observer = new ResizeObserver((entries) => {
+      const rect = entries[0]?.contentRect;
+      if (!rect) return;
+      const scale = rect.width >= WIDE_STAGE_WIDTH && rect.height > PANEL_STAGE_HEIGHT ? PANEL_STAGE_HEIGHT / rect.height : 1;
+      setCarScale(Math.round(scale * 1000) / 1000);
+    });
+    observer.observe(stage);
+    return () => observer.disconnect();
+  }, []);
+
   useEffect(() => {
     const cameraGroup = cameraRef.current;
     if (!cameraGroup || !hasCars || (reduceMotion && !carProgressRef)) return;
@@ -511,7 +534,7 @@ function CircuitMapInner({
 
         if (!tireTrails || !trailCarIds.has(car.id)) continue;
         const geometry = carRenderGeometryForId(car.livery?.carAssetId);
-        const scale = focusEnabled ? 1 / zoomRef.current : markerScale;
+        const scale = focusEnabled ? carScaleRef.current / zoomRef.current : markerScale;
         const radians = bodyAngle * Math.PI / 180;
         const wheelPoints = geometry.rearWheels.map(([x, y]) => ({
           x: pose.x + (x * Math.cos(radians) - y * Math.sin(radians)) * scale,
@@ -606,7 +629,7 @@ function CircuitMapInner({
       const baseZoom = camera.zoom ?? FOCUS_ZOOM;
       const targetZoom = zoomModeRef.current === "close" ? Math.max(CLOSE_FOCUS_ZOOM, baseZoom) : zoomModeRef.current === "traffic" ? Math.max(TRAFFIC_FOCUS_ZOOM, baseZoom) : baseZoom;
       zoomRef.current += (targetZoom - zoomRef.current) * 0.08;
-      const markerScale = 1 / zoomRef.current;
+      const markerScale = carScaleRef.current / zoomRef.current;
       if (Math.abs(markerScale - lastMarkerScale) >= 0.005) {
         markers.forEach((marker) => marker.setAttribute("transform", `scale(${markerScale})`));
         lastMarkerScale = markerScale;
@@ -627,7 +650,7 @@ function CircuitMapInner({
       className={`${framed ? "circuit-map" : "circuit-map circuit-map-unframed"}${className ? ` ${className}` : ""}${weather ? ` circuit-weather-${weather}` : ""}`}
       aria-label={tt("city_circuit_map")}
     >
-      <div className="circuit-map-stage">
+      <div className="circuit-map-stage" ref={stageRef}>
         <svg ref={svgRef} viewBox={`0 0 ${VIEW_WIDTH} ${VIEW_HEIGHT}`} preserveAspectRatio="xMidYMid meet" aria-hidden="true" onClick={onCarClick ? handleCarClick : undefined}>
           <g ref={cameraRef} className="circuit-camera">
             <g className="circuit-map-content" transform={mapTransform}>

@@ -5743,6 +5743,20 @@ label small {
 
 /* ---------- Arcade duel ---------- */
 
+/* The lap plays above the board: the map is the story, the panel is the decision. */
+.duel-map {
+  margin-bottom: 12px;
+}
+
+.duel-map .circuit-map-stage {
+  aspect-ratio: 16 / 9;
+}
+
+.duel-call:disabled {
+  cursor: progress;
+  opacity: 0.45;
+}
+
 .duel-rival-card {
   align-items: center;
   background: rgb(248 243 232 / 0.05);

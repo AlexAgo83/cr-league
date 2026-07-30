@@ -147,6 +147,31 @@ export function rivalDuelCall(duel: Duel): DuelCall {
   }
 }
 
+/**
+ * Where the gap stands part-way through a lap. Both ends are the truth — it starts on the gap the
+ * lap opened with and lands exactly on the one it closed with — and the middle is the story: a
+ * driver who dives up the inside is right there before he runs out of road, a driver who shuts the
+ * door lets the other one arrive before holding him off.
+ */
+export function duelGapDuring(round: DuelRound, gapBefore: number, progress: number) {
+  const time = Math.max(0, Math.min(1, progress));
+  const eased = time * time * (3 - 2 * time);
+  return round2(gapBefore + round.swing * eased + duelDrama(round) * Math.sin(Math.PI * time));
+}
+
+/** How far the lap wanders before it lands, and towards whom. */
+function duelDrama(round: DuelRound) {
+  const { playerCall, rivalCall } = round;
+  if (playerCall === rivalCall) return 0.12;
+  // The lunge that does not come off: he is on the door handles at mid-lap, then loses the exit.
+  if (playerCall === "attack" && rivalCall === "cover") return 0.5;
+  if (playerCall === "cover" && rivalCall === "attack") return -0.5;
+  // A move that works arrives early rather than dramatically.
+  if (playerCall === "attack") return 0.2;
+  if (rivalCall === "attack") return -0.2;
+  return playerCall === "manage" ? 0.15 : -0.15;
+}
+
 function round2(value: number) {
   return Math.round(value * 100) / 100;
 }

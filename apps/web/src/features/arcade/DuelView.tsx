@@ -1,18 +1,22 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useT, type TranslationKey } from "../../i18n/index.js";
 import { SetupBackButton } from "../../app/SetupViews.js";
-import { CITY_CIRCUITS, type CityCircuit } from "../../app/circuits.js";
+import { CITY_CIRCUITS, withRoute, type CityCircuit } from "../../app/circuits.js";
+import { CircuitMap, type MapCar } from "../CircuitMap.js";
 import { BoardIcon, CountryBadge, VisualIcon } from "../VisualIcon.js";
 import { TeamCar } from "../TeamCar.js";
 import {
   attackCost,
   createDuel,
   duelOutcome,
+  duelGapDuring,
   duelOver,
   DUEL_CALLS,
   DUEL_MAX_ENGAGEMENT,
   playDuelRound,
-  type Duel
+  type Duel,
+  type DuelCall,
+  type DuelRound
 } from "./duel.js";
 import type { BotArchetype } from "@cr-league/shared";
 
@@ -24,6 +28,13 @@ const RIVALS: Array<{ archetype: BotArchetype; name: string; livery: { primary: 
   { archetype: "rain_specialist", name: "Yuki Farrow", livery: { primary: "#60a5fa", secondary: "#1e3a8a" } },
   { archetype: "opportunist", name: "Diego Pace", livery: { primary: "#ef4444", secondary: "#facc15" } }
 ];
+
+/** A lap of animation per call: long enough to watch it happen, short enough to keep asking. */
+const LAP_MS = 4200;
+/** A second of gap is this much of a lap on screen — enough to read, not enough to lap anyone. */
+const GAP_TO_LAP = 0.045;
+const PLAYER_ID = "you";
+const RIVAL_ID = "rival";
 
 /* Icons the board already ships: the boost for a charge, the balanced marker for holding station,
    the defensive order for shutting the door. */
@@ -37,15 +48,49 @@ export function DuelView({ onBack }: { onBack: () => void }) {
   const tt = useT();
   const [setup, setSetup] = useState(() => drawSetup(`duel-${Date.now()}`));
   const [duel, setDuel] = useState<Duel | null>(null);
+  // The lap being driven: the board waits on it, and the cars are placed from it every frame.
+  const [lap, setLap] = useState<{ round: DuelRound; gapBefore: number; next: Duel } | null>(null);
+  const carProgressRef = useRef<Record<string, number>>({ [PLAYER_ID]: 0, [RIVAL_ID]: 0 });
   const rival = RIVALS.find((candidate) => candidate.archetype === setup.rival) ?? RIVALS[0]!;
 
+  useEffect(() => {
+    if (!lap) return;
+    const startedAt = performance.now();
+    const lapIndex = lap.round.lap - 1;
+    let frame = 0;
+    const drive = (now: number) => {
+      const time = Math.min(1, (now - startedAt) / LAP_MS);
+      const gap = duelGapDuring(lap.round, lap.gapBefore, time);
+      // The player runs the lap; the rival sits at the gap behind or ahead of him.
+      carProgressRef.current = { [PLAYER_ID]: lapIndex + time, [RIVAL_ID]: lapIndex + time - gap * GAP_TO_LAP };
+      if (time < 1) {
+        frame = requestAnimationFrame(drive);
+        return;
+      }
+      setDuel(lap.next);
+      setLap(null);
+    };
+    frame = requestAnimationFrame(drive);
+    return () => cancelAnimationFrame(frame);
+  }, [lap]);
+
+  function call(playerCall: DuelCall) {
+    if (!duel || lap) return;
+    const next = playDuelRound(duel, playerCall);
+    const round = next.rounds.at(-1);
+    if (round) setLap({ round, gapBefore: duel.gap, next });
+  }
+
   function start() {
+    carProgressRef.current = { [PLAYER_ID]: 0, [RIVAL_ID]: 0 };
     setDuel(createDuel(setup.seed, setup.rival, setup.circuit.likelyWeather));
   }
 
   function again() {
     const next = drawSetup(`duel-${Date.now()}`);
+    carProgressRef.current = { [PLAYER_ID]: 0, [RIVAL_ID]: 0 };
     setSetup(next);
+    setLap(null);
     setDuel(null);
   }
 
@@ -96,6 +141,11 @@ export function DuelView({ onBack }: { onBack: () => void }) {
   const finished = duelOver(duel);
   const last = duel.rounds.at(-1);
   const cost = attackCost(duel.weather);
+  const driving = Boolean(lap);
+  const cars: MapCar[] = [
+    { id: PLAYER_ID, label: duel.gap >= 0 ? "1" : "2", player: true, delay: 0, duration: 30, progress: carProgressRef.current[PLAYER_ID] ?? 0, livery: { primary: "#16c784", secondary: "#38bdf8" } },
+    { id: RIVAL_ID, label: duel.gap >= 0 ? "2" : "1", player: false, delay: 0, duration: 30, progress: carProgressRef.current[RIVAL_ID] ?? 0, livery: rival.livery }
+  ];
 
   return (
     <section className="setup-grid setup-grid-single setup-grid-split" aria-labelledby="duel-board-title">
@@ -105,6 +155,18 @@ export function DuelView({ onBack }: { onBack: () => void }) {
         <h1 id="duel-board-title">{finished ? tt(duelOutcome(duel) === "player" ? "duel_win_title" : "duel_lose_title") : gapLabel(duel.gap, tt)}</h1>
         <p className="status">{finished ? tt("duel_result_gap", { gap: Math.abs(duel.gap).toFixed(1), rival: rival.name }) : tt("duel_board_intro", { rival: rival.name })}</p>
       </div>
+
+      <CircuitMap
+        className="duel-map"
+        circuit={setup.hydrated}
+        cars={cars}
+        carProgressRef={carProgressRef}
+        weather={duel.weather}
+        showHeading={false}
+        framed={false}
+        showTraits={false}
+        camera={{ enabled: true, car: cars[0], zoom: 1.5 }}
+      />
 
       <div className="panel setup-main-panel setup-form-panel setup-choice-panel">
         <div className="duel-tanks">
@@ -131,12 +193,12 @@ export function DuelView({ onBack }: { onBack: () => void }) {
           </div>
         ) : (
           <div className="duel-calls">
-            {DUEL_CALLS.map((call) => (
-              <button key={call} type="button" className="duel-call" onClick={() => setDuel(playDuelRound(duel, call))}>
-                <BoardIcon className="duel-call-icon" name={CALL_ICONS[call]} />
-                <strong>{tt(`duel_call_${call}` as TranslationKey)}</strong>
-                <small>{tt(`duel_call_${call}_hint` as TranslationKey)}</small>
-                <em>{call === "attack" ? tt("duel_call_cost", { cost }) : tt("duel_call_refill")}</em>
+            {DUEL_CALLS.map((option) => (
+              <button key={option} type="button" className="duel-call" disabled={driving} onClick={() => call(option)}>
+                <BoardIcon className="duel-call-icon" name={CALL_ICONS[option]} />
+                <strong>{tt(`duel_call_${option}` as TranslationKey)}</strong>
+                <small>{tt(`duel_call_${option}_hint` as TranslationKey)}</small>
+                <em>{option === "attack" ? tt("duel_call_cost", { cost }) : tt("duel_call_refill")}</em>
               </button>
             ))}
           </div>
@@ -181,8 +243,9 @@ function gapLabel(gap: number, tt: ReturnType<typeof useT>) {
 }
 
 /** A fresh circuit and rival per duel, so two runs never open on the same briefing. */
-function drawSetup(seed: string): { seed: string; rival: BotArchetype; circuit: CityCircuit } {
+function drawSetup(seed: string): { seed: string; rival: BotArchetype; circuit: CityCircuit; hydrated: CityCircuit } {
   const rival = RIVALS[Math.floor(Math.random() * RIVALS.length)] ?? RIVALS[0]!;
   const circuit = CITY_CIRCUITS[Math.floor(Math.random() * CITY_CIRCUITS.length)] ?? CITY_CIRCUITS[0];
-  return { seed, rival: rival.archetype, circuit };
+  // A fresh route snapshot, the way every other map takes one.
+  return { seed, rival: rival.archetype, circuit, hydrated: withRoute(circuit) };
 }

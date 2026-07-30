@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   attackCost,
+  duelGapDuring,
   createDuel,
   duelOutcome,
   duelOver,
@@ -103,5 +104,34 @@ describe("a duel", () => {
   it("gives a dead heat to the rival, since he is the one to beat", () => {
     expect(duelOutcome({ ...createDuel("x", "prudent"), gap: 0 })).toBe("rival");
     expect(duelOutcome({ ...createDuel("x", "prudent"), gap: 0.1 })).toBe("player");
+  });
+});
+
+describe("the lap in between", () => {
+  const round = { lap: 1, playerCall: "attack" as const, rivalCall: "cover" as const, swing: -0.6, overreach: null };
+
+  it("starts on the gap the lap opened with and lands on the one it closed with", () => {
+    expect(duelGapDuring(round, 1.2, 0)).toBeCloseTo(1.2, 5);
+    expect(duelGapDuring(round, 1.2, 1)).toBeCloseTo(0.6, 5);
+    // Beyond the lap it holds the finished gap rather than drifting.
+    expect(duelGapDuring(round, 1.2, 1.5)).toBeCloseTo(0.6, 5);
+  });
+
+  it("lets the lunge arrive before it fails", () => {
+    // Mid-lap he is closer than either end of the lap suggests.
+    expect(duelGapDuring(round, 1.2, 0.5)).toBeGreaterThan(1.2);
+  });
+
+  it("lets the attacker arrive when he is the one attacking", () => {
+    const defended = { ...round, playerCall: "cover" as const, rivalCall: "attack" as const, swing: 0.6 };
+
+    expect(duelGapDuring(defended, 1.2, 0.5)).toBeLessThan(1.2 + defended.swing / 2);
+  });
+
+  it("never wanders on a lap where both drivers made the same call", () => {
+    const mirror = { ...round, playerCall: "manage" as const, rivalCall: "manage" as const, swing: 0 };
+    const samples = [0.2, 0.5, 0.8].map((time) => duelGapDuring(mirror, 1, time));
+
+    expect(Math.max(...samples) - 1).toBeLessThan(0.2);
   });
 });

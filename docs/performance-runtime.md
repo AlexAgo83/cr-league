@@ -2,6 +2,35 @@
 
 Use this when the app feels heavier while it runs. It is manual on purpose and is not part of CI.
 
+## Rules Before Any Measurement
+
+1. **Never judge FPS on the dev server.** `jsxDEV` and React DEV validation eat 25-30% of CPU there. The dev build reads ~10x heavier than the real one. Frame numbers only count against a production build.
+2. **Throttle the CPU.** An M-series Mac hides everything. `--cpu-throttle 4` ~ a decent phone, `10` ~ a low-end Android, `20` ~ the floor where the replay collapses.
+3. **The noise floor is about ±10% FPS between identical runs.** Never claim a win from one before/after pair. Run each side twice, and ignore the first window of each run (cold JIT + first paint).
+
+## FPS And Frame Timing
+
+```bash
+# 1. production build served locally (the mock API lives on 127.0.0.1:4874)
+VITE_API_BASE_URL=http://127.0.0.1:4874 npm run build -w @cr-league/web
+npm run preview -w @cr-league/web -- --port 4899
+
+# 2. play a real 6-car race with a real replay trace and sample frames
+npx tsx scripts/perf-browser-runtime.ts --mode fps --cycles 4 --cpu-throttle 10 \
+  --no-server --url http://localhost:4899 --report reports/perf/replay-fps.md
+```
+
+`npm run perf:fps` is the shorthand for the dev server (leak signal only — the FPS numbers there are meaningless, see rule 1).
+
+The `fps` mode differs from the leak modes: it simulates a real race with `simulateRace` and feeds it to the mocked API, so the map animates a full field over a real trace instead of the two-car stub. It reports:
+
+- `FPS`, `Avg ms`, `P95 ms`, `Worst ms`, `Jank %` (share of frames over 32 ms) per window.
+- `Top Self Time`: the CDP sampling profile aggregated by function, which is the shortlist of what to optimise. `(program)` is raster/compositor work, not JS — when it dominates, the fix is paint complexity (filters, masks, blend modes), not faster JavaScript.
+
+Useful flags: `--window 3` (seconds per sample window), `--cycles`, `--cpu-throttle`.
+
+Note for anything injected into the page (`addInitScript`, `page.evaluate`): pass it as a **string**, not a function. tsx/esbuild rewrites named functions with a `__name` helper that does not exist in the browser, and the injected code dies silently.
+
 ## Browser Runtime Smoke
 
 ```bash
@@ -75,35 +104,42 @@ Use it to track simulation duration, result JSON size, and retained Node memory 
 
 ## Current Baseline
 
-Local smoke on 2026-07-27 with 3 GP cycles:
+Measured 2026-07-30 on a production build (`vite preview`), 6-car race with a real replay trace.
 
-- Heap growth: 1.8 MB.
-- DOM node growth: 44.
-- Listener growth: 25.
-- No extra network transfer after initial load.
+Frames, `--mode fps`:
 
-This is small but confirms the right signal exists for longer runs.
+| CPU throttle | Median FPS | Jank (frames > 32 ms) | Worst frame |
+| --- | --- | --- | --- |
+| 1x | 120 (vsync) | 0% | 58 ms (replay open) |
+| 4x | 120 (vsync) | 0% | 143 ms (replay open) |
+| 10x | 45-53 | 5-8% | ~350 ms (replay open) |
+| 20x | 16 | 100% | 817 ms |
 
-Replay smoke on 2026-07-27 with 3 replay-control cycles:
+At 10x, `(program)` (raster/compositor) is 60% of self time and the garbage collector 6.6%; the heaviest app function is ~4% — the replay is paint-bound, not JS-bound.
 
-- Heap growth: 3.8 MB.
-- DOM node growth: 209.
-- Listener growth: 126.
-- No extra network transfer after initial load.
+Memory, production build, no leak found:
 
-That points first at replay UI retention: timers, SVG nodes, camera/animation state, or event handlers.
+- 8 GP cycles: heap +1.1 MB, DOM nodes +41, listeners -5.
+- 8 replay-control cycles: heap +2.6 MB, nodes flat at 605 after the first open, listeners oscillating 539-580.
+- The 2026-07-27 "replay leak" reading was the one-time cost of opening the replay, not growth per cycle.
 
-Bundle smoke on 2026-07-27:
+Bundle:
 
-- Total `apps/web/dist`: 14.29 MB across 819 files.
-- Images: 10.66 MB.
-- JS: 2.4 MB.
-- Largest files: `finish-flag.png` 1393 KB, app chunk 489 KB, `stand.png` 469 KB, circuit routes 455 KB.
+- Total `apps/web/dist`: 8.68 MB across 367 files (images 6.69 MB, JS 1.28 MB, fonts 0.48 MB).
+- Real first load: ~1.4 MB over ~90 requests.
+- Largest: `social/og-card.png` 595 KB and `social/install-*.png` 621 KB (never requested at runtime), `circuit-routes` chunk 455 KB raw / 98 KB gz (loaded on the home screen because the attract map draws a route).
 
-API simulation smoke on 2026-07-27 with 20 cycles:
+API simulation, 200 cycles:
 
-- Average resolve: 3.1 ms.
-- P95 resolve: 8.11 ms.
-- Average result JSON: 111.85 KB.
-- Heap delta after GC: 0.82 MB.
-- RSS delta after GC: 14.44 MB.
+- Average resolve 1.88 ms, P95 2.5 ms, max 7.35 ms.
+- Average result JSON 112 KB, of which `replayTrace` is 90 KB.
+
+## Interpreting A Run
+
+| Signal | Reading |
+| --- | --- |
+| `(program)` dominates self time | Paint/raster bound: SVG filters, masks, blend modes, layer size. |
+| `(garbage collector)` above ~5% | Per-frame allocation in the animation path. |
+| One app function above ~3% | Real JS hotspot, worth a targeted fix. |
+| Worst frame only in the first window | Cold start, not a steady-state problem. |
+| Nodes/listeners rising every cycle | Retention. Nodes flat after the first open is normal. |

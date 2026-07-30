@@ -3,15 +3,20 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { dirname } from "node:path";
 import { setTimeout as delay } from "node:timers/promises";
 import { chromium, type Page } from "@playwright/test";
+import { DEMO_RACE_INPUT, simulateRace, type RaceInput, type RaceResult } from "../packages/shared/src/index.js";
 
 const webBaseUrl = stringArg("--url", process.env.WEB_BASE_URL ?? "http://127.0.0.1:4873");
 const cycles = numberArg("--cycles", 5);
 const mode = stringArg("--mode", "grand-prix");
+const windowSeconds = numberArg("--window", 2);
+const cpuThrottle = numberArg("--cpu-throttle", 1);
 const reportPath = stringArg("--report", "reports/perf/browser-runtime.md");
 const jsonPath = stringArg("--json", reportPath.replace(/\.md$/, ".json"));
 const noServer = process.argv.includes("--no-server");
 
-const player = { teamId: "team_1", claimCode: "CLAIM123" };
+const LIVERY_COLORS = ["#16c784", "#38bdf8", "#f97316", "#a855f7", "#ef4444", "#eab308"];
+const playerTeamId = mode === "fps" ? "volt" : "team_1";
+const player = { teamId: playerTeamId, claimCode: "CLAIM123" };
 let round = 1;
 let cadence = "manual";
 let currentStatus = "briefing";
@@ -20,8 +25,14 @@ let credits = 0;
 let points = 0;
 let cards = ["rain_grip"];
 
+// ponytail: the fps mode plays a real simulated race so the frame numbers come from a full
+// 6-car field with a real trace, not the 2-car stub the leak modes use.
+const fpsResult = mode === "fps" ? simulateRace({ ...(DEMO_RACE_INPUT as RaceInput), seed: "perf-fps" }) : null;
+
+type Frames = { fps: number; avgMs: number; p95Ms: number; worstMs: number; jankPct: number };
 type Sample = {
   label: string;
+  frames?: Frames;
   heapMb: number;
   heapTotalMb: number;
   nodes: number;
@@ -41,12 +52,23 @@ try {
 
   const browser = await chromium.launch({ args: ["--js-flags=--expose-gc"] });
   const context = await browser.newContext({ baseURL: webBaseUrl, viewport: { width: 1440, height: 1000 } });
-  await context.addInitScript(() => {
-    (window as unknown as { __crPerf: { longTasks: Array<{ duration: number }> } }).__crPerf = { longTasks: [] };
-    new PerformanceObserver((list) => {
-      const perf = (window as unknown as { __crPerf: { longTasks: Array<{ duration: number }> } }).__crPerf;
-      perf.longTasks.push(...list.getEntries().map((entry) => ({ duration: entry.duration })));
-    }).observe({ entryTypes: ["longtask"] });
+  // ponytail: string content, not a function — tsx/esbuild rewrites named functions with a __name
+  // helper that does not exist in the page, and the injected script dies silently.
+  await context.addInitScript({
+    content: `
+      var perf = { longTasks: [], frames: [] };
+      window.__crPerf = perf;
+      new PerformanceObserver(function (list) {
+        for (var entry of list.getEntries()) perf.longTasks.push({ duration: entry.duration });
+      }).observe({ entryTypes: ["longtask"] });
+      var last = 0;
+      var onFrame = function (now) {
+        if (last) perf.frames.push(now - last);
+        last = now;
+        requestAnimationFrame(onFrame);
+      };
+      requestAnimationFrame(onFrame);
+    `
   });
 
   const page = await context.newPage();
@@ -55,8 +77,10 @@ try {
   await client.send("Performance.enable");
   await client.send("HeapProfiler.enable");
 
+  if (cpuThrottle > 1) await client.send("Emulation.setCPUThrottlingRate", { rate: cpuThrottle });
+
   const samples: Sample[] = [];
-  const sample = async (label: string) => {
+  const sample = async (label: string, frames?: Frames) => {
     await client.send("HeapProfiler.collectGarbage");
     await delay(100);
     const metrics = Object.fromEntries((await client.send("Performance.getMetrics")).metrics.map((metric) => [metric.name, metric.value]));
@@ -73,6 +97,7 @@ try {
     });
     samples.push({
       label,
+      frames,
       heapMb: mb(metrics.JSHeapUsedSize ?? 0),
       heapTotalMb: mb(metrics.JSHeapTotalSize ?? 0),
       nodes: Math.round(metrics.Nodes ?? 0),
@@ -91,7 +116,19 @@ try {
   await createLeague(page);
   await sample("league-created");
 
-  if (mode === "replay") {
+  let profile: Array<{ name: string; selfMs: number; pct: number }> = [];
+  if (mode === "fps") {
+    await launchReplay(page);
+    await sample("replay-open");
+    await client.send("Profiler.enable");
+    await client.send("Profiler.setSamplingInterval", { interval: 200 });
+    await client.send("Profiler.start");
+    for (let cycle = 1; cycle <= cycles; cycle += 1) {
+      await measureFrames(page, windowSeconds);
+      await sample(`play-${cycle}`, await drainFrames(page));
+    }
+    profile = summarizeProfile(await client.send("Profiler.stop"));
+  } else if (mode === "replay") {
     await launchReplay(page);
     await sample("replay-open");
     for (let cycle = 1; cycle <= cycles; cycle += 1) {
@@ -107,7 +144,7 @@ try {
 
   const resources = await topResources(page);
   await browser.close();
-  await writeReport(samples, resources);
+  await writeReport(samples, resources, profile);
   console.log(`Runtime perf report written to ${reportPath}`);
   console.log(`Runtime perf data written to ${jsonPath}`);
 } finally {
@@ -177,6 +214,8 @@ async function mockLeagueApi(page: Page) {
 async function createProfile(page: Page) {
   const pressStart = page.getByRole("button", { name: "PRESS START" });
   if (await pressStart.isVisible({ timeout: 1000 }).catch(() => false)) await pressStart.click();
+  const multiplayer = page.getByRole("button", { name: /Multiplayer/ });
+  if (await multiplayer.isVisible({ timeout: 1000 }).catch(() => false)) await multiplayer.click();
   await page.getByRole("button", { name: /Create profile/ }).click();
   await page.getByLabel("Email").fill("pilot@example.test");
   await page.getByRole("button", { name: "Create profile" }).click();
@@ -239,6 +278,50 @@ async function stressReplay(page: Page) {
   await delay(400);
 }
 
+async function measureFrames(page: Page, seconds: number) {
+  await drainFrames(page);
+  await delay(seconds * 1000);
+}
+
+async function drainFrames(page: Page): Promise<Frames> {
+  const deltas = await page.evaluate(() => {
+    const perf = (window as unknown as { __crPerf?: { frames: number[] } }).__crPerf;
+    const frames = perf?.frames ?? [];
+    if (perf) perf.frames = [];
+    return frames;
+  });
+  if (!deltas.length) return { fps: 0, avgMs: 0, p95Ms: 0, worstMs: 0, jankPct: 0 };
+  const sorted = [...deltas].sort((left, right) => left - right);
+  const avg = deltas.reduce((sum, value) => sum + value, 0) / deltas.length;
+  return {
+    fps: roundNumber(1000 / avg),
+    avgMs: roundNumber(avg),
+    p95Ms: roundNumber(sorted[Math.floor(sorted.length * 0.95)] ?? 0),
+    worstMs: roundNumber(sorted.at(-1) ?? 0),
+    jankPct: roundNumber((deltas.filter((value) => value > 32).length / deltas.length) * 100)
+  };
+}
+
+// Self time per function from the CDP sampling profile: the shortlist of what to optimise first.
+function summarizeProfile(profile: { profile: { nodes: Array<{ id: number; callFrame: { functionName: string; url: string; lineNumber: number } }>; samples?: number[]; timeDeltas?: number[] } }) {
+  const byId = new Map(profile.profile.nodes.map((node) => [node.id, node.callFrame]));
+  const selfMs = new Map<string, number>();
+  const samples = profile.profile.samples ?? [];
+  const deltas = profile.profile.timeDeltas ?? [];
+  samples.forEach((id, index) => {
+    const frame = byId.get(id);
+    if (!frame) return;
+    const file = frame.url.split("/").pop() ?? "";
+    const name = `${frame.functionName || "(anonymous)"} @ ${file}:${frame.lineNumber + 1}`;
+    selfMs.set(name, (selfMs.get(name) ?? 0) + (deltas[index] ?? 0) / 1000);
+  });
+  const total = [...selfMs.values()].reduce((sum, value) => sum + value, 0) || 1;
+  return [...selfMs.entries()]
+    .sort((left, right) => right[1] - left[1])
+    .slice(0, 25)
+    .map(([name, ms]) => ({ name, selfMs: roundNumber(ms), pct: roundNumber((ms / total) * 100) }));
+}
+
 async function dismissOnboarding(page: Page) {
   for (let attempt = 0; attempt < 5; attempt += 1) {
     const overlay = page.locator(".modal-overlay").last();
@@ -276,24 +359,36 @@ function leagueState(result: ReturnType<typeof resultForRound> | null = null) {
       const historyRound = round - index;
       return { id: `gp_${historyRound}`, name: "Silver Ridge GP", season: 1, round: historyRound, status: historyRound === round ? currentStatus : "resolved", result: historyRound === round ? result : resultForRound(historyRound) };
     }),
-    teams: [
-      { id: "team_1", name: "Volt Union", kind: "human", points, credits, cards, livery: { primary: "#16c784", secondary: "#38bdf8" }, ready: hasDecision },
-      { id: "team_2", name: "Mika Blitz", kind: "bot", points: 0, credits: 0, cards: [], livery: { primary: "#38bdf8", secondary: "#16c784" }, ready: false }
-    ],
+    teams: fpsResult
+      ? fpsResult.classification.map((entry, index) => ({
+          id: entry.teamId,
+          name: entry.teamName,
+          kind: entry.teamId === playerTeamId ? "human" : "bot",
+          points: entry.teamId === playerTeamId ? points : 0,
+          credits: entry.teamId === playerTeamId ? credits : 0,
+          cards: entry.teamId === playerTeamId ? cards : [],
+          livery: { primary: LIVERY_COLORS[index % LIVERY_COLORS.length]!, secondary: "#38bdf8" },
+          ready: entry.teamId === playerTeamId ? hasDecision : false
+        }))
+      : [
+          { id: "team_1", name: "Volt Union", kind: "human", points, credits, cards, livery: { primary: "#16c784", secondary: "#38bdf8" }, ready: hasDecision },
+          { id: "team_2", name: "Mika Blitz", kind: "bot", points: 0, credits: 0, cards: [], livery: { primary: "#38bdf8", secondary: "#16c784" }, ready: false }
+        ],
     cardShop: [{ cardId: "rain_grip", price: 100 }, { cardId: "launch_boost", price: 100 }],
     actionState: {
-      submittedTeamIds: hasDecision ? ["team_1"] : [],
-      missingTeamIds: currentStatus === "resolved" ? [] : hasDecision ? ["team_2"] : ["team_1", "team_2"],
+      submittedTeamIds: hasDecision ? [playerTeamId] : [],
+      missingTeamIds: currentStatus === "resolved" ? [] : hasDecision ? ["team_2"] : [playerTeamId, "team_2"],
       canResolve: currentStatus !== "resolved" && hasDecision,
       canStartNextGrandPrix: currentStatus === "resolved",
       nextAction: currentStatus === "resolved" ? "start_next_grand_prix" : hasDecision ? "resolve_grand_prix" : "wait_for_directives"
     },
     player,
-    decisions: hasDecision ? [{ teamId: "team_1", approach: "balanced", preparation: "weather", cardId: "rain_grip", rivalTeamId: null }] : []
+    decisions: hasDecision ? [{ teamId: playerTeamId, approach: "balanced", preparation: "weather", cardId: "rain_grip", rivalTeamId: null }] : []
   };
 }
 
-function resultForRound(resultRound: number) {
+function resultForRound(resultRound: number): RaceResult | Record<string, unknown> {
+  if (fpsResult) return { ...fpsResult, seed: `${fpsResult.seed}-${resultRound}` };
   return {
     grandPrixName: "Silver Ridge GP",
     seed: `silver-ridge-${resultRound}`,
@@ -319,7 +414,7 @@ async function topResources(page: Page) {
   );
 }
 
-async function writeReport(samples: Sample[], resources: Awaited<ReturnType<typeof topResources>>) {
+async function writeReport(samples: Sample[], resources: Awaited<ReturnType<typeof topResources>>, profile: Array<{ name: string; selfMs: number; pct: number }> = []) {
   await mkdir(dirname(reportPath), { recursive: true });
   const first = samples[0]!;
   const last = samples.at(-1)!;
@@ -329,7 +424,9 @@ async function writeReport(samples: Sample[], resources: Awaited<ReturnType<type
     listeners: last.listeners - first.listeners,
     transferMb: roundNumber(last.transferMb - first.transferMb)
   };
-  await writeFile(jsonPath, `${JSON.stringify({ webBaseUrl, mode, cycles, growth, samples, resources }, null, 2)}\n`);
+  const frameSamples = samples.filter((entry) => entry.frames?.fps);
+  const fpsValues = frameSamples.map((entry) => entry.frames!.fps);
+  await writeFile(jsonPath, `${JSON.stringify({ webBaseUrl, mode, cycles, cpuThrottle, growth, samples, resources, profile }, null, 2)}\n`);
   await writeFile(
     reportPath,
     [
@@ -338,6 +435,15 @@ async function writeReport(samples: Sample[], resources: Awaited<ReturnType<type
       `- URL: ${webBaseUrl}`,
       `- Mode: ${mode}`,
       `- Cycles: ${cycles}`,
+      `- CPU throttle: ${cpuThrottle}x`,
+      ...(fpsValues.length
+        ? [
+            `- Median FPS: ${median(fpsValues)}`,
+            `- Worst window FPS: ${Math.min(...fpsValues)}`,
+            `- Worst frame: ${Math.max(...frameSamples.map((entry) => entry.frames!.worstMs))} ms`,
+            `- Frames over 32 ms: ${median(frameSamples.map((entry) => entry.frames!.jankPct))}%`
+          ]
+        : []),
       `- Heap growth: ${growth.heapMb} MB`,
       `- DOM node growth: ${growth.nodes}`,
       `- Listener growth: ${growth.listeners}`,
@@ -350,6 +456,25 @@ async function writeReport(samples: Sample[], resources: Awaited<ReturnType<type
         samples.map((sample) => [sample.label, sample.heapMb, sample.heapTotalMb, sample.nodes, sample.documents, sample.listeners, sample.longTasks, sample.longTaskMs, sample.resourceCount, sample.transferMb, sample.encodedMb])
       ),
       "",
+      ...(frameSamples.length
+        ? [
+            "## Frames",
+            "",
+            table(
+              ["Window", "FPS", "Avg ms", "P95 ms", "Worst ms", "Jank %"],
+              frameSamples.map((sample) => [sample.label, sample.frames!.fps, sample.frames!.avgMs, sample.frames!.p95Ms, sample.frames!.worstMs, sample.frames!.jankPct])
+            ),
+            ""
+          ]
+        : []),
+      ...(profile.length
+        ? [
+            "## Top Self Time",
+            "",
+            table(["Function", "Self ms", "% CPU"], profile.map((entry) => [entry.name, entry.selfMs, entry.pct])),
+            ""
+          ]
+        : []),
       "## Largest Resources",
       "",
       table(["Resource", "Type", "Transfer KB", "Encoded KB"], resources.map((resource) => [resource.name, resource.type, resource.transferKb, resource.encodedKb])),
@@ -371,6 +496,11 @@ function numberArg(name: string, fallback: number) {
 function stringArg(name: string, fallback: string) {
   const index = process.argv.lastIndexOf(name);
   return index >= 0 && process.argv[index + 1] ? process.argv[index + 1]! : fallback;
+}
+
+function median(values: number[]) {
+  const sorted = [...values].sort((left, right) => left - right);
+  return sorted[Math.floor(sorted.length / 2)] ?? 0;
 }
 
 function mb(bytes: number) {

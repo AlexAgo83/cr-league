@@ -39,6 +39,7 @@
     "perf:browser": "tsx scripts/perf-browser-runtime.ts",
     "perf:browser:attached": "tsx scripts/perf-browser-runtime.ts --no-server",
     "perf:replay": "tsx scripts/perf-browser-runtime.ts --mode replay --report reports/perf/replay-runtime.md --json reports/perf/replay-runtime.json",
+    "perf:fps": "tsx scripts/perf-browser-runtime.ts --mode fps --cycles 5 --report reports/perf/replay-fps.md --json reports/perf/replay-fps.json",
     "perf:compare": "tsx scripts/perf-compare.ts",
     "perf:bundle": "tsx scripts/perf-bundle.ts",
     "perf:api": "node --expose-gc --import tsx scripts/perf-api.ts",

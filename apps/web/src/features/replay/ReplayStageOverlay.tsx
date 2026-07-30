@@ -307,17 +307,21 @@ function ReplayDriverConnectors({ entries, teamLiveries }: { entries: ReplayTowe
         return;
       }
       lastUpdate = now;
+      // Read every rect first, then write. Interleaving them made each measurement flush the
+      // layout dirtied by the previous line: 2 forced layouts per driver, 20 times a second.
       const stageRect = stage.getBoundingClientRect();
-      for (const line of lines) {
+      const measured = lines.map((line) => {
         const teamId = line.dataset.teamId;
         const badge = teamId ? badges.get(teamId) : undefined;
         const car = teamId ? cars.get(teamId) : undefined;
-        if (!badge || !car) {
+        if (!badge || !car) return { line };
+        return { line, badgeRect: badge.getBoundingClientRect(), carRect: car.getBoundingClientRect() };
+      });
+      for (const { line, badgeRect, carRect } of measured) {
+        if (!badgeRect || !carRect) {
           line.style.opacity = "0";
           continue;
         }
-        const badgeRect = badge.getBoundingClientRect();
-        const carRect = car.getBoundingClientRect();
         line.setAttribute("x1", String(badgeRect.left - stageRect.left));
         line.setAttribute("y1", String(badgeRect.top + badgeRect.height / 2 - stageRect.top));
         line.setAttribute("x2", String(carRect.left + carRect.width / 2 - stageRect.left));

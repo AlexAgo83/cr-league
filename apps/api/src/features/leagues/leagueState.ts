@@ -5,6 +5,25 @@ import type { Db, LeagueState } from "./types.js";
 import { normalizeCards, normalizeLivery, normalizeQualifyingRuns, normalizeSeasonSummaries, normalizeUnlockedCarAssetIds } from "./utils.js";
 import { buildActionState } from "./visibility.js";
 
+// The replay trace is 90 KB of the 112 KB a result weighs, and every state read shipped one per
+// race ever run: ~1.1 MB per response by the end of a season, growing with every season. Solo saves
+// already keep traces for the last few races only (trimSoloState), so history replays past that
+// point already run off the fallback interpolation. Same policy here.
+const TRACE_HISTORY_LIMIT = 2;
+
+function withoutOldTraces<T extends { status: string; result: unknown }>(history: T[]): T[] {
+  let kept = 0;
+  return history.map((entry) => {
+    const result = entry.result as RaceResult | null;
+    if (!result?.replayTrace) return entry;
+    kept += 1;
+    if (kept <= TRACE_HISTORY_LIMIT) return entry;
+    const lightResult = { ...result };
+    delete lightResult.replayTrace;
+    return { ...entry, result: lightResult };
+  });
+}
+
 export async function getLeagueState(db: Db, leagueId: string, options: { includeInviteCode?: boolean } = {}): Promise<LeagueState | null> {
   // ponytail: fetch only the current GP with its decisions; past GPs pulled decisions + result/
   // qualifying/forecast JSON blobs for nothing (history only needs id/name/season/round/status/result),
@@ -65,7 +84,7 @@ export async function getLeagueState(db: Db, leagueId: string, options: { includ
       qualifyingRuns: normalizeQualifyingRuns(grandPrix.qualifyingRuns),
       result: grandPrix.result as RaceResult | null
     },
-    grandPrixHistory: grandPrixHistory.map((entry) => ({
+    grandPrixHistory: withoutOldTraces(grandPrixHistory).map((entry) => ({
       id: entry.id,
       name: entry.name,
       season: entry.season,

@@ -29,10 +29,15 @@ let cards = ["rain_grip"];
 // 6-car field with a real trace, not the 2-car stub the leak modes use.
 const fpsResult = mode === "fps" ? simulateRace({ ...(DEMO_RACE_INPUT as RaceInput), seed: "perf-fps" }) : null;
 
-type Frames = { fps: number; avgMs: number; p95Ms: number; worstMs: number; jankPct: number };
+type Frames = { fps: number; count: number; avgMs: number; p95Ms: number; worstMs: number; jankPct: number };
+// Cumulative CDP counters. FPS is capped by vsync and swamped by run-to-run noise, so main-thread
+// busy time is what actually shows whether a change moved the work.
+type Cpu = { taskMs: number; scriptMs: number; layoutMs: number; styleMs: number; frames: number };
+const CPU_METRICS = { taskMs: "TaskDuration", scriptMs: "ScriptDuration", layoutMs: "LayoutDuration", styleMs: "RecalcStyleDuration" } as const;
 type Sample = {
   label: string;
   frames?: Frames;
+  cpu?: Cpu;
   heapMb: number;
   heapTotalMb: number;
   nodes: number;
@@ -79,8 +84,32 @@ try {
 
   if (cpuThrottle > 1) await client.send("Emulation.setCPUThrottlingRate", { rate: cpuThrottle });
 
+  const cpuCounters = async () => {
+    const metrics = Object.fromEntries((await client.send("Performance.getMetrics")).metrics.map((metric) => [metric.name, metric.value]));
+    return Object.fromEntries(Object.entries(CPU_METRICS).map(([key, name]) => [key, (metrics[name] ?? 0) * 1000])) as Record<keyof typeof CPU_METRICS, number>;
+  };
+
+  const measureWindow = async (seconds: number) => {
+    await drainFrames(page);
+    const before = await cpuCounters();
+    await delay(seconds * 1000);
+    const after = await cpuCounters();
+    const frames = await drainFrames(page);
+    const count = Math.max(1, frames.count);
+    return {
+      frames,
+      cpu: {
+        taskMs: roundNumber((after.taskMs - before.taskMs) / count),
+        scriptMs: roundNumber((after.scriptMs - before.scriptMs) / count),
+        layoutMs: roundNumber((after.layoutMs - before.layoutMs) / count),
+        styleMs: roundNumber((after.styleMs - before.styleMs) / count),
+        frames: frames.count
+      } satisfies Cpu
+    };
+  };
+
   const samples: Sample[] = [];
-  const sample = async (label: string, frames?: Frames) => {
+  const sample = async (label: string, frames?: Frames, cpu?: Cpu) => {
     await client.send("HeapProfiler.collectGarbage");
     await delay(100);
     const metrics = Object.fromEntries((await client.send("Performance.getMetrics")).metrics.map((metric) => [metric.name, metric.value]));
@@ -98,6 +127,7 @@ try {
     samples.push({
       label,
       frames,
+      cpu,
       heapMb: mb(metrics.JSHeapUsedSize ?? 0),
       heapTotalMb: mb(metrics.JSHeapTotalSize ?? 0),
       nodes: Math.round(metrics.Nodes ?? 0),
@@ -124,8 +154,8 @@ try {
     await client.send("Profiler.setSamplingInterval", { interval: 200 });
     await client.send("Profiler.start");
     for (let cycle = 1; cycle <= cycles; cycle += 1) {
-      await measureFrames(page, windowSeconds);
-      await sample(`play-${cycle}`, await drainFrames(page));
+      const window = await measureWindow(windowSeconds);
+      await sample(`play-${cycle}`, window.frames, window.cpu);
     }
     profile = summarizeProfile(await client.send("Profiler.stop"));
   } else if (mode === "replay") {
@@ -278,11 +308,6 @@ async function stressReplay(page: Page) {
   await delay(400);
 }
 
-async function measureFrames(page: Page, seconds: number) {
-  await drainFrames(page);
-  await delay(seconds * 1000);
-}
-
 async function drainFrames(page: Page): Promise<Frames> {
   const deltas = await page.evaluate(() => {
     const perf = (window as unknown as { __crPerf?: { frames: number[] } }).__crPerf;
@@ -290,11 +315,12 @@ async function drainFrames(page: Page): Promise<Frames> {
     if (perf) perf.frames = [];
     return frames;
   });
-  if (!deltas.length) return { fps: 0, avgMs: 0, p95Ms: 0, worstMs: 0, jankPct: 0 };
+  if (!deltas.length) return { fps: 0, count: 0, avgMs: 0, p95Ms: 0, worstMs: 0, jankPct: 0 };
   const sorted = [...deltas].sort((left, right) => left - right);
   const avg = deltas.reduce((sum, value) => sum + value, 0) / deltas.length;
   return {
     fps: roundNumber(1000 / avg),
+    count: deltas.length,
     avgMs: roundNumber(avg),
     p95Ms: roundNumber(sorted[Math.floor(sorted.length * 0.95)] ?? 0),
     worstMs: roundNumber(sorted.at(-1) ?? 0),
@@ -426,6 +452,7 @@ async function writeReport(samples: Sample[], resources: Awaited<ReturnType<type
   };
   const frameSamples = samples.filter((entry) => entry.frames?.fps);
   const fpsValues = frameSamples.map((entry) => entry.frames!.fps);
+  const cpuSamples = samples.filter((entry) => entry.cpu);
   await writeFile(jsonPath, `${JSON.stringify({ webBaseUrl, mode, cycles, cpuThrottle, growth, samples, resources, profile }, null, 2)}\n`);
   await writeFile(
     reportPath,
@@ -436,6 +463,13 @@ async function writeReport(samples: Sample[], resources: Awaited<ReturnType<type
       `- Mode: ${mode}`,
       `- Cycles: ${cycles}`,
       `- CPU throttle: ${cpuThrottle}x`,
+      ...(cpuSamples.length
+        ? [
+            `- Median main-thread ms per frame: ${median(cpuSamples.map((entry) => entry.cpu!.taskMs))}`,
+            `- Median script ms per frame: ${median(cpuSamples.map((entry) => entry.cpu!.scriptMs))}`,
+            `- Median layout+style ms per frame: ${roundNumber(median(cpuSamples.map((entry) => entry.cpu!.layoutMs + entry.cpu!.styleMs)))}`
+          ]
+        : []),
       ...(fpsValues.length
         ? [
             `- Median FPS: ${median(fpsValues)}`,
@@ -461,8 +495,19 @@ async function writeReport(samples: Sample[], resources: Awaited<ReturnType<type
             "## Frames",
             "",
             table(
-              ["Window", "FPS", "Avg ms", "P95 ms", "Worst ms", "Jank %"],
-              frameSamples.map((sample) => [sample.label, sample.frames!.fps, sample.frames!.avgMs, sample.frames!.p95Ms, sample.frames!.worstMs, sample.frames!.jankPct])
+              ["Window", "FPS", "Avg ms", "P95 ms", "Worst ms", "Jank %", "Main ms/frame", "Script", "Layout", "Style"],
+              frameSamples.map((sample) => [
+                sample.label,
+                sample.frames!.fps,
+                sample.frames!.avgMs,
+                sample.frames!.p95Ms,
+                sample.frames!.worstMs,
+                sample.frames!.jankPct,
+                sample.cpu?.taskMs ?? "",
+                sample.cpu?.scriptMs ?? "",
+                sample.cpu?.layoutMs ?? "",
+                sample.cpu?.styleMs ?? ""
+              ])
             ),
             ""
           ]

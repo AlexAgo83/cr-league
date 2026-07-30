@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useId, useMemo, useRef, useState, type MouseEvent, type Ref, type RefObject } from "react";
+import { memo, useCallback, useEffect, useId, useMemo, useRef, useState, type MouseEvent, type Ref, type RefObject } from "react";
 import { useT } from "../i18n/index.js";
 import type { CSSProperties } from "react";
 import type { DecisionDeltaKey, TeamLivery, TrackSpeedProfile, Weather } from "@cr-league/shared";
@@ -194,21 +194,24 @@ export function poseOnRoute(points: RoutePoint[], progress: number) {
 function pointOnRoute(points: RoutePoint[], progress: number): RoutePose {
   if (!points.length) return { x: VIEW_WIDTH / 2, y: VIEW_HEIGHT / 2, angle: 0 };
   const { segments, total } = getRouteGeometry(points);
-  let distance = (((progress % 1) + 1) % 1) * (total || 1);
-
-  for (const segment of segments) {
-    if (distance <= segment.length) {
-      const ratio = segment.length ? distance / segment.length : 0;
-      return {
-        x: segment.from.x + (segment.to.x - segment.from.x) * ratio,
-        y: segment.from.y + (segment.to.y - segment.from.y) * ratio,
-        angle: segment.angle * 180 / Math.PI
-      };
-    }
-    distance -= segment.length;
+  const distance = (((progress % 1) + 1) % 1) * (total || 1);
+  // Segments carry cumulative distances, so the one holding this distance is a bisection away.
+  // Walking them was O(n) per lookup on routes of up to 577 points, called dozens of times a frame.
+  let low = 0;
+  let high = segments.length - 1;
+  while (low < high) {
+    const mid = (low + high) >> 1;
+    if (segments[mid]!.endDistance < distance) low = mid + 1;
+    else high = mid;
   }
-
-  return { ...points[0]!, angle: 0 };
+  const segment = segments[low];
+  if (!segment) return { ...points[0]!, angle: 0 };
+  const ratio = segment.length ? (distance - segment.startDistance) / segment.length : 0;
+  return {
+    x: segment.from.x + (segment.to.x - segment.from.x) * ratio,
+    y: segment.from.y + (segment.to.y - segment.from.y) * ratio,
+    angle: segment.angle * 180 / Math.PI
+  };
 }
 
 function routeLength(points: RoutePoint[]) {
@@ -383,11 +386,16 @@ function CircuitMapInner({
   const zoomRef = useRef(FOCUS_ZOOM);
   const zoomModeRef = useRef<CameraZoomMode>("normal");
   const tireMarksRef = useRef(new Map<string, TireMarks>());
+  // The car loop and the camera loop ask for the same poses every frame. poseOnRoute is pure in
+  // (points, progress), so one memo serves both without any frame ordering to get right.
+  const poseMemo = useRef({ points: points as RoutePoint[], poses: new Map<string, RoutePose>() });
   const fpsMeterRef = useRef({ frames: 0, last: 0 });
   const [fps, setFps] = useState<number | undefined>();
   const focusEnabled = Boolean(camera?.enabled && camera.car);
   const markerScale = focusEnabled ? 1 / FOCUS_ZOOM : 0.62;
   const hasCars = cars.length > 0;
+  // Same condition the animation loop below bails on: when it does not run, React owns positions.
+  const animatesCars = hasCars && (!reduceMotion || Boolean(carProgressRef));
   const routeAnalysis = useMemo(() => analyzeCircuitRoute(points, circuit), [circuit, points]);
   const mapFit = useMemo(() => routeFitTransform(points), [points]);
   const activeMapFit = focusEnabled ? null : mapFit;
@@ -401,7 +409,6 @@ function CircuitMapInner({
   }) as CSSProperties, [routeDecorScale]);
   const renderPoints = points;
   const renderD = d;
-  const stageProgress = (progress: number) => progressFromStart(progress, routeAnalysis.startProgress);
   const displayWeather = weather ?? circuit.likelyWeather;
   const sortedCars = useMemo(() => [...cars].sort((a, b) => Number(a.player) - Number(b.player)), [cars]);
   const carDomKey = sortedCars.map((car) => car.id).join("|");
@@ -442,6 +449,26 @@ function CircuitMapInner({
   ), [hasCars, renderD, routeAnalysis]);
   carsRef.current = cars;
   pointsRef.current = renderPoints;
+  const memoizedPose = useCallback((routePoints: RoutePoint[], progress: number) => {
+    const memo = poseMemo.current;
+    if (memo.points !== routePoints) {
+      memo.points = routePoints;
+      memo.poses.clear();
+    }
+    const key = progress.toFixed(6);
+    const cached = memo.poses.get(key);
+    if (cached) return cached;
+    const pose = poseOnRoute(routePoints, progress);
+    // Progress keys are floats, so the map would grow forever on a long replay.
+    if (memo.poses.size > 512) memo.poses.clear();
+    memo.poses.set(key, pose);
+    return pose;
+  }, []);
+  const memoizedDrift = useCallback((routePoints: RoutePoint[], progress: number) => {
+    const before = memoizedPose(routePoints, progress - DRIFT_LOOKAHEAD).angle;
+    const after = memoizedPose(routePoints, progress + DRIFT_LOOKAHEAD).angle;
+    return Math.max(-MAX_DRIFT_ANGLE, Math.min(MAX_DRIFT_ANGLE, angleDelta(before, after) * DRIFT_GAIN));
+  }, [memoizedPose]);
   const handleCarClick = useCallback((event: MouseEvent<SVGSVGElement>) => {
     if (!onCarClick) return;
     const group = (event.target as Element).closest<SVGGElement>(".map-car[data-car-id]");
@@ -477,8 +504,8 @@ function CircuitMapInner({
         const progress = carProgressRef?.current[car.id] ?? car.progress ?? ambientProgress;
         if (progress === undefined) continue;
         const stagedProgress = progressFromStart(progress, routeAnalysis.startProgress);
-        const pose = poseOnRoute(pointsRef.current, stagedProgress);
-        const drift = driftAngle(pointsRef.current, stagedProgress);
+        const pose = memoizedPose(pointsRef.current, stagedProgress);
+        const drift = memoizedDrift(pointsRef.current, stagedProgress);
         const transform = `translate(${pose.x} ${pose.y})`;
         const group = carGroups.get(car.id);
         if (group && lastTransforms.get(car.id) !== transform) {
@@ -537,7 +564,7 @@ function CircuitMapInner({
       fpsMeterRef.current = { frames: 0, last: 0 };
       tireMarks.clear();
     };
-  }, [carDomKey, carProgressRef, circuit.laps, circuit.speedProfile, focusEnabled, hasCars, markerScale, reduceMotion, routeAnalysis.startProgress, tireTrails, trailCarDomKey, trailCarIds]);
+  }, [carDomKey, carProgressRef, circuit.laps, circuit.speedProfile, focusEnabled, hasCars, markerScale, memoizedDrift, memoizedPose, reduceMotion, routeAnalysis.startProgress, tireTrails, trailCarDomKey, trailCarIds]);
 
   useEffect(() => {
     const cameraGroup = cameraRef.current;
@@ -569,15 +596,14 @@ function CircuitMapInner({
       const usesTrace = liveProgress !== undefined || car.progress !== undefined;
       const progress = liveProgress ?? car.progress ?? ambientProgress;
       const stagedProgress = progressFromStart(progress, routeAnalysis.startProgress);
-      const point = usesTrace ? poseOnRoute(pointsRef.current, stagedProgress) : route.getPointAtLength(length * stagedProgress);
-      const nearestCarDistance = Math.min(
-        ...carsRef.current.map((other) => {
-          const otherProgress = carProgressRef?.current[other.id] ?? other.progress;
-          if (other.id === car.id || otherProgress === undefined) return Number.POSITIVE_INFINITY;
-          const otherPoint = poseOnRoute(pointsRef.current, progressFromStart(otherProgress, routeAnalysis.startProgress));
-          return Math.hypot(otherPoint.x - point.x, otherPoint.y - point.y);
-        })
-      );
+      const point = usesTrace ? memoizedPose(pointsRef.current, stagedProgress) : route.getPointAtLength(length * stagedProgress);
+      let nearestCarDistance = Number.POSITIVE_INFINITY;
+      for (const other of carsRef.current) {
+        const otherProgress = carProgressRef?.current[other.id] ?? other.progress;
+        if (other.id === car.id || otherProgress === undefined) continue;
+        const otherPoint = memoizedPose(pointsRef.current, progressFromStart(otherProgress, routeAnalysis.startProgress));
+        nearestCarDistance = Math.min(nearestCarDistance, Math.hypot(otherPoint.x - point.x, otherPoint.y - point.y));
+      }
       if (zoomModeRef.current === "close") {
         if (nearestCarDistance > CLOSE_EXIT_DISTANCE) zoomModeRef.current = nearestCarDistance < TRAFFIC_EXIT_DISTANCE ? "traffic" : "normal";
       } else if (zoomModeRef.current === "traffic") {
@@ -605,7 +631,7 @@ function CircuitMapInner({
       cancelAnimationFrame(frame);
       cameraGroup.removeAttribute("transform");
     };
-  }, [camera?.enabled, camera?.car?.id, camera?.timeRef, camera?.zoom, carDomKey, carProgressRef, circuit.laps, circuit.speedProfile, routeAnalysis.startProgress]);
+  }, [camera?.enabled, camera?.car?.id, camera?.timeRef, camera?.zoom, carDomKey, carProgressRef, circuit.laps, circuit.speedProfile, memoizedPose, routeAnalysis.startProgress]);
 
   return (
     <section
@@ -626,54 +652,15 @@ function CircuitMapInner({
                     ))
                   )))}
                 </g>
-                {/* SVG z-order is document order: render the player's car last so it always sits on top. */}
-                {sortedCars.map((car) => {
-                  const pose = car.progress === undefined ? null : poseOnRoute(renderPoints, stageProgress(car.progress));
-                  const drift = car.progress === undefined ? 0 : driftAngle(renderPoints, stageProgress(car.progress));
-                  const asset = carAssetForId(car.livery?.carAssetId);
-                  const carStyle = car.livery
-                    ? ({ "--car-primary": safeHex(car.livery.primary, "#38bdf8"), "--car-secondary": safeHex(car.livery.secondary, "#16c784") } as CSSProperties & Record<string, string>)
-                    : undefined;
-                  return (
-                    <g
-                      key={car.id}
-                      data-car-id={car.id}
-                      className={`${car.player ? "map-car player" : "map-car"}${onCarClick ? " focus-target" : ""}`}
-                      style={carStyle}
-                      transform={pose ? `translate(${pose.x} ${pose.y})` : undefined}
-                    >
-                      <g className="map-car-marker" transform={`scale(${markerScale})`}>
-                        <MapCarSprite asset={asset} braking={car.braking} maskId={`car-sprite-mask-${mapId}-${svgIdPart(car.id)}`} transform={pose ? `rotate(${pose.angle + drift})` : undefined} />
-                        <text textAnchor="middle" dominantBaseline="central">
-                          {car.label}
-                        </text>
-                        {car.positionDelta ? (
-                          <text
-                            key={`${car.id}-${car.positionDeltaKey}`}
-                            className={car.positionDelta > 0 ? "map-car-delta gain" : "map-car-delta loss"}
-                            x="24"
-                            y="-16"
-                            textAnchor="middle"
-                            dominantBaseline="central"
-                          >
-                            {car.positionDelta > 0 ? `+${car.positionDelta}` : car.positionDelta}
-                          </text>
-                        ) : null}
-                        {car.emote ? (
-                          <image
-                            key={`${car.id}-emote-${car.emoteKey}`}
-                            className="map-car-emote"
-                            href={`/assets/crl/emotes/${car.emote}.webp`}
-                            x="-22"
-                            y="-62"
-                            width="44"
-                            height="44"
-                          />
-                        ) : null}
-                      </g>
-                    </g>
-                  );
-                })}
+                <MapCarLayer
+                  cars={sortedCars}
+                  points={renderPoints}
+                  startProgress={routeAnalysis.startProgress}
+                  markerScale={markerScale}
+                  mapId={mapId}
+                  clickable={Boolean(onCarClick)}
+                  imperative={animatesCars}
+                />
               </g>
             </g>
           </g>
@@ -710,6 +697,107 @@ function CircuitMapInner({
       </div>
     </section>
   );
+}
+
+type MapCarLayerProps = {
+  cars: MapCar[];
+  points: RoutePoint[];
+  startProgress: number;
+  markerScale: number;
+  mapId: string;
+  clickable: boolean;
+  /** True while the rAF loop writes every car transform, which makes React's own positions dead weight. */
+  imperative: boolean;
+};
+
+/**
+ * The replay republishes state 10 times a second, which re-rendered this whole layer — masks,
+ * gradients and sprites for every car — for positions the animation loop had already written
+ * straight to the DOM. It now only re-renders when something React actually owns changes:
+ * position label, livery, overtake badge, emote.
+ */
+const MapCarLayer = memo(function MapCarLayer({ cars, points, startProgress, markerScale, mapId, clickable }: MapCarLayerProps) {
+  return (
+    <>
+      {/* SVG z-order is document order: render the player's car last so it always sits on top. */}
+      {cars.map((car) => {
+        const staged = car.progress === undefined ? null : progressFromStart(car.progress, startProgress);
+        const pose = staged === null ? null : poseOnRoute(points, staged);
+        const drift = staged === null ? 0 : driftAngle(points, staged);
+        const asset = carAssetForId(car.livery?.carAssetId);
+        const carStyle = car.livery
+          ? ({ "--car-primary": safeHex(car.livery.primary, "#38bdf8"), "--car-secondary": safeHex(car.livery.secondary, "#16c784") } as CSSProperties & Record<string, string>)
+          : undefined;
+        return (
+          <g
+            key={car.id}
+            data-car-id={car.id}
+            className={`${car.player ? "map-car player" : "map-car"}${clickable ? " focus-target" : ""}`}
+            style={carStyle}
+            transform={pose ? `translate(${pose.x} ${pose.y})` : undefined}
+          >
+            <g className="map-car-marker" transform={`scale(${markerScale})`}>
+              <MapCarSprite asset={asset} braking={car.braking} maskId={`car-sprite-mask-${mapId}-${svgIdPart(car.id)}`} transform={pose ? `rotate(${pose.angle + drift})` : undefined} />
+              <text textAnchor="middle" dominantBaseline="central">
+                {car.label}
+              </text>
+              {car.positionDelta ? (
+                <text
+                  key={`${car.id}-${car.positionDeltaKey}`}
+                  className={car.positionDelta > 0 ? "map-car-delta gain" : "map-car-delta loss"}
+                  x="24"
+                  y="-16"
+                  textAnchor="middle"
+                  dominantBaseline="central"
+                >
+                  {car.positionDelta > 0 ? `+${car.positionDelta}` : car.positionDelta}
+                </text>
+              ) : null}
+              {car.emote ? (
+                <image
+                  key={`${car.id}-emote-${car.emoteKey}`}
+                  className="map-car-emote"
+                  href={`/assets/crl/emotes/${car.emote}.webp`}
+                  x="-22"
+                  y="-62"
+                  width="44"
+                  height="44"
+                />
+              ) : null}
+            </g>
+          </g>
+        );
+      })}
+    </>
+  );
+}, sameCarLayer);
+
+function sameCarLayer(previous: MapCarLayerProps, next: MapCarLayerProps) {
+  if (
+    previous.points !== next.points ||
+    previous.startProgress !== next.startProgress ||
+    previous.markerScale !== next.markerScale ||
+    previous.mapId !== next.mapId ||
+    previous.clickable !== next.clickable ||
+    previous.imperative !== next.imperative ||
+    previous.cars.length !== next.cars.length
+  ) return false;
+  return previous.cars.every((car, index) => {
+    const other = next.cars[index]!;
+    return (
+      car.id === other.id &&
+      car.label === other.label &&
+      car.player === other.player &&
+      car.livery === other.livery &&
+      car.positionDelta === other.positionDelta &&
+      car.positionDeltaKey === other.positionDeltaKey &&
+      car.emote === other.emote &&
+      car.emoteKey === other.emoteKey &&
+      // Progress and braking are written to the DOM every frame by the animation loop; when it is
+      // not running, React owns them and a change has to re-render.
+      (next.imperative || (car.progress === other.progress && car.braking === other.braking))
+    );
+  });
 }
 
 export function __ambientCarProgressForTest(car: Pick<MapCar, "delay" | "duration" | "repeatCount">, clock: number, laps: number, speedProfile: TrackSpeedProfile = []) {

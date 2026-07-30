@@ -5148,18 +5148,14 @@ label small {
   }
 }
 
-.map-car-shape,
-.map-car-sprite {
-  filter: drop-shadow(0 2px 2px rgb(0 0 0 / 0.55));
-}
-
+/* Cars move every frame, so anything filtered here is re-rasterised every frame, per car. The depth
+   cue comes from .map-car-stroke (the tinted outline behind the sprite) instead of a shadow pass. */
 .map-car-trails {
   pointer-events: none;
 }
 
 .map-car-trail {
   fill: none;
-  filter: blur(0.25px) drop-shadow(0 0 2px rgb(255 255 255 / 0.18));
   mix-blend-mode: screen;
   stroke: rgb(235 238 240 / 0.34);
   stroke-linecap: round;
@@ -5167,8 +5163,8 @@ label small {
   stroke-width: 1.45;
 }
 
+/* The glow lives in the gradient stops, not in a blur pass. */
 .map-car-headlight {
-  filter: blur(1.8px);
   mix-blend-mode: normal;
   opacity: 0.58;
   pointer-events: none;
@@ -5188,15 +5184,14 @@ label small {
 }
 
 .map-car-rear-light {
-  filter: blur(0.65px);
   opacity: 0.28;
   pointer-events: none;
-  transition: filter 120ms ease, opacity 120ms ease;
+  transition: opacity 120ms ease;
 }
 
+/* Braking reads from the opacity jump, which composites, instead of a shadow that re-rasters. */
 .map-car-rear-light.braking {
-  filter: blur(1px) drop-shadow(0 0 2px rgb(255 38 32 / 0.85));
-  opacity: 0.82;
+  opacity: 1;
 }
 
 .map-car-rear-light circle {

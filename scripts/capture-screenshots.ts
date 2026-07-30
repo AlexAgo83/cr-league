@@ -25,6 +25,8 @@ type Shot = {
   viewport?: { width: number; height: number };
   scale?: number;
   out?: string;
+  /** Social and install shots ship to users, so they go out as JPEG: same frame, a quarter of the bytes. */
+  format?: "png" | "jpeg";
 };
 
 const HIDE_ALWAYS = [".notification-stack", ".onboarding-help", ".pending-feedback"];
@@ -38,9 +40,9 @@ const SHOTS: Shot[] = [
   { name: "market-report", path: "/plan/report", clip: ".report-view" },
   { name: "market-replay", path: "/drive", clip: ".drive-grid" },
   // Social card and PWA install screenshots: fixed frames, so no element crop.
-  { name: "og-card", path: "/drive", viewport: { width: 1200, height: 630 }, scale: 1, out: SOCIAL_DIR },
-  { name: "install-wide", path: "/championship/standings", viewport: { width: 1280, height: 720 }, scale: 1, out: SOCIAL_DIR },
-  { name: "install-narrow", path: "/plan/approach", viewport: { width: 390, height: 844 }, scale: 1, out: SOCIAL_DIR }
+  { name: "og-card", path: "/drive", viewport: { width: 1200, height: 630 }, scale: 1, out: SOCIAL_DIR, format: "jpeg" },
+  { name: "install-wide", path: "/championship/standings", viewport: { width: 1280, height: 720 }, scale: 1, out: SOCIAL_DIR, format: "jpeg" },
+  { name: "install-narrow", path: "/plan/approach", viewport: { width: 390, height: 844 }, scale: 1, out: SOCIAL_DIR, format: "jpeg" }
 ];
 
 async function main() {
@@ -118,9 +120,11 @@ async function capture(page: Page, shot: Shot) {
   await page.evaluate(() => window.scrollTo(0, 0));
   await delay(400); // let entry animations settle before the frame is grabbed
 
-  const path = `${shot.out ?? outDir}/${shot.name}.png`;
+  const jpeg = shot.format === "jpeg";
+  const path = `${shot.out ?? outDir}/${shot.name}.${jpeg ? "jpg" : "png"}`;
+  const encoding = jpeg ? { type: "jpeg" as const, quality: 82 } : {};
   if (!shot.clip) {
-    await page.screenshot({ path });
+    await page.screenshot({ path, ...encoding });
     return path;
   }
 
@@ -135,6 +139,7 @@ async function capture(page: Page, shot: Shot) {
   const scroll = await page.evaluate(() => ({ width: document.documentElement.scrollWidth, height: document.documentElement.scrollHeight }));
   await page.screenshot({
     path,
+    ...encoding,
     fullPage: true,
     clip: {
       x: Math.max(0, box.x - pad),

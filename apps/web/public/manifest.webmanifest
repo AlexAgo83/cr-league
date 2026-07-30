@@ -13,7 +13,7 @@
     { "src": "/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ],
   "screenshots": [
-    { "src": "/assets/social/install-wide.png", "sizes": "1280x720", "type": "image/png", "form_factor": "wide", "label": "Championship standings" },
-    { "src": "/assets/social/install-narrow.png", "sizes": "390x844", "type": "image/png", "form_factor": "narrow", "label": "Race plan" }
+    { "src": "/assets/social/install-wide.jpg", "sizes": "1280x720", "type": "image/jpeg", "form_factor": "wide", "label": "Championship standings" },
+    { "src": "/assets/social/install-narrow.jpg", "sizes": "390x844", "type": "image/jpeg", "form_factor": "narrow", "label": "Race plan" }
   ]
 }

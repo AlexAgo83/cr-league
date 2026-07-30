@@ -7,6 +7,7 @@ Use this when the app feels heavier while it runs. It is manual on purpose and i
 1. **Never judge FPS on the dev server.** `jsxDEV` and React DEV validation eat 25-30% of CPU there. The dev build reads ~10x heavier than the real one. Frame numbers only count against a production build.
 2. **Throttle the CPU.** An M-series Mac hides everything. `--cpu-throttle 4` ~ a decent phone, `10` ~ a low-end Android, `20` ~ the floor where the replay collapses.
 3. **The noise floor is about ±10% FPS between identical runs.** Never claim a win from one before/after pair. Run each side twice, and ignore the first window of each run (cold JIT + first paint).
+4. **Judge a change on `Main ms/frame`, not on FPS.** FPS is capped by vsync (nothing shows below the cap) and swings ±20% between identical runs. Main-thread ms per frame is stable to a few percent and is what a slow device multiplies: 1.6 ms/frame here is ~16 ms/frame on a device 10x slower, which is the whole 60 fps budget.
 
 ## FPS And Frame Timing
 
@@ -24,6 +25,7 @@ npx tsx scripts/perf-browser-runtime.ts --mode fps --cycles 4 --cpu-throttle 10 
 
 The `fps` mode differs from the leak modes: it simulates a real race with `simulateRace` and feeds it to the mocked API, so the map animates a full field over a real trace instead of the two-car stub. It reports:
 
+- `Main ms/frame` and its `Script` / `Layout` / `Style` split, from the CDP cumulative counters divided by the frames in the window. This is the number to compare across runs.
 - `FPS`, `Avg ms`, `P95 ms`, `Worst ms`, `Jank %` (share of frames over 32 ms) per window.
 - `Top Self Time`: the CDP sampling profile aggregated by function, which is the shortlist of what to optimise. `(program)` is raster/compositor work, not JS — when it dominates, the fix is paint complexity (filters, masks, blend modes), not faster JavaScript.
 
@@ -104,7 +106,21 @@ Use it to track simulation duration, result JSON size, and retained Node memory 
 
 ## Current Baseline
 
-Measured 2026-07-30 on a production build (`vite preview`), 6-car race with a real replay trace.
+Measured 2026-07-30 on a production build (`vite preview`), 6-car race with a real replay trace,
+median of 14 two-second windows across two passes (first window of each pass dropped).
+
+Main-thread cost per frame, the number to track:
+
+| Throttle | Main ms/frame | Script | Layout | Style |
+| --- | --- | --- | --- | --- |
+| 1x | 1.56 | 0.43 | 0.22 | 0.12 |
+| 10x | 18.2 | 6.6 | 3.0 | 1.4 |
+
+The 10x column is the 1x column times the throttle, which is the point: on a device 10x slower the
+replay spends its entire frame budget on the main thread. Roughly 1.8 ms of that is the replay
+republishing state 10 times a second (`REPLAY_STATE_UPDATE_SECONDS`); publishing at 2.5 Hz instead
+measured 1.42 ms/frame (-14%), at the cost of a chunkier live tower. The rest is spread thin enough
+that no single call site stands out.
 
 Frames, `--mode fps`:
 
@@ -112,10 +128,12 @@ Frames, `--mode fps`:
 | --- | --- | --- | --- |
 | 1x | 120 (vsync) | 0% | 58 ms (replay open) |
 | 4x | 120 (vsync) | 0% | 143 ms (replay open) |
-| 10x | 45-53 | 5-8% | ~350 ms (replay open) |
+| 10x | 54 | 5-6% | ~350 ms (replay open) |
 | 20x | 16 | 100% | 817 ms |
 
-At 10x, `(program)` (raster/compositor) is 60% of self time and the garbage collector 6.6%; the heaviest app function is ~4% — the replay is paint-bound, not JS-bound.
+In the sampling profile, `(program)` (raster, compositing, throttle stalls) is 60% of self time at 10x
+and the garbage collector 6.6%; no app function passes 5%. There is no hotspot to delete — the cost is
+spread across the whole frame, so only structural changes (publishing less often, drawing less) move it.
 
 Memory, production build, no leak found:
 
@@ -125,14 +143,19 @@ Memory, production build, no leak found:
 
 Bundle:
 
-- Total `apps/web/dist`: 8.68 MB across 367 files (images 6.69 MB, JS 1.28 MB, fonts 0.48 MB).
+- Total `apps/web/dist`: 7.82 MB across 367 files (images 5.83 MB, JS 1.28 MB, fonts 0.48 MB).
 - Real first load: ~1.4 MB over ~90 requests.
-- Largest: `social/og-card.png` 595 KB and `social/install-*.png` 621 KB (never requested at runtime), `circuit-routes` chunk 455 KB raw / 98 KB gz (loaded on the home screen because the attract map draws a route).
+- Largest: `circuit-routes` chunk 455 KB raw / 98 KB gz (loaded on the home screen because the attract
+  map draws a route, after first paint), then `crl/report-victory.webp` 210 KB.
+- Run `rm -rf apps/web/dist` before a bundle snapshot: `perf:bundle` measures the folder as it finds
+  it, and stale files from an earlier build inflate every number.
 
 API simulation, 200 cycles:
 
 - Average resolve 1.88 ms, P95 2.5 ms, max 7.35 ms.
-- Average result JSON 112 KB, of which `replayTrace` is 90 KB.
+- Average result JSON 112 KB, of which `replayTrace` is 90 KB. League state keeps traces for the two
+  most recent races only (`TRACE_HISTORY_LIMIT` in `leagueState.ts`), so a 10-race season answers with
+  400 KB instead of 1.12 MB.
 
 ## Interpreting A Run
 

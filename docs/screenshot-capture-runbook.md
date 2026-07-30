@@ -76,9 +76,12 @@ Omit `clip` for a full-viewport shot, which is what the social and install shots
   screen.
 - This is not wired into CI on purpose: a screenshot moving by a pixel must not fail a pull
   request.
+- The three social shots ship to users (link previews, install dialog), so they are written as
+  JPEG at quality 82 via `format: "jpeg"`: same frames, roughly a quarter of the PNG bytes.
+  Marketing shots stay PNG.
 - A shot with its own `viewport` gets its own browser context, because `deviceScaleFactor` is
-  fixed per context. The social shots pin `scale: 1` so `og-card.png` lands on the canonical
+  fixed per context. The social shots pin `scale: 1` so `og-card.jpg` lands on the canonical
   1200x630 rather than a doubled frame. Changing those means updating
   `manifest.webmanifest` and the `og:image:width`/`height` meta tags to match.
-- `render.yaml` serves `/assets/*` as `immutable`, so a regenerated `og-card.png` will not
+- `render.yaml` serves `/assets/*` as `immutable`, so a regenerated `og-card.jpg` will not
   propagate to scrapers on its own. Bump the `?v=` query on the `og:image` meta tag.

@@ -628,7 +628,6 @@
 }
 
 .circuit-detail-screen .map-car-headlight {
-  filter: blur(1.9px) drop-shadow(0 0 3px rgb(200 235 255 / 0.28));
   mix-blend-mode: normal;
   opacity: 0.72;
 }

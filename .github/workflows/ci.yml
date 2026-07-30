@@ -88,7 +88,8 @@ jobs:
 
   e2e:
     name: E2E
-    if: github.actor != 'dependabot[bot]'
+    # Dependabot used to skip this lane, and a Playwright bump then merged green with a runner that
+    # could not load a single test. The lane reads no secrets, so there is nothing to withhold.
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -141,7 +142,7 @@ jobs:
           if [ "${{ needs.quality.result }}" != "success" ] ||
              [ "${{ needs.test.result }}" != "success" ] ||
              [ "${{ needs.postgres-integration.result }}" != "success" ] ||
-             { [ "${{ needs.e2e.result }}" != "success" ] && [ "${{ needs.e2e.result }}" != "skipped" ]; } ||
+             [ "${{ needs.e2e.result }}" != "success" ] ||
              [ "${{ needs.build.result }}" != "success" ]; then
             echo "A required CI lane failed."
             exit 1

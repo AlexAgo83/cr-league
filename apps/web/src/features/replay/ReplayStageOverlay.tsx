@@ -289,10 +289,29 @@ export function ReplayStageOverlay({
   );
 }
 
-export function centerInside(rect: { left: number; top: number; width: number; height: number }, bounds: { left: number; top: number; width: number; height: number }) {
+type Box = { left: number; top: number; width: number; height: number };
+
+export function centerInside(rect: Box, bounds: Box) {
   const x = rect.left + rect.width / 2;
   const y = rect.top + rect.height / 2;
   return x >= bounds.left && x <= bounds.left + bounds.width && y >= bounds.top && y <= bounds.top + bounds.height;
+}
+
+/**
+ * A connector is only ever drawn between two things the player can see:
+ * - the team's row has to be on screen. Collapsing the tower with the chevron sets `display: none`
+ *   on the rows past the fold, and a hidden row measures 0x0 at the document origin, which drew a
+ *   line off to a corner of the map instead of to a standing.
+ * - the car has to be on the stage. The focus camera zooms most of the field out of frame.
+ */
+export function canDrawConnector<T extends { badgeRect?: Box; carRect?: Box }>(
+  measure: T,
+  stageRect: Box
+): measure is T & { badgeRect: Box; carRect: Box } {
+  const { badgeRect, carRect } = measure;
+  if (!badgeRect || !carRect) return false;
+  if (badgeRect.width === 0 || badgeRect.height === 0) return false;
+  return centerInside(carRect, stageRect);
 }
 
 function ReplayDriverConnectors({ entries, teamLiveries }: { entries: ReplayTowerEntry[]; teamLiveries: Record<string, TeamLivery> }) {
@@ -326,13 +345,12 @@ function ReplayDriverConnectors({ entries, teamLiveries }: { entries: ReplayTowe
         if (!badge || !car) return { line };
         return { line, badgeRect: badge.getBoundingClientRect(), carRect: car.getBoundingClientRect() };
       });
-      for (const { line, badgeRect, carRect } of measured) {
-        // The focus camera zooms the map, which pushes most cars outside the stage: a connector to
-        // one of them would shoot off past the edge instead of pointing at anything on screen.
-        if (!badgeRect || !carRect || !centerInside(carRect, stageRect)) {
-          line.style.opacity = "0";
+      for (const measure of measured) {
+        if (!canDrawConnector(measure, stageRect)) {
+          measure.line.style.opacity = "0";
           continue;
         }
+        const { line, badgeRect, carRect } = measure;
         line.setAttribute("x1", String(badgeRect.left - stageRect.left));
         line.setAttribute("y1", String(badgeRect.top + badgeRect.height / 2 - stageRect.top));
         line.setAttribute("x2", String(carRect.left + carRect.width / 2 - stageRect.left));

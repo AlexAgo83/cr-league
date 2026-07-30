@@ -522,6 +522,22 @@ test("keeps driver connectors pointing at cars on the stage across focus toggles
   await page.waitForTimeout(2500);
   // A connector whose car has been zoomed off the stage used to keep drawing, shooting off past the
   // corner instead of pointing at a car. Toggling focus is what made it visible.
+  // A connector may only exist between a car and a standing that is actually listed: collapsing the
+  // tower hides rows past the fold, and their badges measure 0x0 at the document origin — which drew
+  // lines into the corner of the map, inside the stage, so geometry alone does not catch it.
+  const connectorsWithoutRow = async () =>
+    page.evaluate(() => {
+      const svg = document.querySelector(".replay-driver-connectors");
+      if (!svg) return -1;
+      const listed = new Set(
+        Array.from(document.querySelectorAll(".replay-tower > ol > li"))
+          .filter((row) => row.getBoundingClientRect().height > 0)
+          .map((row) => row.querySelector<HTMLElement>("[data-team-id]")?.dataset.teamId)
+      );
+      return Array.from(svg.querySelectorAll<SVGLineElement>("line[data-team-id]")).filter(
+        (line) => line.style.opacity !== "0" && !listed.has(line.dataset.teamId)
+      ).length;
+    });
   const strayConnectors = async () =>
     page.evaluate(() => {
       const svg = document.querySelector(".replay-driver-connectors");
@@ -529,9 +545,13 @@ test("keeps driver connectors pointing at cars on the stage across focus toggles
       if (!svg || !stage) return -1;
       return Array.from(svg.querySelectorAll<SVGLineElement>("line[data-team-id]")).filter((line) => {
         if (line.style.opacity === "0") return false;
-        const x = Number(line.getAttribute("x2") ?? 0);
-        const y = Number(line.getAttribute("y2") ?? 0);
-        return x < -20 || y < -20 || x > stage.width + 20 || y > stage.height + 20;
+        // Both ends: the standing end strays when its row is hidden, the car end when the camera
+        // zooms the car out of frame.
+        return (["1", "2"] as const).some((end) => {
+          const x = Number(line.getAttribute(`x${end}`) ?? 0);
+          const y = Number(line.getAttribute(`y${end}`) ?? 0);
+          return x < -20 || y < -20 || x > stage.width + 20 || y > stage.height + 20;
+        });
       }).length;
     });
 
@@ -541,6 +561,19 @@ test("keeps driver connectors pointing at cars on the stage across focus toggles
     await page.waitForTimeout(400);
   }
   await expect.poll(strayConnectors, { timeout: 4000 }).toBe(0);
+
+  // Narrow enough to collapse the tower to four rows: the last two teams have no row to point at,
+  // and a hidden row measures 0x0 at the document origin. Focus off so every car is on the stage —
+  // otherwise the off-stage guard hides those same connectors and the hidden-row case never runs.
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect(focusButton).toHaveClass(/active/);
+  await focusButton.click();
+  await expect(focusButton).not.toHaveClass(/active/);
+  await page.waitForTimeout(600);
+  expect(await page.locator(".replay-tower.map-list-collapsed").count(), "tower is not collapsed, the hidden-row case is untested").toBe(1);
+  expect(await page.locator(".replay-tower > ol > li").evaluateAll((rows) => rows.filter((row) => row.getBoundingClientRect().height === 0).length)).toBeGreaterThan(0);
+  await expect.poll(strayConnectors, { timeout: 4000 }).toBe(0);
+  await expect.poll(connectorsWithoutRow, { timeout: 4000 }).toBe(0);
 });
 
 test("keeps first-click commands animated and result shortcuts wired", async ({ page }) => {

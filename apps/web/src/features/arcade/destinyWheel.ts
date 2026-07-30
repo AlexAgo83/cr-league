@@ -47,6 +47,18 @@ export function wheelLivery(index: number, chosen?: Pick<WheelParticipant, "prim
 }
 
 /**
+ * The circuit a seed draws inside a region. Its own function so the pick can be checked over many
+ * seeds without simulating a race for each one — under coverage that is the difference between a
+ * millisecond and a timeout. An empty region would be a dead wheel, so it falls back to the whole
+ * catalogue rather than throwing at the player.
+ */
+export function wheelCircuit(seed: string, region: WheelRegion = "all"): CityCircuit {
+  const pool = circuitsInRegion(region);
+  const catalogue = pool.length ? pool : CITY_CIRCUITS;
+  return catalogue[hash(seed) % catalogue.length] ?? CITY_CIRCUITS[0];
+}
+
+/**
  * Runs the draw. The seed varies per launch, so the same participants entered twice give two
  * different orders — a draw that always answered the same would not be one.
  */
@@ -55,10 +67,7 @@ export function drawDestinyWheel(participants: WheelParticipant[], seed: string,
     throw new Error("A draw needs at least two participants.");
   }
 
-  // The draw picks inside the chosen region. An empty region would be a dead wheel, so it falls back
-  // to the whole catalogue rather than throwing at the player.
-  const pool = circuitsInRegion(region);
-  const drawn = (pool.length ? pool : CITY_CIRCUITS)[hash(seed) % (pool.length || CITY_CIRCUITS.length)] ?? CITY_CIRCUITS[0];
+  const drawn = wheelCircuit(seed, region);
   const circuit = withRoute(drawn);
   // CITY_CIRCUITS is built by mapping over the identities, so the two stay index-aligned. The
   // identity is what `raceInputFromCircuit` types against; the circuit is what the map draws.

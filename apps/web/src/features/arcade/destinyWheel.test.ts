@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { drawDestinyWheel, wheelLivery } from "./destinyWheel.js";
+import { drawDestinyWheel, wheelCircuit, wheelLivery } from "./destinyWheel.js";
 import { circuitsInRegion, COUNTRY_REGION } from "../../app/circuits.js";
 import type { WheelParticipant } from "./arcadeStorage.js";
 
@@ -70,28 +70,30 @@ describe("destiny wheel draw", () => {
   });
 
   it("draws only inside the chosen region", () => {
-    const seeds = Array.from({ length: 25 }, (_, index) => `region-${index}`);
+    // The pick, not the race: 100 seeds per region cost nothing without a simulation each.
+    const seeds = Array.from({ length: 100 }, (_, index) => `region-${index}`);
 
-    for (const region of ["europe", "asia", "africa"] as const) {
-      const drawn = seeds.map((seed) => drawDestinyWheel(people, seed, region).circuit);
+    for (const region of ["europe", "americas", "asia", "africa", "oceania"] as const) {
+      const drawn = seeds.map((seed) => wheelCircuit(seed, region));
       expect(drawn.every((circuit) => COUNTRY_REGION[circuit.country] === region), region).toBe(true);
-      // A region with several circuits must not always answer the same one.
+      // A region holding several circuits must not always answer the same one.
       if (circuitsInRegion(region).length > 1) expect(new Set(drawn.map((circuit) => circuit.layoutKey)).size, region).toBeGreaterThan(1);
     }
   });
 
   it("reaches outside Europe when no region is chosen", () => {
-    const regions = new Set(
-      Array.from({ length: 40 }, (_, index) => COUNTRY_REGION[drawDestinyWheel(people, `all-${index}`, "all").circuit.country])
-    );
+    const regions = new Set(Array.from({ length: 100 }, (_, index) => COUNTRY_REGION[wheelCircuit(`all-${index}`, "all").country]));
 
     expect(regions.size).toBeGreaterThan(1);
   });
 
-  it("races the drawn circuit, not another one", () => {
-    // The identity feeding the simulation has to be the circuit the map draws.
+  it("races the circuit the region drew, not another one", () => {
+    // One simulation, covering both wirings: the draw honours the region, and the identity feeding
+    // the simulation is the circuit the map draws.
     const draw = drawDestinyWheel(people, "identity-1", "asia");
 
+    expect(COUNTRY_REGION[draw.circuit.country]).toBe("asia");
+    expect(draw.circuit.layoutKey).toBe(wheelCircuit("identity-1", "asia").layoutKey);
     expect(draw.result.grandPrixName).toBe(draw.circuit.city);
     expect(draw.result.classification).toHaveLength(people.length);
   });

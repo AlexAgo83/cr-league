@@ -2745,7 +2745,9 @@ label small {
   line-height: 1.3;
   padding: 10px 12px;
   pointer-events: auto;
-  width: min(360px, 100%);
+  /* Hugs its message: a three-word status used to fill the same 360px as a full sentence. */
+  max-width: min(360px, 100%);
+  width: fit-content;
 }
 
 .floating-notification p {
@@ -3078,29 +3080,41 @@ label small {
 /* Experiment: full-page maps at the widths that still use a panel — below 860px responsive.css
    already does this, with overlay offsets tuned for the mobile header. */
 @media (min-width: 861px) {
-  /* Flag: cr-league-fullbleed-map, or ?fullmap=1. The map spans the viewport, the fixed header
-     floats over its top, and the SVG is scaled to cover and centred — so a wide viewport crops the
-     route sides rather than letterboxing it. */
+  /* Flag: cr-league-fullbleed-map, or ?fullmap=1. The map spans the viewport, the header floats over
+     its top, and the SVG is scaled to cover and centred — so a wide viewport crops the route sides
+     rather than letterboxing it. */
   .fullbleed-map .app-shell {
+    /* Enforced rather than assumed: the overlay clearance below is computed from it. */
+    --fullbleed-topbar-height: 68px;
+    --fullbleed-topbar-top: 12px;
     gap: 0;
     /* The sticky command bar floats over the map instead of reserving room under it. */
     padding: 0;
+    position: relative;
+  }
+
+  /* Out of flow, so the page reserves no band above the map and stays exactly one viewport tall.
+     A sticky topbar keeps its flow space, which is the gap that pushed the page taller. */
+  .fullbleed-map .app-shell > .topbar {
+    left: 0;
+    min-height: var(--fullbleed-topbar-height);
+    position: absolute;
+    right: 0;
+    top: var(--fullbleed-topbar-top);
+    z-index: 60;
   }
 
   .fullbleed-map .app-shell .drive-map-panel,
   .fullbleed-map .app-shell .replay-map-panel {
-    /* Negative top margin: the map starts at the very top of the page and the fixed header floats
-       over it, rather than the page reserving a band above the map. */
     margin-left: calc(50% - 50vw);
-    margin-top: calc(var(--setup-topbar-height) * -1);
     min-height: 100dvh;
     width: 100vw;
   }
 
   .fullbleed-map .app-shell .drive-map-panel .circuit-map-stage,
   .fullbleed-map .app-shell .replay-map-panel .circuit-map-stage {
-    /* Clears the header the map now runs under. */
-    --map-overlay-top: calc(var(--setup-topbar-height) + 12px);
+    /* Below the floating header, by the same gap that separates any two panels. */
+    --map-overlay-top: calc(var(--fullbleed-topbar-top) + var(--fullbleed-topbar-height) + 16px);
     border: 0;
     border-radius: 0;
     min-height: inherit;

@@ -1,4 +1,4 @@
-import { memo, useCallback, useEffect, useId, useMemo, useRef, useState, type MouseEvent, type Ref, type RefObject } from "react";
+import { memo, useCallback, useEffect, useId, useMemo, useRef, type MouseEvent, type Ref, type RefObject } from "react";
 import { useT } from "../i18n/index.js";
 import type { CSSProperties } from "react";
 import type { DecisionDeltaKey, TeamLivery, TrackSpeedProfile, Weather } from "@cr-league/shared";
@@ -10,6 +10,7 @@ import { applyTrackSpeedProfile } from "./replay/replayMath.js";
 import { DEFAULT_CAR_ASSET, carAssetForId, carRenderGeometryForId, type CarAsset } from "./carAssets.js";
 import { safeHex } from "./LiveryPlate.js";
 import { CountryBadge, VisualIcon } from "./VisualIcon.js";
+import { subscribeFps } from "../app/fpsMeter.js";
 
 export type MapCar = {
   id: string;
@@ -389,8 +390,6 @@ function CircuitMapInner({
   // The car loop and the camera loop ask for the same poses every frame. poseOnRoute is pure in
   // (points, progress), so one memo serves both without any frame ordering to get right.
   const poseMemo = useRef({ points: points as RoutePoint[], poses: new Map<string, RoutePose>() });
-  const fpsMeterRef = useRef({ frames: 0, last: 0 });
-  const [fps, setFps] = useState<number | undefined>();
   const focusEnabled = Boolean(camera?.enabled && camera.car);
   const markerScale = focusEnabled ? 1 / FOCUS_ZOOM : 0.62;
   const hasCars = cars.length > 0;
@@ -490,14 +489,6 @@ function CircuitMapInner({
     let frame = 0;
     const tick = () => {
       const now = performance.now();
-      const fpsMeter = fpsMeterRef.current;
-      fpsMeter.frames += 1;
-      if (!fpsMeter.last) fpsMeter.last = now;
-      if (now - fpsMeter.last >= 500) {
-        setFps(Math.round((fpsMeter.frames * 1000) / (now - fpsMeter.last)));
-        fpsMeter.frames = 0;
-        fpsMeter.last = now;
-      }
       const clock = (now - startedAt) / 1000;
       for (const car of carsRef.current) {
         const ambientProgress = ambientCarProgress(car, clock, circuit.laps, circuit.speedProfile);
@@ -560,8 +551,6 @@ function CircuitMapInner({
     frame = requestAnimationFrame(tick);
     return () => {
       cancelAnimationFrame(frame);
-      setFps(undefined);
-      fpsMeterRef.current = { frames: 0, last: 0 };
       tireMarks.clear();
     };
   }, [carDomKey, carProgressRef, circuit.laps, circuit.speedProfile, focusEnabled, hasCars, markerScale, memoizedDrift, memoizedPose, reduceMotion, routeAnalysis.startProgress, tireTrails, trailCarDomKey, trailCarIds]);
@@ -665,7 +654,7 @@ function CircuitMapInner({
             </g>
           </g>
         </svg>
-        {fps !== undefined ? <small className="map-fps-readout">{fps} FPS</small> : null}
+        <MapFpsReadout />
         <small className="map-attribution">© OSM · CARTO</small>
         {showHeading || showTraits ? (
           <div className="map-info-stack">
@@ -875,6 +864,15 @@ export function MapCarSprite({ asset = DEFAULT_CAR_ASSET, braking = false, maskI
       ))}
     </g>
   );
+}
+
+/** Every map shows it, in the same corner: written by ref, so the reading never re-renders a map. */
+function MapFpsReadout() {
+  const ref = useRef<HTMLElement>(null);
+  useEffect(() => subscribeFps((fps) => {
+    if (ref.current) ref.current.textContent = `${fps} FPS`;
+  }), []);
+  return <small ref={ref} className="map-fps-readout">— FPS</small>;
 }
 
 export function MapTraitsPanel({ traits, impacts = {} }: { traits: MapTraitStats; impacts?: MapTraitImpacts }) {

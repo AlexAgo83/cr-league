@@ -415,6 +415,67 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
   await page.screenshot({ path: testInfo.outputPath("replay-layout-mobile.png"), fullPage: true });
 });
 
+test("shows the FPS readout on every map in the same corner", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await mockLeagueApi(page);
+  await page.goto("/");
+
+  // Offsets inside each stage rather than page coordinates: the maps sit in different places, the
+  // readout has to sit in the same corner of whichever map it belongs to.
+  const readouts = async () =>
+    page.evaluate(() =>
+      Array.from(document.querySelectorAll(".circuit-map-stage")).map((stage) => {
+        const readout = stage.querySelector(".map-fps-readout");
+        if (!readout) return { missing: true };
+        const stageRect = stage.getBoundingClientRect();
+        const rect = readout.getBoundingClientRect();
+        return {
+          missing: false,
+          left: Math.round(rect.left - stageRect.left),
+          bottom: Math.round(stageRect.bottom - rect.bottom),
+          text: (readout.textContent ?? "").replace(/\d+/, "n")
+        };
+      })
+    );
+  // Maps render a placeholder until the lazy circuit-route chunk lands, so wait for a real stage
+  // before reading positions.
+  // The first screen sets the reference corner; every later map has to match it exactly.
+  let corner: { missing: boolean; left?: number; bottom?: number; text?: string } | undefined;
+  const check = async (screen: string) => {
+    await expect.poll(async () => (await readouts()).filter((readout) => readout.text === "n FPS").length, { timeout: 5000, message: `${screen}: no map with a live readout` }).toBeGreaterThan(0);
+    for (const readout of await readouts()) {
+      corner ??= readout;
+      expect(readout, screen).toEqual(corner);
+    }
+  };
+
+  // The attract map arrives with the mode-choice screen, not the title splash.
+  await page.getByRole("button", { name: "PRESS START" }).click();
+  await check("mode choice attract map");
+
+  await createProfile(page);
+  await createLeague(page);
+  await page.getByTestId("nav-drive").click();
+  await dismissOnboarding(page);
+  await check("drive map");
+
+  await page.getByTestId("nav-championship").click();
+  await dismissOnboarding(page);
+  await page.locator(`[data-section-tab="calendar"]`).click();
+  await page.locator(".circuit-calendar-button").first().click();
+  await expect(page.locator(".circuit-detail-screen")).toBeVisible();
+  await check("championship circuit detail");
+
+  await page.getByTestId("nav-drive").click();
+  await dismissOnboarding(page);
+  await page.getByRole("button", { name: "Send plan" }).click();
+  await page.getByTestId("dialog-send-plan").getByTestId("modal-confirm").click();
+  await page.getByRole("button", { name: "Launch GP" }).click();
+  await page.getByTestId("dialog-launch-gp").getByTestId("modal-confirm").click();
+  await expect(page.getByRole("heading", { name: "Race replay" })).toBeVisible();
+  await check("replay map");
+});
+
 test("keeps driver connectors pointing at cars on the stage across focus toggles", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   // The shared mock runs two cars that share a position for the whole replay, which is exactly the

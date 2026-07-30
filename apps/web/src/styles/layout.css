@@ -3120,6 +3120,21 @@ label small {
     min-height: inherit;
   }
 
+  /* Arcade and onboarding race screens have no header card: a logo and the language pills float in
+     the corners and stop well short of the game topbar, so the overlays owe them much less room.
+     Enforced with a min-height, like the game topbar above, so the clearance stays true. */
+  .fullbleed-map .app-shell.setup-shell.map-screen {
+    --fullbleed-setup-header: 50px;
+  }
+
+  .fullbleed-map .app-shell.setup-shell.map-screen > .setup-topbar {
+    min-height: var(--fullbleed-setup-header);
+  }
+
+  .fullbleed-map .app-shell.setup-shell.map-screen .replay-map-panel .circuit-map-stage {
+    --map-overlay-top: calc(var(--fullbleed-setup-header) + 16px);
+  }
+
   .fullbleed-map .app-shell.map-screen .drive-map-panel .circuit-map-stage > svg,
   .fullbleed-map .app-shell.map-screen .replay-map-panel .circuit-map-stage > svg {
     height: 100%;

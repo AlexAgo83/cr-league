@@ -6,12 +6,17 @@ Release date: 2026-07-31
 - The rival reads you. He plays his archetype, answers a habit when he spots one, comes forward when the flag is close and he is losing, and shuts the door on a lead worth keeping.
 - Rain falls on the screen when the race is wet, heavier in a downpour, and the wind slowly turns the drops.
 - Team helmets appear in the race lists, on profiles and on the rival you follow.
+- The car reacts to its own lap times during a chrono: a lap that beats every earlier one, and a lap thrown away. A chrono used to run in silence.
 
 ## Changed
 - The full-page map is now the layout for the Stand and the replay, at every width. The header floats over the map and the route is drawn edge to edge.
 - Bots think about the weekend in front of them. Approach, tyres, pit strategy and the card they play all read the forecast, the circuit and the championship instead of repeating one plan all season — and they buy for the season rather than at random.
 - Chrono attempts learn: a bot runs its plan, tries one variation, then goes back out on whichever was quicker.
-- On the standings, only the team you follow is joined to its car by a dotted line. Below four cars every one gets a line and a tyre trail.
+- Below four cars, every one leaves a tyre trail on any map.
+- The duel plays on the map: both engagement tanks across the top, the rematch button in the bottom-right corner, and a camera close enough to see the two cars trade a second of gap. The reveal panel is gone — the lap history already says what he chose and what it was worth.
+- An attack with an empty tank is closed rather than offered.
+- The team you follow is named on the race-tracking panel instead of heading the running order it is already listed in.
+- The dotted line is drawn between the selection and its car, with no other rule. It used to be all of them below four cars and only the followed one above.
 - Open-wheel cars carry marker lights on the nose instead of a GT's headlights.
 
 ## Fixed

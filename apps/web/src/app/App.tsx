@@ -19,6 +19,7 @@ import { LanguageSwitcher, NotificationStack, ProfileMenu, SetupTopbar } from ".
 import { AppOverlays } from "./AppOverlays.js";
 import { ONBOARDING_HELP_KEYS, SCREEN_ONBOARDING_HELP_TOPICS, type OnboardingHelpTopic } from "./OnboardingShell.js";
 import { clearStoredUiPreferences, LEAGUE_SCOPED_HELP_TOPICS } from "./appPreferences.js";
+import { FULLBLEED_MAP_KEY } from "./viewPreferences.js";
 import {
   ApiError,
   api,
@@ -51,6 +52,9 @@ import { useRaceDerivations } from "./useRaceDerivations.js";
 import { useReplayUiState } from "./useReplayUiState.js";
 import { createInitialSoloLeagueState, isSoloLeagueState } from "./soloLeague.js";
 import { clearSoloSlot, firstFreeSoloSlot, hasAnySoloSave, listSoloSlots, loadSoloSlot, saveSoloSlot, type SoloSlot, type SoloSlotSummary } from "./soloStorage.js";
+
+const requestedFullbleedMap = typeof window === "undefined" ? null : new URLSearchParams(window.location.search).get("fullmap");
+if (requestedFullbleedMap) safeStorage.set(FULLBLEED_MAP_KEY, requestedFullbleedMap === "1" ? "1" : "0");
 
 const AdminConsoleView = lazy(() => import("../features/AdminConsoleView.js").then((module) => ({ default: module.AdminConsoleView })));
 
@@ -249,6 +253,13 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
   useEffect(() => {
     setSavedLeagueIndex((index) => Math.min(index, Math.max(0, savedClaims.length - 1)));
   }, [savedClaims.length]);
+
+  // Experiment: full-page Stand and replay maps instead of a panel. ?fullmap=1 turns it on (and
+  // sticks), ?fullmap=0 turns it off. ponytail: a body class and a stored flag, no settings UI until
+  // the layout is actually wanted.
+  useEffect(() => {
+    document.body.classList.toggle("fullbleed-map", safeStorage.get(FULLBLEED_MAP_KEY) === "1");
+  }, [preferencesResetSignal]);
 
   useEffect(() => {
     savedClaimsRef.current = savedClaims;

@@ -3072,6 +3072,41 @@ label small {
   opacity: 0.52;
 }
 
+/* Experiment behind the cr-league-fullbleed-map flag (or ?fullmap=1): give the Stand and replay
+   maps the whole page instead of a panel, which is what mobile already does below 900px. The SVG is
+   scaled to cover and centred, so a wide viewport crops the route sides rather than letterboxing it. */
+.fullbleed-map .app-shell {
+  gap: 0;
+  /* The sticky command bar floats over the map instead of reserving room under it. */
+  padding: 0;
+}
+
+.fullbleed-map .app-shell .drive-map-panel,
+.fullbleed-map .app-shell .replay-map-panel {
+  margin-left: calc(50% - 50vw);
+  min-height: calc(100dvh - var(--setup-topbar-height));
+  width: 100vw;
+}
+
+.fullbleed-map .app-shell .drive-map-panel .circuit-map-stage,
+.fullbleed-map .app-shell .replay-map-panel .circuit-map-stage {
+  border: 0;
+  border-radius: 0;
+  min-height: inherit;
+}
+
+.fullbleed-map .app-shell .drive-map-panel .circuit-map-stage > svg,
+.fullbleed-map .app-shell .replay-map-panel .circuit-map-stage > svg {
+  height: 100%;
+  left: 50%;
+  max-width: none;
+  min-width: 100%;
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  width: auto;
+}
+
 .circuit-map-stage > svg {
   display: block;
   height: auto;

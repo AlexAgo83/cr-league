@@ -8,6 +8,8 @@ export const CHAMPIONSHIP_RECORD_TAB_KEY = "cr-league-championship-record-tab";
 export const GARAGE_PANEL_KEY = "cr-league-garage-panel";
 export const MAP_STATS_EXPANDED_KEY = "cr-league-map-stats-expanded";
 export const MAP_INFO_EXPANDED_KEY = "cr-league-map-info-expanded";
+/** Experiment flag: full-page Stand and replay maps. Flipped with ?fullmap=1 / ?fullmap=0. */
+export const FULLBLEED_MAP_KEY = "cr-league-fullbleed-map";
 
 /**
  * Every remembered map toggle has the same shape: one key, expanded unless the key says "0", and

@@ -5741,6 +5741,206 @@ label small {
 
 /* ---------- Arcade: Destiny Wheel ---------- */
 
+/* ---------- Arcade duel ---------- */
+
+.duel-rival-card {
+  align-items: center;
+  background: rgb(248 243 232 / 0.05);
+  border: 1px solid var(--color-border);
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 56px minmax(0, 1fr);
+  margin-bottom: 12px;
+  padding: 10px 12px;
+}
+
+.duel-rival-card strong {
+  display: block;
+}
+
+.duel-rival-card small {
+  color: var(--color-muted);
+}
+
+.duel-briefing {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0 0 14px;
+}
+
+.duel-briefing dt {
+  color: var(--color-muted);
+  font-size: 0.72rem;
+}
+
+.duel-briefing dd {
+  align-items: center;
+  display: flex;
+  gap: 6px;
+  margin: 0;
+}
+
+.duel-tanks {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-bottom: 12px;
+}
+
+.duel-tank small {
+  color: var(--color-muted);
+  display: block;
+  margin-bottom: 4px;
+}
+
+.duel-tank-pips {
+  display: flex;
+  gap: 3px;
+}
+
+/* An empty pip still shows: the tank you have left is the tell both drivers read. */
+.duel-tank-pips i {
+  background: rgb(248 243 232 / 0.12);
+  border: 1px solid rgb(248 243 232 / 0.18);
+  display: block;
+  height: 10px;
+  width: 100%;
+}
+
+.duel-tank-pips i.filled {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+.duel-calls {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-bottom: 14px;
+}
+
+.duel-call {
+  align-items: center;
+  background: rgb(248 243 232 / 0.05);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  display: grid;
+  gap: 4px;
+  justify-items: center;
+  padding: 12px 8px;
+  text-align: center;
+}
+
+.duel-call:hover:not(:disabled),
+.duel-call:focus-visible {
+  background: rgb(255 77 0 / 0.14);
+  border-color: var(--color-accent);
+}
+
+.duel-call-icon {
+  height: 34px;
+  width: 34px;
+}
+
+.duel-call small {
+  color: var(--color-muted);
+  font-size: 0.72rem;
+  line-height: 1.2;
+}
+
+.duel-call em {
+  color: rgb(248 243 232 / 0.6);
+  font-size: 0.66rem;
+  font-style: normal;
+}
+
+.duel-reveal {
+  align-items: center;
+  background: rgb(16 14 18 / 0.5);
+  border: 1px solid var(--color-border);
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 30px minmax(0, 1fr);
+  margin: 0 0 12px;
+  padding: 9px 11px;
+}
+
+.duel-reveal.gain {
+  border-color: rgb(22 199 132 / 0.5);
+}
+
+.duel-reveal.loss {
+  border-color: rgb(248 113 113 / 0.5);
+}
+
+.duel-reveal b {
+  margin-left: 6px;
+}
+
+.duel-reveal em {
+  color: #fecaca;
+  font-size: 0.72rem;
+  font-style: normal;
+  grid-column: 2;
+}
+
+.duel-reveal-icon {
+  height: 30px;
+  width: 30px;
+}
+
+.duel-history h2 {
+  color: var(--color-muted);
+  font-size: 0.76rem;
+  margin: 0 0 6px;
+}
+
+.duel-history ol {
+  display: grid;
+  gap: 4px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Your call, then his, then what the lap was worth: the duel reads back as a sequence of guesses. */
+.duel-history li {
+  align-items: center;
+  border-left: 2px solid transparent;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 18px 24px 24px minmax(0, 1fr);
+  padding: 2px 0 2px 6px;
+}
+
+.duel-history li.gain {
+  border-left-color: #16c784;
+}
+
+.duel-history li.loss {
+  border-left-color: #f87171;
+}
+
+.duel-history-lap {
+  color: var(--color-muted);
+  font-size: 0.7rem;
+}
+
+.duel-history-icon {
+  height: 22px;
+  width: 22px;
+}
+
+.duel-history-icon.rival {
+  opacity: 0.72;
+}
+
+.duel-history li b {
+  font-size: 0.76rem;
+  text-align: right;
+}
+
 .wheel-add {
   display: grid;
   gap: 8px;

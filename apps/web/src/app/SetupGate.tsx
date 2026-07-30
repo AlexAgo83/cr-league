@@ -6,6 +6,7 @@ import { SetupShell } from "./OnboardingShell.js";
 import { useSetup } from "./setupContext.js";
 import { ArcadeCatalogueView, LeagueSetupView, ProfileSetupView, SetupEntryView, SoloModeView, SoloSlotsView } from "./SetupViews.js";
 import { DestinyWheelView } from "../features/arcade/DestinyWheelView.js";
+import { DuelView } from "../features/arcade/DuelView.js";
 
 export function SetupGate({
   profileSession,
@@ -92,7 +93,15 @@ export function SetupGate({
   if (!leagueState && setupEntryMode === "arcade" && !utilitySetupView) {
     return (
       <SetupShell topbar={setupTopbar} notificationStack={notificationStack} errorModal={overlays} profileCodeModal={null} profileLogoutModal={null} preferencesResetModal={null}>
-        <ArcadeCatalogueView status={status} onBack={() => setSetupEntryMode("solo")} onOpenWheel={() => setSetupEntryMode("wheel")} />
+        <ArcadeCatalogueView status={status} onBack={() => setSetupEntryMode("solo")} onOpenWheel={() => setSetupEntryMode("wheel")} onOpenDuel={() => setSetupEntryMode("duel")} />
+      </SetupShell>
+    );
+  }
+
+  if (!leagueState && setupEntryMode === "duel" && !utilitySetupView) {
+    return (
+      <SetupShell topbar={setupTopbar} notificationStack={notificationStack} errorModal={overlays} profileCodeModal={null} profileLogoutModal={null} preferencesResetModal={null}>
+        <DuelView onBack={() => setSetupEntryMode("arcade")} />
       </SetupShell>
     );
   }

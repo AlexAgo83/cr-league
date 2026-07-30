@@ -25,12 +25,13 @@ function SaveLine({ icon, children }: { icon: BoardIconName; children: string })
 
 export type ProfileMode = "choice" | "create" | "recover";
 export type SetupMode = "choice" | "create" | "join";
-export type SetupEntryMode = "choice" | "multiplayer" | "solo" | "campaign" | "arcade" | "wheel";
+export type SetupEntryMode = "choice" | "multiplayer" | "solo" | "campaign" | "arcade" | "wheel" | "duel";
 
 export const SOLO_MODE_ICONS = {
   campaign: "solo-campaign",
   arcade: "arcade",
-  destinyWheel: "destiny-wheel"
+  destinyWheel: "destiny-wheel",
+  duel: "rival-pressure"
 } satisfies Record<string, BoardIconName>;
 
 // A choice step is a poster moment, not a form: icon first, and the panel drops the paper
@@ -128,14 +129,19 @@ export function SoloModeView({
 export function ArcadeCatalogueView({
   status,
   onBack,
-  onOpenWheel
+  onOpenWheel,
+  onOpenDuel
 }: {
   status: "idle" | "loading" | "error";
   onBack: () => void;
   onOpenWheel: () => void;
+  onOpenDuel: () => void;
 }) {
   const tt = useT();
-  const games = [{ key: "wheel", icon: SOLO_MODE_ICONS.destinyWheel, label: tt("arcade_wheel_title"), hint: tt("arcade_wheel_hint"), onSelect: onOpenWheel }];
+  const games = [
+    { key: "wheel", icon: SOLO_MODE_ICONS.destinyWheel, label: tt("arcade_wheel_title"), hint: tt("arcade_wheel_hint"), onSelect: onOpenWheel },
+    { key: "duel", icon: SOLO_MODE_ICONS.duel, label: tt("arcade_duel_title"), hint: tt("arcade_duel_hint"), onSelect: onOpenDuel }
+  ];
   return (
     <section className="setup-grid setup-grid-single setup-grid-split" aria-labelledby="arcade-title">
       <div className="panel setup-main-panel setup-hero-panel arcade-hero-panel">

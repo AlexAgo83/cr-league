@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { botApproach, botDecision, botPreparation, wetRisk } from "./botBrain.js";
+import { botApproach, botCard, botCardPurchase, botDecision, botPreparation, botQualifyingDecision, wetRisk } from "./botBrain.js";
 import type { LeagueState } from "./league.js";
 import type { RaceDecision } from "./race.js";
 
@@ -103,5 +103,53 @@ describe("one brain", () => {
     const submitted = { ...state(), decisions: [{ teamId: "bot-1", approach: "aggressive" as const, preparation: "weather" as const, pitStrategy: "mini_pack" as const, cardId: null, rivalTeamId: null }] } as LeagueState;
 
     expect(botDecision(submitted, team())).toMatchObject({ approach: "aggressive", preparation: "weather", pitStrategy: "mini_pack" });
+  });
+});
+
+describe("bot cards", () => {
+  const hand = ["fleet_sponsorship", "rain_grip", "launch_boost"] as const;
+
+  it("plays the card the weekend calls for, not the first one bought", () => {
+    const storm = state({ forecast: { dry: 5, light_rain: 25, heavy_rain: 45 } });
+
+    expect(botCard(storm, team({ cards: [...hand] }))).toBe("rain_grip");
+  });
+
+  it("keeps rain cover in the bag when the sky is clear", () => {
+    expect(botCard(state(), team({ cards: [...hand] }))).not.toBe("rain_grip");
+  });
+
+  it("has nothing to play with an empty hand", () => {
+    expect(botCard(state(), team({ cards: [] }))).toBeUndefined();
+  });
+
+  it("buys for the season it is having", () => {
+    const field = [team({ id: "leader", points: 100 }), team({ id: "chaser", points: 0 })];
+    const affordable = ["fleet_sponsorship", "rain_grip", "final_surge"] as const;
+    const wet = state({ forecast: { dry: 20, light_rain: 40, heavy_rain: 20 }, teams: field });
+    const dry = state({ teams: field });
+
+    expect(botCardPurchase(wet, field[1]!, [...affordable])).toBe("rain_grip");
+    expect(botCardPurchase(dry, field[0]!, [...affordable])).not.toBe("rain_grip");
+  });
+});
+
+describe("bot chrono attempts", () => {
+  const template = { approach: "prudent" as const, preparation: "reliability" as const };
+
+  it("tries something else on the second run, then goes back to the quicker one", () => {
+    const bot = team();
+    const runs: Array<{ teamId: string; time: number; decision: typeof template }> = [];
+    const plans: string[] = [];
+    for (let attempt = 1; attempt <= 3; attempt += 1) {
+      const decision = botQualifyingDecision(state(), bot, attempt, runs, template);
+      plans.push(`${decision.approach}/${decision.preparation}`);
+      // The opening plan was the quick one.
+      runs.push({ teamId: bot.id, time: attempt === 1 ? 71.2 : 73.4, decision: decision as typeof template });
+    }
+
+    expect(plans[0]).toBe("prudent/reliability");
+    expect(plans[1]).not.toBe(plans[0]);
+    expect(plans[2]).toBe(plans[0]);
   });
 });

@@ -2,7 +2,7 @@ import { betterCircuitTime, normalizeCircuitRecords, withCircuitRecord, DEMO_RAC
 import { LeagueRuleError } from "./errors.js";
 import { getCurrentGrandPrix, lockGrandPrixRow, runWrite } from "./persistence.js";
 import { createQualifyingRuns, qualifyingCardForTeam } from "./qualifying.js";
-import { defaultBotDecision } from "./botLifecycle.js";
+import { botQualifyingDecision } from "@cr-league/shared";
 import { getLeagueState } from "./leagueState.js";
 import { requireTeamClaim } from "./transactionHelpers.js";
 import type { Db, SubmitQualifyingInput } from "./types.js";
@@ -81,7 +81,7 @@ export async function submitQualifyingRun(db: Db, leagueId: string, input: Submi
           seed: `${freshGrandPrix.seed}-${bot.id}-bot-qualifying-${botAttempt}`,
           teamId: bot.id,
           teamName: bot.name,
-          decision: defaultBotDecision(state, bot, demo?.decision),
+          decision: botQualifyingDecision(state, bot, botAttempt, nextRuns, demo?.decision),
           primaryTrait: freshGrandPrix.primaryTrait as RaceInput["primaryTrait"],
           secondaryTrait: freshGrandPrix.secondaryTrait as RaceInput["secondaryTrait"],
           traits: circuit.traits,

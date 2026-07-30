@@ -132,6 +132,64 @@ export function botCard(state: LeagueState, team: LeagueState["teams"][number], 
   return preferred && held.includes(preferred) ? preferred : held[0];
 }
 
+/**
+ * Which card to buy next, out of what it can afford. Buying at random left bots holding a rain card
+ * for a dry season and a comeback card while leading the championship — the shop is the only place a
+ * bot builds a hand, so it is where its plan for the season starts.
+ */
+export function botCardPurchase(state: LeagueState, team: LeagueState["teams"][number], affordable: CardId[]): CardId | undefined {
+  if (!affordable.length) return undefined;
+  const seasonRisk = wetRisk(state.currentGrandPrix.forecast);
+  const ranked = [...state.teams].sort((left, right) => right.points - left.points);
+  const chasing = ranked.findIndex((candidate) => candidate.id === team.id) >= Math.ceil(ranked.length / 2);
+  const held = new Set(team.cards);
+
+  const wanted: CardDefinition["family"][] = [
+    ...(seasonRisk >= 45 ? ["weather" as const] : []),
+    ...(chasing ? ["comeback" as const, "attack" as const] : ["reliability" as const, "economy" as const]),
+    "attack",
+    "reliability"
+  ];
+  for (const family of wanted) {
+    // A second copy of a card it already owns adds nothing to the hand it can play.
+    const fresh = affordable.filter((cardId) => CARD_DEFINITIONS[cardId].family === family && !held.has(cardId));
+    if (fresh.length) return fresh[0];
+  }
+  return affordable.find((cardId) => !held.has(cardId)) ?? affordable[0];
+}
+
+/**
+ * What a bot sends out on a chrono attempt. Every attempt used to carry the same plan, so the second
+ * and third told it nothing it did not already know: three rolls of the same dice. It now spends one
+ * attempt trying something else, then goes back to whichever of the two was quicker — which is what
+ * the attempts are for.
+ */
+export function botQualifyingDecision(
+  state: LeagueState,
+  team: LeagueState["teams"][number],
+  attempt: number,
+  runs: Array<{ teamId: string; time: number; decision: RaceDecision }>,
+  fallback?: RaceDecision
+): RaceDecision {
+  const base = botDecision(state, team, fallback);
+  const own = runs.filter((run) => run.teamId === team.id);
+  if (attempt <= 1 || !own.length) return base;
+
+  const best = own.reduce((quickest, run) => (run.time < quickest.time ? run : quickest), own[0]!);
+  const tried = new Set(own.map((run) => `${run.decision.approach}/${run.decision.preparation}`));
+  if (attempt === 2 || tried.size < 2) {
+    // One variation, in the direction a chrono rewards: a lap is not a race, so it leans on pace.
+    const variant: RaceDecision = {
+      ...base,
+      approach: base.approach === "aggressive" ? "balanced" : "aggressive",
+      preparation: base.preparation === "weather" ? "weather" : "speed"
+    };
+    return tried.has(`${variant.approach}/${variant.preparation}`) ? base : variant;
+  }
+  // Both have been tried: go back out on the one that was quicker.
+  return { ...base, approach: best.decision.approach, preparation: best.decision.preparation };
+}
+
 export function normalizePitStrategy(value: unknown): NonNullable<RaceDecision["pitStrategy"]> {
   return PIT_STRATEGIES.includes(value as NonNullable<RaceDecision["pitStrategy"]>) ? (value as NonNullable<RaceDecision["pitStrategy"]>) : "standard";
 }

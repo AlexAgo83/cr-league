@@ -1,4 +1,5 @@
 import {
+  botCardPurchase,
   botDecision,
   normalizePitStrategy,
   CARD_DEFINITIONS,
@@ -25,7 +26,9 @@ export async function buyBotCards(db: Db, state: LeagueState, seed: string) {
     const cards = freshTeam ? normalizeCards(freshTeam.cards) : team.cards;
     const affordable = affordableCardIds(credits);
     if (!freshTeam || !affordable.length) continue;
-    const cardId = randomCardId(`${seed}-${team.id}-${credits}-${cards.length}`, affordable);
+    // The shop is where a bot builds its hand for the season, so it buys for the season rather than
+    // at random: rain cover when the forecasts are wet, a comeback when it is chasing.
+    const cardId = botCardPurchase(state, { ...team, cards, credits }, affordable) ?? randomCardId(`${seed}-${team.id}-${credits}-${cards.length}`, affordable);
     await db.team.update({
       where: { id: team.id },
       data: {

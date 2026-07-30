@@ -1,4 +1,4 @@
-import { botDecision, normalizePitStrategy } from "./botBrain.js";
+import { botDecision, botQualifyingDecision, normalizePitStrategy } from "./botBrain.js";
 import { CARD_DEFINITIONS } from "../cards/definitions.js";
 import { normalizeCircuitRecords, withCircuitRecord } from "./circuitStats.js";
 import { circuitIdentityForRound, circuitSeasonSeed, raceInputFromCircuit, trackSpeedProfileForCircuit, trackZonesForCircuit } from "./circuits.js";
@@ -235,7 +235,7 @@ export function runQualifying(state: LeagueState, input: RunQualifyingInput) {
           seed: `${state.currentGrandPrix.id}-${bot.id}-bot-qualifying-${botAttempt}`,
           teamId: bot.id,
           teamName: bot.name,
-          decision: botDecision(state, bot),
+          decision: botQualifyingDecision(state, bot, botAttempt, nextRuns),
           primaryTrait: state.currentGrandPrix.primaryTrait as RaceInput["primaryTrait"],
           secondaryTrait: state.currentGrandPrix.secondaryTrait as RaceInput["secondaryTrait"],
           traits: circuit.traits,

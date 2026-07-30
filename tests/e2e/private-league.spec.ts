@@ -538,6 +538,24 @@ test("keeps driver connectors pointing at cars on the stage across focus toggles
         (line) => line.style.opacity !== "0" && !listed.has(line.dataset.teamId)
       ).length;
     });
+  // The other direction of the same rule: a team on the list has a connector. Suppressing lines for
+  // cars the focus camera had zoomed out of frame left listed teams without one.
+  const listedTeamsWithoutConnector = async () =>
+    page.evaluate(() => {
+      const svg = document.querySelector(".replay-driver-connectors");
+      if (!svg) return -1;
+      const drawn = new Set(
+        Array.from(svg.querySelectorAll<SVGLineElement>("line[data-team-id]"))
+          .filter((line) => line.style.opacity !== "0")
+          .map((line) => line.dataset.teamId)
+      );
+      return Array.from(document.querySelectorAll(".replay-tower > ol > li"))
+        .filter((row) => row.getBoundingClientRect().height > 0)
+        .filter((row) => {
+          const teamId = row.querySelector<HTMLElement>("[data-team-id]")?.dataset.teamId;
+          return teamId && !drawn.has(teamId);
+        }).length;
+    });
   const strayConnectors = async () =>
     page.evaluate(() => {
       const svg = document.querySelector(".replay-driver-connectors");
@@ -557,6 +575,7 @@ test("keeps driver connectors pointing at cars on the stage across focus toggles
 
   for (let toggle = 0; toggle < 4; toggle += 1) {
     await expect.poll(strayConnectors, { timeout: 4000 }).toBe(0);
+    await expect.poll(listedTeamsWithoutConnector, { timeout: 4000 }).toBe(0);
     await focusButton.click();
     await page.waitForTimeout(400);
   }
@@ -574,6 +593,7 @@ test("keeps driver connectors pointing at cars on the stage across focus toggles
   expect(await page.locator(".replay-tower > ol > li").evaluateAll((rows) => rows.filter((row) => row.getBoundingClientRect().height === 0).length)).toBeGreaterThan(0);
   await expect.poll(strayConnectors, { timeout: 4000 }).toBe(0);
   await expect.poll(connectorsWithoutRow, { timeout: 4000 }).toBe(0);
+  await expect.poll(listedTeamsWithoutConnector, { timeout: 4000 }).toBe(0);
 });
 
 test("keeps first-click commands animated and result shortcuts wired", async ({ page }) => {

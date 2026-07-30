@@ -291,27 +291,20 @@ export function ReplayStageOverlay({
 
 type Box = { left: number; top: number; width: number; height: number };
 
-export function centerInside(rect: Box, bounds: Box) {
-  const x = rect.left + rect.width / 2;
-  const y = rect.top + rect.height / 2;
-  return x >= bounds.left && x <= bounds.left + bounds.width && y >= bounds.top && y <= bounds.top + bounds.height;
-}
-
 /**
- * A connector is only ever drawn between two things the player can see:
- * - the team's row has to be on screen. Collapsing the tower with the chevron sets `display: none`
- *   on the rows past the fold, and a hidden row measures 0x0 at the document origin, which drew a
- *   line off to a corner of the map instead of to a standing.
- * - the car has to be on the stage. The focus camera zooms most of the field out of frame.
+ * A connector exists only if the standing it points at is listed: collapsing the tower with the
+ * chevron sets `display: none` on the rows past the fold, and a hidden row measures 0x0 at the
+ * document origin, which drew a line into the corner of the map.
+ *
+ * The car's own position is not a condition. The focus camera zooms most of the field out of frame,
+ * and suppressing those connectors dropped lines for teams sitting right there in the list.
  */
 export function canDrawConnector<T extends { badgeRect?: Box; carRect?: Box }>(
-  measure: T,
-  stageRect: Box
+  measure: T
 ): measure is T & { badgeRect: Box; carRect: Box } {
   const { badgeRect, carRect } = measure;
   if (!badgeRect || !carRect) return false;
-  if (badgeRect.width === 0 || badgeRect.height === 0) return false;
-  return centerInside(carRect, stageRect);
+  return badgeRect.width > 0 && badgeRect.height > 0;
 }
 
 function ReplayDriverConnectors({ entries, teamLiveries }: { entries: ReplayTowerEntry[]; teamLiveries: Record<string, TeamLivery> }) {
@@ -322,19 +315,32 @@ function ReplayDriverConnectors({ entries, teamLiveries }: { entries: ReplayTowe
     const stage = svg?.parentElement;
     if (!svg || !stage) return;
     let lastUpdate = 0;
+    let lastLookup = 0;
     let frame = 0;
+    let cars = new Map<string | undefined, SVGGElement>();
+    let badges = new Map<string | undefined, HTMLElement>();
+    let lines: SVGLineElement[] = [];
+    const written = new Map<SVGLineElement, string>();
+    // Nodes are replaced when the car layer or the standings re-render — a focus toggle, a new race.
+    // Holding them forever left connectors pointing at where a car used to be; re-querying every
+    // tick made three subtree scans 20 times a second. Twice a second covers both.
+    const lookup = () => {
+      cars = new Map(Array.from(stage.querySelectorAll<SVGGElement>(".map-car[data-car-id]")).map((car) => [car.dataset.carId, car]));
+      badges = new Map(Array.from(stage.querySelectorAll<HTMLElement>(".replay-tower-livery[data-team-id]")).map((badge) => [badge.dataset.teamId, badge]));
+      lines = Array.from(svg.querySelectorAll<SVGLineElement>("line[data-team-id]"));
+      written.clear();
+    };
+
     const update = (now: number) => {
       if (now - lastUpdate < 50) {
         frame = requestAnimationFrame(update);
         return;
       }
       lastUpdate = now;
-      // Queried per tick, not once: focus mode re-renders the car layer, and holding onto the old
-      // nodes left connectors pointing at where a car used to be. querySelectorAll costs nothing
-      // here, unlike the rect reads below.
-      const cars = new Map(Array.from(stage.querySelectorAll<SVGGElement>(".map-car[data-car-id]")).map((car) => [car.dataset.carId, car]));
-      const badges = new Map(Array.from(stage.querySelectorAll<HTMLElement>(".replay-tower-livery[data-team-id]")).map((badge) => [badge.dataset.teamId, badge]));
-      const lines = Array.from(svg.querySelectorAll<SVGLineElement>("line[data-team-id]"));
+      if (now - lastLookup >= 500 || !lines.length) {
+        lastLookup = now;
+        lookup();
+      }
       // Read every rect first, then write. Interleaving them made each measurement flush the
       // layout dirtied by the previous line: 2 forced layouts per driver, 20 times a second.
       const stageRect = stage.getBoundingClientRect();
@@ -342,19 +348,36 @@ function ReplayDriverConnectors({ entries, teamLiveries }: { entries: ReplayTowe
         const teamId = line.dataset.teamId;
         const badge = teamId ? badges.get(teamId) : undefined;
         const car = teamId ? cars.get(teamId) : undefined;
-        if (!badge || !car) return { line };
-        return { line, badgeRect: badge.getBoundingClientRect(), carRect: car.getBoundingClientRect() };
+        // A team the tower is not listing needs no rect read at all.
+        if (!badge || !car || !badge.isConnected || !car.isConnected) return { line };
+        const badgeRect = badge.getBoundingClientRect();
+        if (badgeRect.width === 0 || badgeRect.height === 0) return { line, badgeRect };
+        return { line, badgeRect, carRect: car.getBoundingClientRect() };
       });
       for (const measure of measured) {
-        if (!canDrawConnector(measure, stageRect)) {
-          measure.line.style.opacity = "0";
+        if (!canDrawConnector(measure)) {
+          if (written.get(measure.line) !== "off") {
+            measure.line.style.opacity = "0";
+            written.set(measure.line, "off");
+          }
           continue;
         }
         const { line, badgeRect, carRect } = measure;
-        line.setAttribute("x1", String(badgeRect.left - stageRect.left));
-        line.setAttribute("y1", String(badgeRect.top + badgeRect.height / 2 - stageRect.top));
-        line.setAttribute("x2", String(carRect.left + carRect.width / 2 - stageRect.left));
-        line.setAttribute("y2", String(carRect.top + carRect.height / 2 - stageRect.top));
+        const points = [
+          badgeRect.left - stageRect.left,
+          badgeRect.top + badgeRect.height / 2 - stageRect.top,
+          carRect.left + carRect.width / 2 - stageRect.left,
+          carRect.top + carRect.height / 2 - stageRect.top
+        ].map((value) => String(Math.round(value)));
+        const signature = points.join(",");
+        // Writing unchanged attributes still invalidates style, which the next tick's rect reads
+        // then have to flush.
+        if (written.get(line) === signature) continue;
+        written.set(line, signature);
+        line.setAttribute("x1", points[0]!);
+        line.setAttribute("y1", points[1]!);
+        line.setAttribute("x2", points[2]!);
+        line.setAttribute("y2", points[3]!);
         line.style.opacity = "";
       }
       frame = requestAnimationFrame(update);

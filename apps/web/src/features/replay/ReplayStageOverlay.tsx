@@ -10,7 +10,7 @@ import { Modal } from "../Modal.js";
 import { RaceInfoDetailsForResolvedWeather } from "../RaceInfoDetails.js";
 import { BoardIcon, CountryBadge, VisualIcon, type VisualIconName } from "../VisualIcon.js";
 import { ReplayProgress, type ReplayTimelineMarker } from "./ReplayProgress.js";
-import { ReplayTower } from "./ReplayTower.js";
+import { ReplayTower, TeamHelmet } from "./ReplayTower.js";
 import type { ReplaySpeed } from "./useReplayClock.js";
 
 const REPLAY_SPEEDS: ReplaySpeed[] = [1, 2, 4, 8];
@@ -188,6 +188,7 @@ export function ReplayStageOverlay({
         <div className="replay-info-stack">
           {activeDirector ? (
             <div className={`replay-director-panel ${activeDirector.type}`}>
+              <ReplayFocusChip entries={tower} teamLiveries={teamLiveries} focusedTeamId={focusedTeamId} />
               <span>{directorTitle} · L{activeDirector.lap}</span>
               {playerGapItems.length ? (
                 <small className="replay-player-gaps">
@@ -250,6 +251,7 @@ export function ReplayStageOverlay({
       {overlayActions && activeDirector ? (
         <div className="replay-overlay-director-slot">
           <div className={`replay-director-panel ${activeDirector.type}`}>
+            <ReplayFocusChip entries={tower} teamLiveries={teamLiveries} focusedTeamId={focusedTeamId} />
             <span>{directorTitle} · L{activeDirector.lap}</span>
             <strong>{activeDirector.title}</strong>
             <small>{activeDirector.detail}</small>
@@ -289,6 +291,31 @@ export function ReplayStageOverlay({
   );
 }
 
+/**
+ * Who the map is following, flush in the top-right of the race-tracking panel. It used to head the
+ * running order, where it repeated a row of the very list it sat on; here it labels the panel that
+ * is actually reporting on that team.
+ */
+function ReplayFocusChip({
+  entries,
+  teamLiveries,
+  focusedTeamId
+}: {
+  entries: ReplayTowerEntry[];
+  teamLiveries: Record<string, TeamLivery>;
+  focusedTeamId?: string;
+}) {
+  const entry = focusedTeamId ? entries.find((candidate) => candidate.teamId === focusedTeamId) : undefined;
+  const livery = entry ? teamLiveries[entry.teamId] : undefined;
+  if (!entry || !livery) return null;
+  return (
+    <div className="replay-focus-chip">
+      <TeamHelmet className="replay-focus-helmet" livery={livery} />
+      <span>{entry.teamName}</span>
+    </div>
+  );
+}
+
 type Box = { left: number; top: number; width: number; height: number };
 
 /**
@@ -307,9 +334,6 @@ export function canDrawConnector<T extends { badgeRect?: Box; carRect?: Box }>(
   return badgeRect.width > 0 && badgeRect.height > 0;
 }
 
-/** Below this, every standing can carry a line without the map turning into a cat's cradle. */
-const CONNECTORS_FOR_ALL_BELOW = 4;
-
 function ReplayDriverConnectors({
   entries,
   teamLiveries,
@@ -320,9 +344,9 @@ function ReplayDriverConnectors({
   focusedTeamId?: string;
 }) {
   const ref = useRef<SVGSVGElement>(null);
-  // One line, to the standing being watched — whichever display mode is on. A full grid drawing six
-  // of them said less than the one you are actually following.
-  const connected = entries.length < CONNECTORS_FOR_ALL_BELOW ? entries : entries.filter((entry) => entry.teamId === focusedTeamId);
+  // One line, between the selection and its car. No other rule: field size, display mode and where
+  // the car happens to be on screen used to gate it, and every one of them was a surprise.
+  const connected = entries.filter((entry) => entry.teamId === focusedTeamId);
   const connectedKey = connected.map((entry) => entry.teamId).join("|");
 
   useEffect(() => {

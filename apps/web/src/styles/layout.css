@@ -3027,6 +3027,9 @@ label small {
 }
 
 .circuit-map-stage {
+  /* Every overlay pinned to the top of a map reads this, so a layout that puts a header over the
+     map only has to push the inset down once. */
+  --map-overlay-top: 12px;
   background: #121014;
   border: 1px solid rgb(255 255 255 / 0.14);
   border-radius: 6px;
@@ -3072,39 +3075,48 @@ label small {
   opacity: 0.52;
 }
 
-/* Experiment behind the cr-league-fullbleed-map flag (or ?fullmap=1): give the Stand and replay
-   maps the whole page instead of a panel, which is what mobile already does below 900px. The SVG is
-   scaled to cover and centred, so a wide viewport crops the route sides rather than letterboxing it. */
-.fullbleed-map .app-shell {
-  gap: 0;
-  /* The sticky command bar floats over the map instead of reserving room under it. */
-  padding: 0;
-}
+/* Experiment: full-page maps at the widths that still use a panel — below 860px responsive.css
+   already does this, with overlay offsets tuned for the mobile header. */
+@media (min-width: 861px) {
+  /* Flag: cr-league-fullbleed-map, or ?fullmap=1. The map spans the viewport, the fixed header
+     floats over its top, and the SVG is scaled to cover and centred — so a wide viewport crops the
+     route sides rather than letterboxing it. */
+  .fullbleed-map .app-shell {
+    gap: 0;
+    /* The sticky command bar floats over the map instead of reserving room under it. */
+    padding: 0;
+  }
 
-.fullbleed-map .app-shell .drive-map-panel,
-.fullbleed-map .app-shell .replay-map-panel {
-  margin-left: calc(50% - 50vw);
-  min-height: calc(100dvh - var(--setup-topbar-height));
-  width: 100vw;
-}
+  .fullbleed-map .app-shell .drive-map-panel,
+  .fullbleed-map .app-shell .replay-map-panel {
+    /* Negative top margin: the map starts at the very top of the page and the fixed header floats
+       over it, rather than the page reserving a band above the map. */
+    margin-left: calc(50% - 50vw);
+    margin-top: calc(var(--setup-topbar-height) * -1);
+    min-height: 100dvh;
+    width: 100vw;
+  }
 
-.fullbleed-map .app-shell .drive-map-panel .circuit-map-stage,
-.fullbleed-map .app-shell .replay-map-panel .circuit-map-stage {
-  border: 0;
-  border-radius: 0;
-  min-height: inherit;
-}
+  .fullbleed-map .app-shell .drive-map-panel .circuit-map-stage,
+  .fullbleed-map .app-shell .replay-map-panel .circuit-map-stage {
+    /* Clears the header the map now runs under. */
+    --map-overlay-top: calc(var(--setup-topbar-height) + 12px);
+    border: 0;
+    border-radius: 0;
+    min-height: inherit;
+  }
 
-.fullbleed-map .app-shell .drive-map-panel .circuit-map-stage > svg,
-.fullbleed-map .app-shell .replay-map-panel .circuit-map-stage > svg {
-  height: 100%;
-  left: 50%;
-  max-width: none;
-  min-width: 100%;
-  position: absolute;
-  top: 0;
-  transform: translateX(-50%);
-  width: auto;
+  .fullbleed-map .app-shell .drive-map-panel .circuit-map-stage > svg,
+  .fullbleed-map .app-shell .replay-map-panel .circuit-map-stage > svg {
+    height: 100%;
+    left: 50%;
+    max-width: none;
+    min-width: 100%;
+    position: absolute;
+    top: 0;
+    transform: translateX(-50%);
+    width: auto;
+  }
 }
 
 .circuit-map-stage > svg {
@@ -3260,7 +3272,7 @@ label small {
   min-width: 128px;
   padding: 10px 12px;
   position: absolute;
-  top: 12px;
+  top: var(--map-overlay-top);
   z-index: 2;
 }
 
@@ -3878,7 +3890,7 @@ label small {
   padding: 10px 12px;
   position: absolute;
   right: 12px;
-  top: 12px;
+  top: var(--map-overlay-top);
   z-index: 2;
 }
 
@@ -3961,7 +3973,7 @@ label small {
   padding: 7px 10px;
   position: absolute;
   right: 12px;
-  top: 12px;
+  top: var(--map-overlay-top);
   z-index: 2;
 }
 
@@ -4277,7 +4289,7 @@ label small {
   left: 50%;
   padding: 4px;
   position: absolute;
-  top: 12px;
+  top: var(--map-overlay-top);
   transform: translateX(-50%);
   z-index: 70;
 }
@@ -4728,7 +4740,7 @@ label small {
   max-width: min(560px, calc(100% - 24px));
   padding: 9px 10px;
   position: absolute;
-  top: 58px;
+  top: calc(var(--map-overlay-top) + 46px);
   transform: translateX(-50%);
   width: max-content;
   z-index: 4;
@@ -4863,7 +4875,7 @@ label small {
   padding: 10px 12px;
   position: absolute;
   right: 12px;
-  top: 12px;
+  top: var(--map-overlay-top);
   z-index: 2;
 }
 

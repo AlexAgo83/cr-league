@@ -3083,7 +3083,7 @@ label small {
   /* Flag: cr-league-fullbleed-map, or ?fullmap=1. The map spans the viewport, the header floats over
      its top, and the SVG is scaled to cover and centred — so a wide viewport crops the route sides
      rather than letterboxing it. */
-  .fullbleed-map .app-shell {
+  .fullbleed-map .app-shell.map-screen {
     /* Enforced rather than assumed: the overlay clearance below is computed from it. */
     --fullbleed-topbar-height: 68px;
     --fullbleed-topbar-top: 12px;
@@ -3095,7 +3095,7 @@ label small {
 
   /* Out of flow, so the page reserves no band above the map and stays exactly one viewport tall.
      A sticky topbar keeps its flow space, which is the gap that pushed the page taller. */
-  .fullbleed-map .app-shell > .topbar {
+  .fullbleed-map .app-shell.map-screen > .topbar {
     left: 0;
     min-height: var(--fullbleed-topbar-height);
     position: absolute;
@@ -3104,15 +3104,15 @@ label small {
     z-index: 60;
   }
 
-  .fullbleed-map .app-shell .drive-map-panel,
-  .fullbleed-map .app-shell .replay-map-panel {
+  .fullbleed-map .app-shell.map-screen .drive-map-panel,
+  .fullbleed-map .app-shell.map-screen .replay-map-panel {
     margin-left: calc(50% - 50vw);
     min-height: 100dvh;
     width: 100vw;
   }
 
-  .fullbleed-map .app-shell .drive-map-panel .circuit-map-stage,
-  .fullbleed-map .app-shell .replay-map-panel .circuit-map-stage {
+  .fullbleed-map .app-shell.map-screen .drive-map-panel .circuit-map-stage,
+  .fullbleed-map .app-shell.map-screen .replay-map-panel .circuit-map-stage {
     /* Below the floating header, by the same gap that separates any two panels. */
     --map-overlay-top: calc(var(--fullbleed-topbar-top) + var(--fullbleed-topbar-height) + 16px);
     border: 0;
@@ -3120,8 +3120,8 @@ label small {
     min-height: inherit;
   }
 
-  .fullbleed-map .app-shell .drive-map-panel .circuit-map-stage > svg,
-  .fullbleed-map .app-shell .replay-map-panel .circuit-map-stage > svg {
+  .fullbleed-map .app-shell.map-screen .drive-map-panel .circuit-map-stage > svg,
+  .fullbleed-map .app-shell.map-screen .replay-map-panel .circuit-map-stage > svg {
     height: 100%;
     left: 50%;
     max-width: none;

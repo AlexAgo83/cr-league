@@ -1,6 +1,6 @@
 ## prod_085_solo_save_slots_product_brief - Solo Save Slots Product Brief
 > Date: 2026-07-29
-> Status: Proposed
+> Status: Settled
 > Related request: `req_133_offer_three_solo_save_slots_with_readable_state`
 > Related backlog: `item_353_bound_what_a_solo_save_costs_in_storage`, `item_354_store_solo_games_in_three_slots_with_a_light_index`, `item_355_pick_a_solo_slot_from_the_entry_screen`
 > Related task: `task_134_orchestrate_solo_save_slots`

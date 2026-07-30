@@ -1,3 +1,4 @@
+import { CARD_DEFINITIONS, type CardDefinition } from "../cards/definitions.js";
 import { circuitIdentityForRound, circuitSeasonSeed } from "./circuits.js";
 import type { LeagueState } from "./league.js";
 import { PIT_STRATEGIES, type CardId, type RaceDecision } from "./race.js";
@@ -22,7 +23,7 @@ export function botDecision(state: LeagueState, team: LeagueState["teams"][numbe
     approach: botApproach(state, team, fallback),
     preparation: botPreparation(state, fallback),
     pitStrategy: botPitStrategy(state, team, fallback),
-    cardId: botCard(team, fallback?.cardId),
+    cardId: botCard(state, team, fallback?.cardId),
     rivalTeamId: fallback?.rivalTeamId
   };
 }
@@ -102,8 +103,33 @@ export function botPitStrategy(
   return normalizePitStrategy(fallback?.pitStrategy);
 }
 
-export function botCard(team: LeagueState["teams"][number], preferred?: CardId) {
-  return preferred && team.cards.includes(preferred) ? preferred : team.cards[0];
+/**
+ * Which card to play, out of the ones the team holds. It used to be `cards[0]` — whichever landed
+ * first in the inventory — so a bot sat on Rain Grip through a downpour because a sponsorship card
+ * happened to be bought earlier.
+ */
+export function botCard(state: LeagueState, team: LeagueState["teams"][number], preferred?: CardId) {
+  const held = team.cards.filter((cardId) => CARD_DEFINITIONS[cardId]);
+  if (!held.length) return undefined;
+  const risk = wetRisk(state.currentGrandPrix.forecast);
+  const circuit = circuitIdentityForRound(state.currentGrandPrix.round, circuitSeasonSeed(state.league.id, state.currentGrandPrix.season));
+  const ranked = [...state.teams].sort((left, right) => right.points - left.points);
+  const chasing = ranked.findIndex((candidate) => candidate.id === team.id) >= Math.ceil(ranked.length / 2);
+
+  const wanted: CardDefinition["family"][] = [];
+  if (risk >= 70) wanted.push("weather");
+  if (circuit.traits.overtaking >= 72 || state.currentGrandPrix.primaryTrait === "fast") wanted.push("attack");
+  if (circuit.traits.energy <= 58 || state.currentGrandPrix.primaryTrait === "high_wear") wanted.push("reliability");
+  if (chasing) wanted.push("comeback");
+  // Nothing pressing about this weekend: bank the payout instead of burning an edge.
+  if (!wanted.length) wanted.push("economy");
+
+  for (const family of wanted) {
+    const match = held.find((cardId) => CARD_DEFINITIONS[cardId].family === family);
+    if (match) return match;
+  }
+  // A card kept for its own weekend is worth more than one played on the wrong one.
+  return preferred && held.includes(preferred) ? preferred : held[0];
 }
 
 export function normalizePitStrategy(value: unknown): NonNullable<RaceDecision["pitStrategy"]> {

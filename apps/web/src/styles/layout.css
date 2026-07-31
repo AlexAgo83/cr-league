@@ -3196,14 +3196,16 @@ label small {
   }
 
   .app-shell.map-screen .drive-map-panel,
-  .app-shell.map-screen .replay-map-panel {
+  .app-shell.map-screen .replay-map-panel,
+  .app-shell.map-screen .duel-map {
     margin-left: calc(50% - 50vw);
     min-height: 100dvh;
     width: 100vw;
   }
 
   .app-shell.map-screen .drive-map-panel .circuit-map-stage,
-  .app-shell.map-screen .replay-map-panel .circuit-map-stage {
+  .app-shell.map-screen .replay-map-panel .circuit-map-stage,
+  .app-shell.map-screen .duel-map .circuit-map-stage {
     /* Below the floating header, by the same gap that separates any two panels. */
     --map-overlay-top: calc(var(--fullbleed-topbar-top) + var(--fullbleed-topbar-height) + 16px);
     border: 0;
@@ -3218,16 +3220,26 @@ label small {
     --fullbleed-setup-header: 50px;
   }
 
+  /* Out of flow, like the game topbar above: left in flow it added its own height to a map already
+     one viewport tall, and the page grew a scrollbar — which then made the 100vw map overflow
+     sideways by the width of that scrollbar. */
   .app-shell.setup-shell.map-screen > .setup-topbar {
+    left: 0;
     min-height: var(--fullbleed-setup-header);
+    position: absolute;
+    right: 0;
+    top: 0;
+    z-index: 60;
   }
 
-  .app-shell.setup-shell.map-screen .replay-map-panel .circuit-map-stage {
+  .app-shell.setup-shell.map-screen .replay-map-panel .circuit-map-stage,
+  .app-shell.setup-shell.map-screen .duel-map .circuit-map-stage {
     --map-overlay-top: calc(var(--fullbleed-setup-header) + 16px);
   }
 
   .app-shell.map-screen .drive-map-panel .circuit-map-stage > svg,
-  .app-shell.map-screen .replay-map-panel .circuit-map-stage > svg {
+  .app-shell.map-screen .replay-map-panel .circuit-map-stage > svg,
+  .app-shell.map-screen .duel-map .circuit-map-stage > svg {
     height: 100%;
     left: 50%;
     max-width: none;
@@ -5831,13 +5843,85 @@ label small {
 
 /* ---------- Arcade duel ---------- */
 
-/* The lap plays above the board: the map is the story, the panel is the decision. */
-.duel-map {
-  margin-bottom: 12px;
+/* The board is the map: the duel fills the screen and every read-out takes a corner of it. */
+.duel-race {
+  display: contents;
 }
 
-.duel-map .circuit-map-stage {
-  aspect-ratio: 16 / 9;
+/* The top band. Empty middle, so it lets clicks through to the map underneath. */
+.duel-hud {
+  align-items: flex-start;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  left: 12px;
+  pointer-events: none;
+  position: absolute;
+  right: 12px;
+  top: var(--map-overlay-top);
+  z-index: 3;
+}
+
+.duel-hud > * {
+  pointer-events: auto;
+}
+
+.duel-hud-side {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+/* Left: which lap, where the gap stands, who it is against. */
+.duel-status {
+  background: rgb(16 14 18 / 0.72);
+  border: 1px solid rgb(255 255 255 / 0.12);
+  border-radius: 8px;
+  max-width: 340px;
+  padding: 10px 12px;
+}
+
+.duel-status h1 {
+  font-size: 1.35rem;
+  margin: 2px 0 4px;
+}
+
+.duel-status p {
+  color: var(--color-muted);
+  font-size: 0.78rem;
+  margin: 0;
+}
+
+.duel-status .setup-back-button {
+  margin-bottom: 6px;
+  position: static;
+}
+
+/* Bottom-centre: the one decision the screen is asking for. */
+.duel-calls {
+  bottom: 14px;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  left: 50%;
+  max-width: calc(100% - 24px);
+  position: absolute;
+  transform: translateX(-50%);
+  width: 560px;
+  z-index: 3;
+}
+
+/* Right, under the tanks: the duel read back as a sequence of guesses. */
+.duel-history {
+  align-self: flex-end;
+  background: rgb(16 14 18 / 0.72);
+  border: 1px solid rgb(255 255 255 / 0.12);
+  border-radius: 8px;
+  max-height: min(46vh, 420px);
+  overflow-y: auto;
+  padding: 9px 11px;
+  width: 190px;
 }
 
 .duel-call:disabled {
@@ -5887,13 +5971,9 @@ label small {
    every other map overlay. */
 .duel-tanks {
   display: grid;
-  gap: 10px;
+  gap: 8px;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  left: 10px;
-  position: absolute;
-  right: 10px;
-  top: 10px;
-  z-index: 3;
+  width: 300px;
 }
 
 .duel-tank {
@@ -5946,16 +6026,9 @@ label small {
   border-color: var(--color-accent);
 }
 
-.duel-calls {
-  display: grid;
-  gap: 8px;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  margin-bottom: 14px;
-}
-
 .duel-call {
   align-items: center;
-  background: rgb(248 243 232 / 0.05);
+  background: rgb(16 14 18 / 0.78);
   border: 1px solid var(--color-border);
   color: var(--color-text);
   display: grid;

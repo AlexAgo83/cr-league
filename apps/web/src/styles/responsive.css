@@ -63,7 +63,8 @@
   }
 
   .map-screen .view-container,
-  .map-screen .wheel-race {
+  .map-screen .wheel-race,
+  .map-screen .duel-race {
     inset: 0;
     position: fixed;
     z-index: 1;
@@ -267,7 +268,8 @@
   }
 
   .app-shell .drive-map-panel,
-  .app-shell .replay-map-panel {
+  .app-shell .replay-map-panel,
+  .app-shell .duel-map {
     margin-left: 0;
     margin-right: 0;
     min-height: 100dvh;
@@ -275,7 +277,8 @@
   }
 
   .app-shell .drive-map-panel .circuit-map-stage,
-  .app-shell .replay-map-panel .circuit-map-stage {
+  .app-shell .replay-map-panel .circuit-map-stage,
+  .app-shell .duel-map .circuit-map-stage {
     border: 0;
     border-radius: 0;
     min-height: inherit;
@@ -317,7 +320,8 @@
   }
 
   .app-shell .drive-map-panel .circuit-map-stage > svg,
-  .app-shell .replay-map-panel .circuit-map-stage > svg {
+  .app-shell .replay-map-panel .circuit-map-stage > svg,
+  .app-shell .duel-map .circuit-map-stage > svg {
     height: 100%;
     left: 50%;
     max-width: none;
@@ -898,5 +902,49 @@
   .map-result-icon {
     height: 11px;
     width: 11px;
+  }
+}
+
+@media (max-width: 860px) {
+  /* A phone has room for the decision and the gap, not for a side column of history. */
+  .duel-history {
+    display: none;
+  }
+
+  /* The phone topbar is in flow above the map, so the band clears it by hand — the same 68px every
+     other overlay on a narrow map screen uses. Stacked rather than side by side. */
+  .duel-hud {
+    flex-direction: column;
+    top: 68px;
+  }
+
+  .duel-status {
+    max-width: none;
+  }
+
+  .duel-status h1 {
+    font-size: 1.1rem;
+  }
+
+  /* Two lines of standing instructions is not what a phone has room for. */
+  .duel-status p {
+    display: none;
+  }
+
+  .duel-tanks {
+    width: auto;
+  }
+
+  .duel-calls {
+    gap: 6px;
+    width: calc(100% - 24px);
+  }
+
+  .duel-call {
+    padding: 9px 5px;
+  }
+
+  .duel-call small {
+    display: none;
   }
 }

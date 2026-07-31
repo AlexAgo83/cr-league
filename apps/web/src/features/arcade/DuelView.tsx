@@ -44,7 +44,7 @@ const CALL_ICONS = { attack: "boost", manage: "balanced-approach", cover: "defen
  * One rival, eight laps, three calls a lap. The whole game is guessing which call he is about to make,
  * which is why his tank and his last calls are on screen: they are the tells.
  */
-export function DuelView({ onBack }: { onBack: () => void }) {
+export function DuelView({ onBack, onRacingChange }: { onBack: () => void; onRacingChange?: (racing: boolean) => void }) {
   const tt = useT();
   const [setup, setSetup] = useState(() => drawSetup(`duel-${Date.now()}`));
   const [duel, setDuel] = useState<Duel | null>(null);
@@ -52,6 +52,11 @@ export function DuelView({ onBack }: { onBack: () => void }) {
   const [lap, setLap] = useState<{ round: DuelRound; gapBefore: number; next: Duel } | null>(null);
   const carProgressRef = useRef<Record<string, number>>({ [PLAYER_ID]: 0, [RIVAL_ID]: 0 });
   const rival = RIVALS.find((candidate) => candidate.archetype === setup.rival) ?? RIVALS[0]!;
+
+  // The briefing keeps its panel and its ambient circuit; the board takes the screen.
+  useEffect(() => {
+    onRacingChange?.(Boolean(duel));
+  }, [duel, onRacingChange]);
 
   useEffect(() => {
     if (!lap) return;
@@ -146,15 +151,9 @@ export function DuelView({ onBack }: { onBack: () => void }) {
     { id: RIVAL_ID, label: duel.gap >= 0 ? "2" : "1", player: false, delay: 0, duration: 30, progress: carProgressRef.current[RIVAL_ID] ?? 0, livery: rival.livery }
   ];
 
+  // Full screen once the duel is on: the map is the board, and every read-out is a corner of it.
   return (
-    <section className="setup-grid setup-grid-single setup-grid-split" aria-labelledby="duel-board-title">
-      <div className="panel setup-main-panel setup-hero-panel arcade-hero-panel">
-        <SetupBackButton onBack={onBack} />
-        <span className="section-kicker">{finished ? tt("duel_kicker") : tt("duel_lap", { lap: Math.min(duel.lap, duel.laps), laps: duel.laps })}</span>
-        <h1 id="duel-board-title">{finished ? tt(duelOutcome(duel) === "player" ? "duel_win_title" : "duel_lose_title") : gapLabel(duel.gap, tt)}</h1>
-        <p className="status">{finished ? tt("duel_result_gap", { gap: Math.abs(duel.gap).toFixed(1), rival: rival.name }) : tt("duel_board_intro", { rival: rival.name })}</p>
-      </div>
-
+    <div className="duel-race" aria-labelledby="duel-board-title">
       <CircuitMap
         className="duel-map"
         circuit={setup.hydrated}
@@ -164,60 +163,69 @@ export function DuelView({ onBack }: { onBack: () => void }) {
         showHeading={false}
         framed={false}
         showTraits={false}
-        // Closer than a race map: this one lives in a panel, and two cars trading a second of gap
-        // are the whole picture.
+        // Two cars trading a second of gap are the whole picture, so the camera stays on them.
         camera={{ enabled: true, car: cars[0], zoom: 3.4 }}
         overlay={
           <>
-            <div className="duel-tanks">
-              <EngagementBar label={tt("duel_engagement_you")} value={duel.playerEngagement} />
-              <EngagementBar label={rival.name} value={duel.rivalEngagement} />
+            {/* One band across the top of the map: the standing on the left, the tells on the right.
+                Laid out rather than pinned, so neither has to guess how tall the other is. */}
+            <div className="duel-hud">
+              <div className="duel-status">
+                <SetupBackButton onBack={onBack} />
+                <span className="section-kicker">{finished ? tt("duel_kicker") : tt("duel_lap", { lap: Math.min(duel.lap, duel.laps), laps: duel.laps })}</span>
+                <h1 id="duel-board-title">{finished ? tt(duelOutcome(duel) === "player" ? "duel_win_title" : "duel_lose_title") : gapLabel(duel.gap, tt)}</h1>
+                <p>{finished ? tt("duel_result_gap", { gap: Math.abs(duel.gap).toFixed(1), rival: rival.name }) : tt("duel_board_intro", { rival: rival.name })}</p>
+              </div>
+
+              <div className="duel-hud-side">
+                <div className="duel-tanks">
+                  <EngagementBar label={tt("duel_engagement_you")} value={duel.playerEngagement} />
+                  <EngagementBar label={rival.name} value={duel.rivalEngagement} />
+                </div>
+
+                {duel.rounds.length ? (
+                  <div className="duel-history">
+                    <h2>{tt("duel_history_title")}</h2>
+                    <ol>
+                      {duel.rounds.map((round) => (
+                        <li key={round.lap} className={round.swing > 0 ? "gain" : round.swing < 0 ? "loss" : undefined}>
+                          <span className="duel-history-lap">{round.lap}</span>
+                          <BoardIcon className="duel-history-icon" name={CALL_ICONS[round.playerCall]} />
+                          <BoardIcon className="duel-history-icon rival" name={CALL_ICONS[round.rivalCall]} />
+                          <b>{`${round.swing > 0 ? "+" : ""}${round.swing.toFixed(1)}`}</b>
+                        </li>
+                      ))}
+                    </ol>
+                  </div>
+                ) : null}
+              </div>
             </div>
+
             {finished ? (
               <button type="button" className="primary-button duel-again-button" onClick={again}>
                 {tt("duel_again")}
               </button>
-            ) : null}
+            ) : (
+              <div className="duel-calls">
+                {DUEL_CALLS.map((option) => {
+                  // Attacking on an empty tank only ever cost time, so the call is closed rather
+                  // than offered as a trap.
+                  const spent = option === "attack" && duel.playerEngagement < cost;
+                  return (
+                    <button key={option} type="button" className="duel-call" disabled={driving || spent} onClick={() => call(option)}>
+                      <BoardIcon className="duel-call-icon" name={CALL_ICONS[option]} />
+                      <strong>{tt(`duel_call_${option}` as TranslationKey)}</strong>
+                      <small>{tt(`duel_call_${option}_hint` as TranslationKey)}</small>
+                      <em>{option === "attack" ? tt("duel_call_cost", { cost }) : tt("duel_call_refill")}</em>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </>
         }
       />
-
-      <div className="panel setup-main-panel setup-form-panel setup-choice-panel">
-        {finished ? null : (
-          <div className="duel-calls">
-            {DUEL_CALLS.map((option) => {
-              // Attacking on an empty tank only ever cost time, so the call is closed rather than
-              // offered as a trap.
-              const spent = option === "attack" && duel.playerEngagement < cost;
-              return (
-                <button key={option} type="button" className="duel-call" disabled={driving || spent} onClick={() => call(option)}>
-                  <BoardIcon className="duel-call-icon" name={CALL_ICONS[option]} />
-                  <strong>{tt(`duel_call_${option}` as TranslationKey)}</strong>
-                  <small>{tt(`duel_call_${option}_hint` as TranslationKey)}</small>
-                  <em>{option === "attack" ? tt("duel_call_cost", { cost }) : tt("duel_call_refill")}</em>
-                </button>
-              );
-            })}
-          </div>
-        )}
-
-        {duel.rounds.length ? (
-          <div className="duel-history">
-            <h2>{tt("duel_history_title")}</h2>
-            <ol>
-              {duel.rounds.map((round) => (
-                <li key={round.lap} className={round.swing > 0 ? "gain" : round.swing < 0 ? "loss" : undefined}>
-                  <span className="duel-history-lap">{round.lap}</span>
-                  <BoardIcon className="duel-history-icon" name={CALL_ICONS[round.playerCall]} />
-                  <BoardIcon className="duel-history-icon rival" name={CALL_ICONS[round.rivalCall]} />
-                  <b>{`${round.swing > 0 ? "+" : ""}${round.swing.toFixed(1)}`}</b>
-                </li>
-              ))}
-            </ol>
-          </div>
-        ) : null}
-      </div>
-    </section>
+    </div>
   );
 }
 

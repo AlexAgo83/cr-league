@@ -65,6 +65,7 @@ export function SetupGate({
   const utilitySetupView = profileSession && ((gameView === "admin" && profileSession.admin) || gameView === "changelog");
   // The entry step still wants the ambient circuit behind its panel; the race covers the screen.
   const [wheelRacing, setWheelRacing] = useState(false);
+  const [duelRacing, setDuelRacing] = useState(false);
 
   if (!leagueState && setupEntryMode === "choice" && !utilitySetupView) {
     return (
@@ -100,8 +101,8 @@ export function SetupGate({
 
   if (!leagueState && setupEntryMode === "duel" && !utilitySetupView) {
     return (
-      <SetupShell topbar={setupTopbar} notificationStack={notificationStack} errorModal={overlays} profileCodeModal={null} profileLogoutModal={null} preferencesResetModal={null}>
-        <DuelView onBack={() => setSetupEntryMode("arcade")} />
+      <SetupShell mapScreen={duelRacing} topbar={setupTopbar} notificationStack={notificationStack} errorModal={overlays} profileCodeModal={null} profileLogoutModal={null} preferencesResetModal={null}>
+        <DuelView onBack={() => setSetupEntryMode("arcade")} onRacingChange={setDuelRacing} />
       </SetupShell>
     );
   }

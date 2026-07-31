@@ -117,20 +117,21 @@ export function DestinyWheelView({ onBack, onRacingChange }: { onBack: () => voi
               </li>
             ))}
           </ol>
-          {/* Two rows on purpose: running it again, then the two ways out. Four buttons never fit on
-              one line here, and left to wrap they broke three-and-one with the stray on its own. */}
+          {/* Two rows on purpose, both flush right: four buttons never fit on one line here, and left
+              to wrap they broke three-and-one with the stray on its own. Each row pairs a way back
+              with a way on, so the two things you can do next sit under each other on the right. */}
           <div className="actions wheel-result-actions">
-            {shareButton}
-            <button type="button" className="primary-button" onClick={launch}>
-              {tt("wheel_draw_again")}
-            </button>
-          </div>
-          <div className="actions wheel-result-exits">
             <button type="button" className="secondary-button" onClick={() => setDraw(null)}>
               {tt("wheel_back_to_entry")}
             </button>
+            {shareButton}
+          </div>
+          <div className="actions wheel-result-actions">
             <button type="button" className="secondary-button" onClick={onBack}>
               {tt("wheel_back_to_catalogue")}
+            </button>
+            <button type="button" className="primary-button" onClick={launch}>
+              {tt("wheel_draw_again")}
             </button>
           </div>
         </div>
@@ -217,7 +218,7 @@ export function DestinyWheelView({ onBack, onRacingChange }: { onBack: () => voi
           <small>{tt("wheel_region_count", { count: circuitsInRegion(region).length })}</small>
         </label>
 
-        <div className="actions">
+        <div className="actions wheel-result-actions">
           <small className="wheel-count">{tt("wheel_count", { count: participants.length, max: WHEEL_MAX_PARTICIPANTS })}</small>
           {shareButton}
           <button type="button" className="primary-button" disabled={!canRace} onClick={launch}>

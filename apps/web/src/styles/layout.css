@@ -5942,9 +5942,18 @@ label small {
   width: 18px;
 }
 
-/* The two rows read as one block: only the first keeps the gap from what is above it. */
-.wheel-result-exits {
+/* Flush right, and the second row tucked under the first so the pair reads as one block. */
+.wheel-result-actions {
+  justify-content: flex-end;
+}
+
+.wheel-result-actions + .wheel-result-actions {
   margin-top: 12px;
+}
+
+/* The count keeps the left of the entry row; the buttons go right, like the result rows. */
+.setup-choice-panel .actions .wheel-count {
+  margin-right: auto;
 }
 
 /* ---------- Arcade duel ---------- */

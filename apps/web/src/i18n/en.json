@@ -1085,6 +1085,7 @@
   "wheel_draw_again": "Draw again",
   "wheel_share": "Share the list",
   "wheel_shuffle": "Shuffle the cars",
+  "wheel_pick_car": "Choose {name}'s car",
   "wheel_share_copied": "Link copied",
   "wheel_back_to_catalogue": "Back to the arcade",
   "wheel_back_to_entry": "Change the names",

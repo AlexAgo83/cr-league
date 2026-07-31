@@ -5,6 +5,8 @@ import { SetupBackButton } from "../../app/SetupViews.js";
 import { regionsWithCircuits, withRoute } from "../../app/circuits.js";
 import { BoardIcon } from "../VisualIcon.js";
 import { TeamCar } from "../TeamCar.js";
+import { Modal } from "../Modal.js";
+import { CAR_ASSETS } from "../carAssets.js";
 import {
   addWheelParticipant,
   loadWheelParticipants,
@@ -37,6 +39,8 @@ export function DestinyWheelView({ onBack, onRacingChange }: { onBack: () => voi
   const [name, setName] = useState("");
   const [region, setRegion] = useState<WheelRegion>(() => shared?.region ?? loadWheelRegion());
   const [shareCopied, setShareCopied] = useState(false);
+  /** The participant whose car is being chosen, if any. */
+  const [pickingCarFor, setPickingCarFor] = useState<string | null>(null);
   const [draw, setDraw] = useState<WheelDraw | null>(null);
   const [showOrder, setShowOrder] = useState(false);
   /**
@@ -171,6 +175,17 @@ export function DestinyWheelView({ onBack, onRacingChange }: { onBack: () => voi
         <h1 id="wheel-title">{tt("wheel_title")}</h1>
         <p className="status">{tt("wheel_intro")}</p>
       </div>
+      {pickingCarFor ? (
+        <WheelCarPicker
+          participants={participants}
+          participantId={pickingCarFor}
+          onClose={() => setPickingCarFor(null)}
+          onPick={(carAssetId) => {
+            setParticipants(participants.map((entry) => (entry.id === pickingCarFor ? { ...entry, carAssetId } : entry)));
+            setPickingCarFor(null);
+          }}
+        />
+      ) : null}
       <div className="panel setup-main-panel setup-form-panel setup-choice-panel">
         <form
           className="wheel-add"
@@ -196,7 +211,14 @@ export function DestinyWheelView({ onBack, onRacingChange }: { onBack: () => voi
           <ul className="wheel-participants">
             {participants.map((participant, index) => (
               <li key={participant.id} className="wheel-participant">
-                <TeamCar className="wheel-participant-car" livery={wheelLivery(index, participant)} />
+                <button
+                  type="button"
+                  className="wheel-participant-car-button"
+                  aria-label={tt("wheel_pick_car", { name: participant.name })}
+                  onClick={() => setPickingCarFor(participant.id)}
+                >
+                  <TeamCar className="wheel-participant-car" livery={wheelLivery(index, participant)} />
+                </button>
                 <strong>{participant.name}</strong>
                 <span className="wheel-participant-colours">
                   {(["primary", "secondary"] as const).map((slot) => (
@@ -256,5 +278,48 @@ export function DestinyWheelView({ onBack, onRacingChange }: { onBack: () => voi
         {canRace ? null : <p className="status">{tt("wheel_need_more")}</p>}
       </div>
     </section>
+  );
+}
+
+/**
+ * The garage's car chooser, without the shop: every car is available here because a draw sells
+ * nothing. A grid rather than the garage's carousel — sixteen cars and no prices to read means
+ * there is nothing to step through.
+ */
+function WheelCarPicker({
+  participants,
+  participantId,
+  onPick,
+  onClose
+}: {
+  participants: WheelParticipant[];
+  participantId: string;
+  onPick: (carAssetId: string) => void;
+  onClose: () => void;
+}) {
+  const tt = useT();
+  const index = participants.findIndex((entry) => entry.id === participantId);
+  const participant = participants[index];
+  if (!participant) return null;
+  const livery = wheelLivery(Math.max(0, index), participant);
+
+  return (
+    <Modal label={tt("wheel_pick_car", { name: participant.name })} closeLabel={tt("action_close")} showCloseButton onClose={onClose}>
+      <h3>{tt("wheel_pick_car", { name: participant.name })}</h3>
+      <div className="wheel-car-grid">
+        {CAR_ASSETS.map((asset) => (
+          <button
+            key={asset.id}
+            type="button"
+            className={asset.id === livery.carAssetId ? "wheel-car-option selected" : "wheel-car-option"}
+            aria-pressed={asset.id === livery.carAssetId}
+            aria-label={asset.name}
+            onClick={() => onPick(asset.id)}
+          >
+            <TeamCar className="wheel-car-option-car" livery={{ ...livery, carAssetId: asset.id }} />
+          </button>
+        ))}
+      </div>
+    </Modal>
   );
 }

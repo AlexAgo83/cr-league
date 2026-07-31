@@ -277,6 +277,24 @@ export function ReplayView({
   });
   const replayComplete = resultUnlocked || clock.current >= replayEnd;
   const finishRecapOpen = Boolean(afterMapContent && replayComplete && !finishRecapDismissed);
+  /**
+   * Space pauses and resumes, the way it does in every video player. Ignored while a field or a
+   * dialog has focus, so it never eats a keystroke someone meant for a control — and a button that
+   * already has focus keeps its own space, which is what makes it a button.
+   */
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.code !== "Space" || event.metaKey || event.ctrlKey || event.altKey) return;
+      const target = event.target as HTMLElement | null;
+      if (target?.closest("input, textarea, select, button, [contenteditable=true], [role=dialog]")) return;
+      event.preventDefault();
+      if (clock.current >= replayEnd) restart();
+      else setPlaying((current) => !current);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [clock, replayEnd, restart, setPlaying]);
+
   const unlockResult = () => {
     seek(replayEnd);
     setPlaying(false);

@@ -51,7 +51,13 @@ const RAW_CAR_GEOMETRY: Record<CarAssetId, RawCarGeometry> = {
   "car-011": { size: [1214, 487], front: [[241, 30], [241, 457]], rear: [[958, 33], [958, 457]], lights: [[0, 91], [0, 406]], beam: 0.35 },
   "car-012": { size: [1037, 501], front: [[162, 39], [162, 466]], rear: [[825, 30], [825, 471]], lights: [[60, 103], [66, 425]], beam: 0.35 },
   "car-013": { size: [1155, 475], front: [[175, 197], [175, 273]], rear: [[924, 37], [924, 444]], lights: [[80, 113], [78, 370]], beam: 0.35 },
-  "car-014": { size: [1104, 443], front: [[891, 31], [891, 413]], rear: [[223, 33], [223, 416]], lights: [[1103, 78], [1103, 372]] },
+  // Its metadata has the nose on the right; the artwork has it on the left, headlights and all, so
+  // the car drove backwards on every map. Front, rear and both sets of lights swapped to match.
+  //
+  // No test guards this: a mirrored entry is internally consistent — the declared front, its wheels
+  // and its lights all agree with each other — so nothing in the numbers can tell you the label is
+  // on the wrong end. Only the sprite can, by looking at which end has the headlights.
+  "car-014": { size: [1104, 443], front: [[223, 33], [223, 416]], rear: [[891, 31], [891, 413]], lights: [[0, 73], [0, 376]] },
   "car-015": { size: [1178, 494], front: [[243, 32], [243, 463]], rear: [[942, 32], [942, 459]], lights: [[74, 121], [77, 378]] },
   "car-016": { size: [1214, 478], front: [[255, 35], [255, 439]], rear: [[979, 40], [979, 440]], lights: [[76, 134], [83, 334]] }
 };
@@ -70,7 +76,7 @@ const RAW_REAR_LIGHTS: Record<CarAssetId, [CarAssetPoint, CarAssetPoint]> = {
   "car-011": [[1213, 75], [1213, 413]],
   "car-012": [[1036, 76], [1036, 424]],
   "car-013": [[1154, 74], [1154, 403]],
-  "car-014": [[0, 73], [0, 376]],
+  "car-014": [[1103, 78], [1103, 372]],
   "car-015": [[1061, 49], [1177, 410]],
   "car-016": [[1124, 173], [1125, 298]]
 };

@@ -32,6 +32,13 @@ export function ChangelogView({ currentVersion, onBack }: { currentVersion: stri
         <span className="section-kicker">{tt("changelog_kicker")}</span>
         <h2>{tt("changelog_title")}</h2>
         <p>{tt("changelog_current", { version: currentVersion })}</p>
+        {/* In the hero rather than under the list: three releases run to some three thousand pixels,
+            and a button at the bottom of that is a button nobody finds. */}
+        {showAll || CHANGELOGS.length <= CHANGELOGS_SHOWN ? null : (
+          <button type="button" className="secondary-button changelog-more" onClick={() => setShowAll(true)}>
+            {tt("changelog_show_all", { count: CHANGELOGS.length - CHANGELOGS_SHOWN })}
+          </button>
+        )}
       </section>
       <div className="changelog-list">
         {shown.map((entry) => (
@@ -44,13 +51,6 @@ export function ChangelogView({ currentVersion, onBack }: { currentVersion: stri
           </article>
         ))}
       </div>
-      {showAll || CHANGELOGS.length <= CHANGELOGS_SHOWN ? null : (
-        <div className="actions arcade-actions changelog-more">
-          <button type="button" className="secondary-button" onClick={() => setShowAll(true)}>
-            {tt("changelog_show_all", { count: CHANGELOGS.length - CHANGELOGS_SHOWN })}
-          </button>
-        </div>
-      )}
     </div>
   );
 }

@@ -574,7 +574,9 @@ function circuitPreviewCar(circuit: CityCircuit, state: LeagueState, playerTeamI
   const jitter = seed / 0xffffffff;
   return {
     id: `circuit-preview-${circuit.city}-${circuit.layoutKey}`,
-    label: "C",
+    // No label: on a race map this is a position, and on a preview lap it was a stray "C" following
+    // the car around an otherwise empty circuit.
+    label: "",
     player: Boolean(team?.id && team.id === playerTeamId),
     delay: -jitter * 8,
     duration: 13.5 + (1 - traitPace) * 5 + jitter * 2.5,

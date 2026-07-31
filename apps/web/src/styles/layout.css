@@ -1163,7 +1163,7 @@
 }
 
 .changelog-more {
-  margin-top: 0;
+  margin-top: 12px;
 }
 
 .changelog-hero p {
@@ -6330,6 +6330,57 @@ label small {
 
 .wheel-participant {
   grid-template-columns: 64px minmax(0, 1fr) auto auto;
+}
+
+/* The car in a row is the way into the picker, so it looks pressable rather than decorative. */
+.wheel-participant-car-button {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  clip-path: none;
+  cursor: pointer;
+  min-height: 0;
+  padding: 2px;
+}
+
+.wheel-participant-car-button:hover,
+.wheel-participant-car-button:focus-visible {
+  background: rgb(255 255 255 / 0.08);
+  border-color: var(--color-accent);
+}
+
+.wheel-car-grid {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  margin-top: 10px;
+  max-height: 56vh;
+  overflow-y: auto;
+}
+
+.wheel-car-option {
+  background: rgb(248 243 232 / 0.05);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  clip-path: none;
+  cursor: pointer;
+  min-height: 0;
+  padding: 6px;
+}
+
+.wheel-car-option:hover,
+.wheel-car-option:focus-visible {
+  border-color: var(--color-accent);
+}
+
+.wheel-car-option.selected {
+  background: rgb(255 77 0 / 0.16);
+  border-color: var(--color-accent);
+}
+
+.wheel-car-option-car {
+  height: 46px;
+  width: 100%;
 }
 
 .wheel-participant-colours {

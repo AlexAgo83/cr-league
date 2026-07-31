@@ -1046,6 +1046,7 @@
   "duel_win_title": "Tu l'as battu",
   "duel_lose_title": "Il t'a contenu",
   "duel_result_gap": "{gap}s entre toi et {rival} à l'arrivée.",
+  "duel_result_tally": "{won} tours pris, {lost} tours perdus.",
   "duel_again": "Nouveau duel",
   "duel_tell_sprinter": "Jette tout dans les premiers tours, puis roule à sec.",
   "duel_tell_gambler": "Attaque dès qu'il a de quoi le faire.",

@@ -13,7 +13,9 @@ Release date: 2026-07-31
 - Bots think about the weekend in front of them. Approach, tyres, pit strategy and the card they play all read the forecast, the circuit and the championship instead of repeating one plan all season — and they buy for the season rather than at random.
 - Chrono attempts learn: a bot runs its plan, tries one variation, then goes back out on whichever was quicker.
 - Below four cars, every one leaves a tyre trail on any map.
-- The duel takes the whole screen. The map is the board: the standing top-left, both engagement tanks and the lap history top-right, the three calls across the bottom, the rematch in the corner. The reveal panel is gone — the lap history already says what he chose and what it was worth.
+- The duel takes the whole screen. The map is the board: the standing top-left, the lap history top-right, both engagement tanks capping the three calls across the bottom, the rematch in the corner. The reveal panel is gone — the lap history already says what he chose and what it was worth.
+- The duel ends on a recap in the middle of the map, the way a Grand Prix and a chrono do: the verdict, the gap at the flag and how many laps each driver took.
+- Duel rivals are named by the same generator as every other team, so no two duels open on the same driver.
 - An attack with an empty tank is closed rather than offered.
 - The team you follow is named on the race-tracking panel instead of heading the running order it is already listed in.
 - The dotted line is drawn between the selection and its car, with no other rule. It used to be all of them below four cars and only the followed one above.

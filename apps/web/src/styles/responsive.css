@@ -935,6 +935,12 @@
     gap: 6px;
   }
 
+  /* At the flag the calls are gone and the rematch button takes that corner, so the tanks step up
+     out of its way. Narrow only: a wide screen has room for both side by side. */
+  .duel-controls:not(:has(.duel-calls)) {
+    bottom: 64px;
+  }
+
   .duel-call {
     padding: 9px 5px;
   }

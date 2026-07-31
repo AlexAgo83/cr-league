@@ -1046,6 +1046,7 @@
   "duel_win_title": "You beat him",
   "duel_lose_title": "He held you off",
   "duel_result_gap": "{gap}s between you and {rival} at the flag.",
+  "duel_result_tally": "{won} laps taken, {lost} laps lost.",
   "duel_again": "New duel",
   "duel_tell_sprinter": "Throws everything at the opening laps, then runs on empty.",
   "duel_tell_gambler": "Attacks whenever he has the engagement for it.",

@@ -53,6 +53,7 @@ export function DuelView({ onBack, onRacingChange }: { onBack: () => void; onRac
   const [duel, setDuel] = useState<Duel | null>(null);
   // The lap being driven: the board waits on it, and the cars are placed from it every frame.
   const [lap, setLap] = useState<{ round: DuelRound; gapBefore: number; next: Duel } | null>(null);
+  const [recapDismissed, setRecapDismissed] = useState(false);
   const carProgressRef = useRef<Record<string, number>>({ [PLAYER_ID]: 0, [RIVAL_ID]: 0 });
   const rival = { ...(RIVALS.find((candidate) => candidate.archetype === setup.rival) ?? RIVALS[0]!), name: setup.rivalName };
 
@@ -90,6 +91,7 @@ export function DuelView({ onBack, onRacingChange }: { onBack: () => void; onRac
   }
 
   function start() {
+    setRecapDismissed(false);
     carProgressRef.current = { [PLAYER_ID]: 0, [RIVAL_ID]: 0 };
     setDuel(createDuel(setup.seed, setup.rival, setup.circuit.likelyWeather));
   }
@@ -100,6 +102,7 @@ export function DuelView({ onBack, onRacingChange }: { onBack: () => void; onRac
     setSetup(next);
     setLap(null);
     setDuel(null);
+    setRecapDismissed(false);
   }
 
   if (!duel) {
@@ -174,9 +177,8 @@ export function DuelView({ onBack, onRacingChange }: { onBack: () => void; onRac
                 Laid out rather than pinned, so neither has to guess how tall the other is. */}
             <div className="duel-hud">
               <div className="duel-status">
-                <span className="section-kicker">{finished ? tt("duel_kicker") : tt("duel_lap", { lap: Math.min(duel.lap, duel.laps), laps: duel.laps })}</span>
-                <h1 id="duel-board-title">{finished ? tt(duelOutcome(duel) === "player" ? "duel_win_title" : "duel_lose_title") : gapLabel(duel.gap, tt)}</h1>
-                {finished ? <p>{tt("duel_result_gap", { gap: Math.abs(duel.gap).toFixed(1), rival: rival.name })}</p> : null}
+                <span className="section-kicker">{tt("duel_lap", { lap: Math.min(duel.lap, duel.laps), laps: duel.laps })}</span>
+                <h1 id="duel-board-title">{gapLabel(duel.gap, tt)}</h1>
               </div>
 
               <div className="duel-hud-side">
@@ -231,6 +233,28 @@ export function DuelView({ onBack, onRacingChange }: { onBack: () => void; onRac
               <button type="button" className="primary-button duel-again-button" onClick={again}>
                 {tt("duel_again")}
               </button>
+            ) : null}
+
+            {/* The verdict pops in the middle of the map, the way a Grand Prix and a chrono end. */}
+            {finished && !recapDismissed ? (
+              <div className="replay-finish-recap">
+                <div className="replay-finish-recap-panel">
+                  <div className="replay-finish-flag" aria-hidden="true" />
+                  <button type="button" className="context-panel-close replay-finish-recap-close" aria-label={tt("action_close")} onClick={() => setRecapDismissed(true)}>
+                    ×
+                  </button>
+                  <div className="duel-recap">
+                    <strong>{tt(duelOutcome(duel) === "player" ? "duel_win_title" : "duel_lose_title")}</strong>
+                    <p>{tt("duel_result_gap", { gap: Math.abs(duel.gap).toFixed(1), rival: rival.name })}</p>
+                    <p className="duel-recap-tally">
+                      {tt("duel_result_tally", {
+                        won: duel.rounds.filter((round) => round.swing > 0).length,
+                        lost: duel.rounds.filter((round) => round.swing < 0).length
+                      })}
+                    </p>
+                  </div>
+                </div>
+              </div>
             ) : null}
           </>
         }

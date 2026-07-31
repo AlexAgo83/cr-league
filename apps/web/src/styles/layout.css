@@ -1146,6 +1146,26 @@
   min-width: 0;
 }
 
+/* Top-right of the hero: the changelog opens from the profile menu in both shells, and the setup
+   shell has no nav to leave by. */
+.changelog-hero {
+  position: relative;
+}
+
+.changelog-back {
+  align-items: center;
+  display: inline-flex;
+  gap: 8px;
+  justify-content: center;
+  position: absolute;
+  right: 14px;
+  top: 14px;
+}
+
+.changelog-more {
+  margin-top: 0;
+}
+
 .changelog-hero p {
   color: var(--color-muted);
   margin: 0;

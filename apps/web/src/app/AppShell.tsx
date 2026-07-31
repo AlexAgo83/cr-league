@@ -22,6 +22,7 @@ export function AppShell({
   gameView,
   adminInspecting,
   adminView,
+  onLeaveChangelog,
   setupTopbar,
   notificationStack,
   overlays,
@@ -75,6 +76,7 @@ export function AppShell({
   gameView: GameView;
   adminInspecting: boolean;
   adminView: ReactNode;
+  onLeaveChangelog: () => void;
   setupTopbar: ReactNode;
   notificationStack: ReactNode;
   overlays: ReactNode;
@@ -131,6 +133,7 @@ export function AppShell({
         leagueState={leagueState}
         gameView={gameView}
         adminView={adminView}
+        onLeaveChangelog={onLeaveChangelog}
         setupTopbar={setupTopbar}
         notificationStack={notificationStack}
         overlays={overlays}

@@ -224,7 +224,7 @@ export function GameViews({
           />
         </Suspense>
       ) : null}
-      {gameView === "changelog" ? <ChangelogView currentVersion={APP_VERSION} /> : null}
+      {gameView === "changelog" ? <ChangelogView currentVersion={APP_VERSION} onBack={() => setGameView("drive")} /> : null}
     </>
   );
 }

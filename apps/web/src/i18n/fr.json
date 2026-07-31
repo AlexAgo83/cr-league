@@ -140,6 +140,8 @@
   "changelog_kicker": "Journal des versions",
   "changelog_title": "Nouveautés",
   "changelog_current": "Version locale actuelle : v{version}.",
+  "changelog_back": "Retour",
+  "changelog_show_all": "Voir les {count} versions précédentes",
   "directive_kicker": "Plan de course",
   "directive_title": "Régler le plan de course",
   "directive_track_read": "Briefing piste",

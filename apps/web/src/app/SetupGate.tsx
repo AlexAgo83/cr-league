@@ -12,6 +12,7 @@ export function SetupGate({
   profileSession,
   leagueState,
   gameView,
+  onLeaveChangelog,
   adminView,
   setupTopbar,
   notificationStack,
@@ -24,6 +25,8 @@ export function SetupGate({
   profileSession: ProfileSession | null;
   leagueState: LeagueState | null;
   gameView: GameView;
+  /** The setup shell has no nav, so the changelog needs to be told the way back out. */
+  onLeaveChangelog: () => void;
   adminView: ReactNode;
   setupTopbar: ReactNode;
   notificationStack: ReactNode;
@@ -143,7 +146,7 @@ export function SetupGate({
         {gameView === "admin" && profileSession.admin ? (
           adminView
         ) : gameView === "changelog" ? (
-          <ChangelogView currentVersion={APP_VERSION} />
+          <ChangelogView currentVersion={APP_VERSION} onBack={onLeaveChangelog} />
         ) : (
           <LeagueSetupView
             form={form}

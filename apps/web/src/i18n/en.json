@@ -140,6 +140,8 @@
   "changelog_kicker": "Release log",
   "changelog_title": "What's new",
   "changelog_current": "Current local version: v{version}.",
+  "changelog_back": "Back",
+  "changelog_show_all": "See the {count} earlier versions",
   "directive_kicker": "Pit wall plan",
   "directive_title": "Tune the race plan",
   "directive_track_read": "Track briefing",

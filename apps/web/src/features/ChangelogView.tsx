@@ -1,4 +1,6 @@
+import { useState } from "react";
 import { useT } from "../i18n/index.js";
+import { BoardIcon } from "./VisualIcon.js";
 
 const changelogFiles = import.meta.glob("../../../../changelogs/CHANGELOGS_*.md", { query: "?raw", import: "default", eager: true }) as Record<string, string>;
 
@@ -9,17 +11,30 @@ const CHANGELOGS = Object.entries(changelogFiles)
   })
   .sort((left, right) => compareVersions(left.version, right.version));
 
-export function ChangelogView({ currentVersion }: { currentVersion: string }) {
+/** Enough to see what changed lately without scrolling through a year of releases. */
+const CHANGELOGS_SHOWN = 3;
+
+export function ChangelogView({ currentVersion, onBack }: { currentVersion: string; onBack?: () => void }) {
   const tt = useT();
+  const [showAll, setShowAll] = useState(false);
+  const shown = showAll ? CHANGELOGS : CHANGELOGS.slice(0, CHANGELOGS_SHOWN);
+
   return (
     <div className="plan-view changelog-view">
       <section className="panel changelog-hero">
+        {/* Reached from the profile menu, from either shell, and there was no way out of it. */}
+        {onBack ? (
+          <button type="button" className="secondary-button changelog-back" onClick={onBack}>
+            <BoardIcon className="wheel-share-icon" name="previous-action" />
+            {tt("changelog_back")}
+          </button>
+        ) : null}
         <span className="section-kicker">{tt("changelog_kicker")}</span>
         <h2>{tt("changelog_title")}</h2>
         <p>{tt("changelog_current", { version: currentVersion })}</p>
       </section>
       <div className="changelog-list">
-        {CHANGELOGS.map((entry) => (
+        {shown.map((entry) => (
           <article key={entry.version} className="panel changelog-entry">
             <header>
               <span>v{entry.version}</span>
@@ -29,6 +44,13 @@ export function ChangelogView({ currentVersion }: { currentVersion: string }) {
           </article>
         ))}
       </div>
+      {showAll || CHANGELOGS.length <= CHANGELOGS_SHOWN ? null : (
+        <div className="actions arcade-actions changelog-more">
+          <button type="button" className="secondary-button" onClick={() => setShowAll(true)}>
+            {tt("changelog_show_all", { count: CHANGELOGS.length - CHANGELOGS_SHOWN })}
+          </button>
+        </div>
+      )}
     </div>
   );
 }

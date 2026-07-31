@@ -1017,6 +1017,7 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
         gameView={gameView}
         adminInspecting={adminInspecting}
         adminView={adminView}
+        onLeaveChangelog={() => setGameView("drive")}
         setupTopbar={setupTopbar}
         notificationStack={notificationStack}
         overlays={commonOverlays}

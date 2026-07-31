@@ -183,11 +183,15 @@ describe("shuffling the grid's look", () => {
     }
   });
 
-  it("actually changes something", () => {
-    const before = list(6);
-    const runs = Array.from({ length: 20 }, () => shuffleWheelLiveries(before).map((entry) => `${entry.carAssetId}${entry.primary}`).join());
-
-    expect(new Set(runs).size).toBeGreaterThan(1);
+  it("always changes something, however many times it is pressed", () => {
+    // A free offset meant a one-in-sixteen chance of a shuffle that landed back where it started,
+    // which is a flaky test and, worse, a button that looks broken.
+    let current = list(6);
+    for (let press = 0; press < 200; press += 1) {
+      const before = current.map((entry) => `${entry.carAssetId}${entry.primary}`).join();
+      current = shuffleWheelLiveries(current);
+      expect(current.map((entry) => `${entry.carAssetId}${entry.primary}`).join(), `press ${press + 1}`).not.toBe(before);
+    }
   });
 });
 

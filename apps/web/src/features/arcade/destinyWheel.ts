@@ -70,8 +70,13 @@ export function wheelLivery(index: number, chosen?: Pick<WheelParticipant, "prim
  * point of the grid is telling six little cars apart at a glance.
  */
 export function shuffleWheelLiveries(participants: WheelParticipant[]): WheelParticipant[] {
-  const colourOffset = Math.floor(Math.random() * WHEEL_PALETTE.length);
-  const carOffset = Math.floor(Math.random() * CAR_ASSETS.length);
+  // Never the offset the list is already on. A free offset meant a one-in-sixteen chance of pressing
+  // Shuffle and watching nothing happen, which reads as a broken button rather than a fair draw.
+  const first = participants[0];
+  const currentCar = first?.carAssetId ? Math.max(0, CAR_ASSETS.findIndex((asset) => asset.id === first.carAssetId)) : 0;
+  const currentColour = first?.primary ? Math.max(0, WHEEL_PALETTE.findIndex(([primary]) => primary === first.primary)) : 0;
+  const colourOffset = nextOffset(currentColour, WHEEL_PALETTE.length);
+  const carOffset = nextOffset(currentCar, CAR_ASSETS.length);
   const flipped = Math.random() < 0.5;
   return participants.map((participant, index) => {
     const [primary, secondary] = WHEEL_PALETTE[(colourOffset + index) % WHEEL_PALETTE.length] ?? WHEEL_PALETTE[0];
@@ -82,6 +87,11 @@ export function shuffleWheelLiveries(participants: WheelParticipant[]): WheelPar
       carAssetId: (CAR_ASSETS[(carOffset + index) % CAR_ASSETS.length] ?? DEFAULT_CAR_ASSET).id
     };
   });
+}
+
+/** A random offset that is never the one already in use, so the shuffle always shows. */
+function nextOffset(current: number, length: number): number {
+  return length < 2 ? current : (current + 1 + Math.floor(Math.random() * (length - 1))) % length;
 }
 
 /**

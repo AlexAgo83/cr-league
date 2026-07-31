@@ -331,15 +331,30 @@ export function routeFitTransform(points: RoutePoint[]) {
   return { x, y, scale, value: `translate(${x} ${y}) scale(${scale})` };
 }
 
-// Circuit route polylines load lazily. Until the cache fills, circuit.route is empty — rendering the
-// inner map (which positions cars on the route) would divide by an empty polyline, so gate on it.
-// ponytail: a placeholder holds the slot for the ~1 frame before the route arrives; no layout jump.
+/**
+ * Circuit route polylines load lazily. Until the cache fills, circuit.route is empty — rendering the
+ * inner map (which positions cars on the route) would divide by an empty polyline, so gate on it.
+ *
+ * The placeholder keeps the stage rather than replacing the whole map with a blank div: on a
+ * full-page map screen the overlay carries the panels too — the race-day bar, the plan, the
+ * standings, the buttons that move the Grand Prix on. Dropping it left the Stand empty but for the
+ * header if that one chunk ever failed to arrive.
+ */
 export function CircuitMap(props: Parameters<typeof CircuitMapInner>[0]) {
   useCircuitRoutesReady();
   if (props.circuit.route.length === 0) {
-    return <div className={props.className} aria-hidden="true" />;
+    const { className, framed = true, weather, overlay } = props;
+    return (
+      <section className={mapSectionClassName(className, framed, weather)}>
+        <div className="circuit-map-stage">{overlay}</div>
+      </section>
+    );
   }
   return <CircuitMapInner {...props} />;
+}
+
+function mapSectionClassName(className: string | undefined, framed: boolean, weather: Weather | undefined) {
+  return `${framed ? "circuit-map" : "circuit-map circuit-map-unframed"}${className ? ` ${className}` : ""}${weather ? ` circuit-weather-${weather}` : ""}`;
 }
 
 function CircuitMapInner({
@@ -658,10 +673,7 @@ function CircuitMapInner({
   }, [camera?.enabled, camera?.car?.id, camera?.timeRef, camera?.zoom, carDomKey, carProgressRef, circuit.laps, circuit.speedProfile, memoizedPose, routeAnalysis.startProgress, smallField]);
 
   return (
-    <section
-      className={`${framed ? "circuit-map" : "circuit-map circuit-map-unframed"}${className ? ` ${className}` : ""}${weather ? ` circuit-weather-${weather}` : ""}`}
-      aria-label={tt("city_circuit_map")}
-    >
+    <section className={mapSectionClassName(className, framed, weather)} aria-label={tt("city_circuit_map")}>
       <div className="circuit-map-stage" ref={stageRef}>
         <svg ref={svgRef} viewBox={`0 0 ${VIEW_WIDTH} ${VIEW_HEIGHT}`} preserveAspectRatio="xMidYMid meet" aria-hidden="true" onClick={onCarClick ? handleCarClick : undefined}>
           <g ref={cameraRef} className="circuit-camera">

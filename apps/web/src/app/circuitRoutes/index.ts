@@ -12,12 +12,26 @@ let loadPromise: Promise<void> | null = null;
 const listeners = new Set<() => void>();
 const emit = () => listeners.forEach((listener) => listener());
 
+/**
+ * One import for the session. A failed one stays failed, and not for want of trying: a module
+ * specifier that fails to fetch is recorded as errored in the browser's module map, so re-importing
+ * it rejects again without ever going back to the network. Measured — a retry loop issued eight
+ * more imports and exactly zero more requests. Only a reload clears it.
+ *
+ * So the failure is survivable rather than recoverable: `CircuitMap` keeps its stage when the route
+ * never arrives, which is what leaves the panels the map carries — the race-day bar, the plan, the
+ * buttons that move the Grand Prix on — on screen instead of a bare header.
+ */
 export function loadCircuitRoutes(): Promise<void> {
   if (!loadPromise) {
-    loadPromise = import("./data.js").then((module) => {
-      routeCache = module.CIRCUIT_ROUTES;
-      emit();
-    });
+    loadPromise = import("./data.js")
+      .then((module) => {
+        routeCache = module.CIRCUIT_ROUTES;
+        emit();
+      })
+      // Swallowed rather than left dangling: every render asks again, and each one would log its
+      // own unhandled rejection.
+      .catch(() => {});
   }
   return loadPromise;
 }

@@ -115,4 +115,18 @@ describe("CircuitMap rendering", () => {
 
     expect(container.querySelector(".map-car-detail")?.getAttribute("href")).toContain("/assets/cars/crl-v2/car-005/top.webp");
   });
+
+  it("keeps its stage and its overlay when the route never arrives", () => {
+    // The panels a full-page map carries live in the overlay, so a map with no route still has to
+    // render the box they hang off — otherwise one failed chunk leaves the Stand blank.
+    const { container } = renderWithT(
+      <CircuitMap circuit={{ ...CITY_CIRCUITS[0]!, route: [] }} className="drive-map-panel" overlay={<p className="probe-overlay">panels</p>} />
+    );
+
+    expect(container.querySelector(".circuit-map-stage")).not.toBeNull();
+    expect(container.querySelector(".probe-overlay")?.textContent).toBe("panels");
+    expect(container.querySelector(".circuit-map")?.classList.contains("drive-map-panel")).toBe(true);
+    // No route means no route: the drawing is what is missing, not the screen.
+    expect(container.querySelector(".circuit-route-layer")).toBeNull();
+  });
 });

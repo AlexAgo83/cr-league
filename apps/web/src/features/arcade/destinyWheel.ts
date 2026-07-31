@@ -152,7 +152,12 @@ export function drawDestinyWheel(participants: WheelParticipant[], seed: string,
  */
 export function wheelShareSearch(participants: WheelParticipant[], region: WheelRegion): string {
   const search = new URLSearchParams();
-  for (const participant of participants) search.append("name", participant.name);
+  for (const participant of participants) {
+    search.append("name", participant.name);
+    // One `look` per name, in the same order: colours without their hash, then the car's index.
+    // A link written before liveries travelled simply has no `look` params, and still opens.
+    search.append("look", lookOf(participant));
+  }
   if (region !== "all") search.set("region", region);
   return `?${search.toString()}`;
 }
@@ -161,18 +166,39 @@ export function wheelShareLink(participants: WheelParticipant[], region: WheelRe
   return `${origin.replace(/\/$/, "")}/arcade/wheel${wheelShareSearch(participants, region)}`;
 }
 
+export type SharedWheelEntry = { name: string; primary?: string; secondary?: string; carAssetId?: string };
+
 /** What a shared link asks for, or null when the URL carries no list. */
-export function wheelShareFromSearch(search: string, max = 16): { names: string[]; region: WheelRegion } | null {
+export function wheelShareFromSearch(search: string, max = 16): { entries: SharedWheelEntry[]; region: WheelRegion } | null {
   const params = new URLSearchParams(search);
-  const names = params
-    .getAll("name")
-    .map((name) => name.trim().slice(0, 24))
-    .filter(Boolean)
+  const names = params.getAll("name").map((name) => name.trim().slice(0, 24));
+  const looks = params.getAll("look");
+  const entries = names
+    .map((name, index) => ({ name, ...parseLook(looks[index]) }))
+    .filter((entry) => Boolean(entry.name))
     .slice(0, max);
-  if (!names.length) return null;
+  if (!entries.length) return null;
   const region = params.get("region");
   const pools: WheelRegion[] = ["all", ...regionsWithCircuits()];
-  return { names, region: pools.includes(region as WheelRegion) ? (region as WheelRegion) : "all" };
+  return { entries, region: pools.includes(region as WheelRegion) ? (region as WheelRegion) : "all" };
+}
+
+function lookOf(participant: WheelParticipant): string {
+  const index = participant.carAssetId ? CAR_ASSETS.findIndex((asset) => asset.id === participant.carAssetId) : -1;
+  return [participant.primary ?? "", participant.secondary ?? ""].map((hex) => hex.replace("#", "")).concat(index >= 0 ? String(index) : "").join("-");
+}
+
+/** Anything malformed simply drops that field: a bad link should still open on the names it has. */
+function parseLook(look: string | undefined): Omit<SharedWheelEntry, "name"> {
+  if (!look) return {};
+  const [primary, secondary, car] = look.split("-");
+  const hex = (value: string | undefined) => (value && /^[0-9a-f]{6}$/i.test(value) ? `#${value.toLowerCase()}` : undefined);
+  const asset = car !== undefined && car !== "" ? CAR_ASSETS[Number(car)] : undefined;
+  return {
+    ...(hex(primary) ? { primary: hex(primary)! } : {}),
+    ...(hex(secondary) ? { secondary: hex(secondary)! } : {}),
+    ...(asset ? { carAssetId: asset.id } : {})
+  };
 }
 
 function hash(value: string) {

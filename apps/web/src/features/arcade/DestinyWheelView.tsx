@@ -34,7 +34,7 @@ export function DestinyWheelView({ onBack, onRacingChange }: { onBack: () => voi
   // A shared link wins over whatever this browser had saved: someone sent this list on purpose.
   const shared = useMemo(() => wheelShareFromSearch(window.location.search, WHEEL_MAX_PARTICIPANTS), []);
   const [participants, setParticipants] = useState<WheelParticipant[]>(() =>
-    shared ? shared.names.map((name, index) => ({ id: `wheel-shared-${index}`, name })) : loadWheelParticipants()
+    shared ? shared.entries.map((entry, index) => ({ id: `wheel-shared-${index}`, ...entry })) : loadWheelParticipants()
   );
   const [name, setName] = useState("");
   const [region, setRegion] = useState<WheelRegion>(() => shared?.region ?? loadWheelRegion());

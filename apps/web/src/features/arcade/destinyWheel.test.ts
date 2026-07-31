@@ -102,21 +102,42 @@ describe("destiny wheel draw", () => {
 describe("sharing a draw", () => {
   const list = (...names: string[]) => names.map((name, index) => ({ id: `p-${index}`, name }));
 
-  it("carries the list and the pool, and reads them back", () => {
-    const search = wheelShareSearch(list("Alex", "Sam"), "europe");
+  it("carries the list, the liveries and the pool, and reads them back", () => {
+    const dressed = [
+      { id: "p-0", name: "Alex", primary: "#ff6a1f", secondary: "#ffd166", carAssetId: "car-004" },
+      { id: "p-1", name: "Sam" }
+    ];
 
-    expect(wheelShareFromSearch(search)).toEqual({ names: ["Alex", "Sam"], region: "europe" });
+    expect(wheelShareFromSearch(wheelShareSearch(dressed, "europe"))).toEqual({
+      entries: [{ name: "Alex", primary: "#ff6a1f", secondary: "#ffd166", carAssetId: "car-004" }, { name: "Sam" }],
+      region: "europe"
+    });
+  });
+
+  it("still opens a link written before liveries travelled", () => {
+    // No `look` params at all: the names and the pool are all such a link ever carried.
+    expect(wheelShareFromSearch("?name=Alex&name=Sam&region=asia")).toEqual({
+      entries: [{ name: "Alex" }, { name: "Sam" }],
+      region: "asia"
+    });
+  });
+
+  it("drops a malformed livery rather than the entry wearing it", () => {
+    expect(wheelShareFromSearch("?name=Alex&look=nothex-ffd166-99")).toEqual({
+      entries: [{ name: "Alex", secondary: "#ffd166" }],
+      region: "all"
+    });
   });
 
   it("leaves the pool out when it is every region, since that is the default at the far end", () => {
-    expect(wheelShareSearch(list("Alex"), "all")).toBe("?name=Alex");
-    expect(wheelShareFromSearch("?name=Alex")).toEqual({ names: ["Alex"], region: "all" });
+    expect(wheelShareSearch(list("Alex"), "all")).toBe("?name=Alex&look=--");
+    expect(wheelShareFromSearch("?name=Alex")).toEqual({ entries: [{ name: "Alex" }], region: "all" });
   });
 
   it("survives names a URL would otherwise break", () => {
     const search = wheelShareSearch(list("Ana & Bo", "Zoé/Max", "100%"), "all");
 
-    expect(wheelShareFromSearch(search)?.names).toEqual(["Ana & Bo", "Zoé/Max", "100%"]);
+    expect(wheelShareFromSearch(search)?.entries.map((entry) => entry.name)).toEqual(["Ana & Bo", "Zoé/Max", "100%"]);
   });
 
   it("refuses a link that carries nothing, or a pool that does not exist", () => {
@@ -129,11 +150,11 @@ describe("sharing a draw", () => {
   it("keeps a link from being padded past what the wheel accepts", () => {
     const many = list(...Array.from({ length: 40 }, (_, index) => `P${index}`));
 
-    expect(wheelShareFromSearch(wheelShareSearch(many, "all"), 16)?.names).toHaveLength(16);
+    expect(wheelShareFromSearch(wheelShareSearch(many, "all"), 16)?.entries).toHaveLength(16);
   });
 
   it("builds an absolute link on the wheel's own path", () => {
-    expect(wheelShareLink(list("Alex", "Sam"), "all", "https://cr-league.example/")).toBe("https://cr-league.example/arcade/wheel?name=Alex&name=Sam");
+    expect(wheelShareLink(list("Alex", "Sam"), "all", "https://cr-league.example/")).toBe("https://cr-league.example/arcade/wheel?name=Alex&look=--&name=Sam&look=--");
   });
 });
 

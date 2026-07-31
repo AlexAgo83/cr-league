@@ -128,6 +128,24 @@ describe("what the rival has learned", () => {
     expect(countered("opportunist")).toBeGreaterThan(seeds.length / 2);
   });
 
+  it("plays the rest of the field: the prudent one waits for a full tank, the rain man for rain", () => {
+    // Mid-duel, level, with a tank that only the prudent archetype's own threshold reads as full.
+    const level = (rival: "prudent" | "rain_specialist", weather: "dry" | "heavy_rain", engagement: number) =>
+      Array.from({ length: 30 }, (_, index) => rivalDuelCall({
+        ...createDuel(`archetype-${index}`, rival, weather),
+        lap: 3,
+        rivalEngagement: engagement,
+        rounds: [{ lap: 1, playerCall: "manage", rivalCall: "manage", swing: 0, overreach: null },
+                 { lap: 2, playerCall: "cover", rivalCall: "manage", swing: 0, overreach: null }]
+      }));
+
+    // Rates, not absence: every archetype keeps a slice of random laps, so nobody is a lock.
+    const attacks = (calls: DuelCall[]) => calls.filter((call) => call === "attack").length;
+
+    expect(attacks(level("prudent", "dry", DUEL_MAX_ENGAGEMENT))).toBeGreaterThan(attacks(level("prudent", "dry", 2)) + 5);
+    expect(attacks(level("rain_specialist", "heavy_rain", DUEL_MAX_ENGAGEMENT))).toBeGreaterThan(attacks(level("rain_specialist", "dry", DUEL_MAX_ENGAGEMENT)) + 5);
+  });
+
   it("comes forward when the flag is close and he is losing", () => {
     const losing = { ...createDuel("late-1", "prudent"), lap: 8, gap: 1.2, rounds: Array.from({ length: 7 }, (_, index) => round("manage", index + 1)) };
 
@@ -160,6 +178,16 @@ describe("the lap in between", () => {
     const defended = { ...round, playerCall: "cover" as const, rivalCall: "attack" as const, swing: 0.6 };
 
     expect(duelGapDuring(defended, 1.2, 0.5)).toBeLessThan(1.2 + defended.swing / 2);
+  });
+
+  it("lets a move that works arrive early rather than dramatically", () => {
+    const worked = { lap: 1, playerCall: "attack" as const, rivalCall: "manage" as const, swing: 0.8, overreach: null };
+    const held = { lap: 1, playerCall: "manage" as const, rivalCall: "cover" as const, swing: 0.65, overreach: null };
+    const lost = { lap: 1, playerCall: "cover" as const, rivalCall: "manage" as const, swing: -0.65, overreach: null };
+
+    // Less mid-lap wander than the lunge that fails, which is the 0.5 case above.
+    expect(duelGapDuring(worked, 0, 0.5) - 0.4).toBeLessThan(0.4);
+    expect(duelGapDuring(held, 0, 0.5)).toBeGreaterThan(duelGapDuring(lost, 0, 0.5));
   });
 
   it("never wanders on a lap where both drivers made the same call", () => {

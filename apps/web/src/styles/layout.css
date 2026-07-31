@@ -6066,6 +6066,13 @@ label small {
   font-style: normal;
 }
 
+.duel-history-empty {
+  color: var(--color-muted);
+  font-size: 0.72rem;
+  line-height: 1.25;
+  margin: 0;
+}
+
 .duel-history h2 {
   color: var(--color-muted);
   font-size: 0.76rem;

@@ -156,7 +156,7 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
    * purpose, and both modes already have a single call that re-enters. Deliberately not cleared
    * when a game is left — that is the whole point of it.
    */
-  const [lastGame, setLastGame] = useState<{ slot: SoloSlot } | { teamId: string } | null>(null);
+  const [lastGame, setLastGame] = useState<{ slot: SoloSlot } | { teamId: string } | { arcade: SetupEntryMode } | null>(null);
   const [soloSlots, setSoloSlots] = useState<Array<SoloSlotSummary | null>>([null, null, null]);
   const [setupMode, setSetupMode] = useState<SetupMode>("choice");
   const { commandClicks, markCommandClicked, resetCommandClicks } = useCommandClicks();
@@ -585,7 +585,8 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
   function resumeLastGame() {
     if (!lastGame) return;
     setProfileOpen(false);
-    if ("slot" in lastGame) openSoloSlot(lastGame.slot);
+    if ("arcade" in lastGame) setSetupEntryMode(lastGame.arcade);
+    else if ("slot" in lastGame) openSoloSlot(lastGame.slot);
     else void switchLeague(lastGame.teamId);
   }
 
@@ -833,7 +834,15 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
       pendingMessage={pendingMessage}
       onHome={goHome}
       onResumeGame={lastGame ? resumeLastGame : undefined}
-      onLeaveToMenu={inArcadeGame ? goHome : undefined}
+      onLeaveToMenu={
+        inArcadeGame
+          ? () => {
+              // The way back in points at the game just left, arcade included.
+              setLastGame({ arcade: setupEntryMode });
+              goHome();
+            }
+          : undefined
+      }
     />
   );
 

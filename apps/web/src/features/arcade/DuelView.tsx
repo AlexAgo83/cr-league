@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useT, type TranslationKey } from "../../i18n/index.js";
 import { SetupBackButton } from "../../app/SetupViews.js";
+import { randomTeamName } from "../../app/nameSeeds.js";
 import { CITY_CIRCUITS, withRoute, type CityCircuit } from "../../app/circuits.js";
 import { CircuitMap, type MapCar } from "../CircuitMap.js";
 import { BoardIcon, CountryBadge, VisualIcon } from "../VisualIcon.js";
@@ -20,13 +21,15 @@ import {
 } from "./duel.js";
 import type { BotArchetype } from "@cr-league/shared";
 
-const RIVALS: Array<{ archetype: BotArchetype; name: string; livery: { primary: string; secondary: string } }> = [
-  { archetype: "sprinter", name: "Nico Vandal", livery: { primary: "#ff6a1f", secondary: "#ffd166" } },
-  { archetype: "gambler", name: "Rae Solano", livery: { primary: "#8b5cf6", secondary: "#22d3ee" } },
-  { archetype: "prudent", name: "Ingrid Haas", livery: { primary: "#0ea5e9", secondary: "#f8fafc" } },
-  { archetype: "mechanic", name: "Sam Okoro", livery: { primary: "#16c784", secondary: "#38bdf8" } },
-  { archetype: "rain_specialist", name: "Yuki Farrow", livery: { primary: "#60a5fa", secondary: "#1e3a8a" } },
-  { archetype: "opportunist", name: "Diego Pace", livery: { primary: "#ef4444", secondary: "#facc15" } }
+/* The name comes from the same generator every other team in the game is named by, drawn per duel:
+   six fixed drivers meant the third duel was against someone you had already beaten twice. */
+const RIVALS: Array<{ archetype: BotArchetype; livery: { primary: string; secondary: string } }> = [
+  { archetype: "sprinter", livery: { primary: "#ff6a1f", secondary: "#ffd166" } },
+  { archetype: "gambler", livery: { primary: "#8b5cf6", secondary: "#22d3ee" } },
+  { archetype: "prudent", livery: { primary: "#0ea5e9", secondary: "#f8fafc" } },
+  { archetype: "mechanic", livery: { primary: "#16c784", secondary: "#38bdf8" } },
+  { archetype: "rain_specialist", livery: { primary: "#60a5fa", secondary: "#1e3a8a" } },
+  { archetype: "opportunist", livery: { primary: "#ef4444", secondary: "#facc15" } }
 ];
 
 /** A lap of animation per call: long enough to watch it happen, short enough to keep asking. */
@@ -51,7 +54,7 @@ export function DuelView({ onBack, onRacingChange }: { onBack: () => void; onRac
   // The lap being driven: the board waits on it, and the cars are placed from it every frame.
   const [lap, setLap] = useState<{ round: DuelRound; gapBefore: number; next: Duel } | null>(null);
   const carProgressRef = useRef<Record<string, number>>({ [PLAYER_ID]: 0, [RIVAL_ID]: 0 });
-  const rival = RIVALS.find((candidate) => candidate.archetype === setup.rival) ?? RIVALS[0]!;
+  const rival = { ...(RIVALS.find((candidate) => candidate.archetype === setup.rival) ?? RIVALS[0]!), name: setup.rivalName };
 
   // The briefing keeps its panel and its ambient circuit; the board takes the screen.
   useEffect(() => {
@@ -173,13 +176,15 @@ export function DuelView({ onBack, onRacingChange }: { onBack: () => void; onRac
               <div className="duel-status">
                 <span className="section-kicker">{finished ? tt("duel_kicker") : tt("duel_lap", { lap: Math.min(duel.lap, duel.laps), laps: duel.laps })}</span>
                 <h1 id="duel-board-title">{finished ? tt(duelOutcome(duel) === "player" ? "duel_win_title" : "duel_lose_title") : gapLabel(duel.gap, tt)}</h1>
-                <p>{finished ? tt("duel_result_gap", { gap: Math.abs(duel.gap).toFixed(1), rival: rival.name }) : tt("duel_board_intro", { rival: rival.name })}</p>
+                {finished ? <p>{tt("duel_result_gap", { gap: Math.abs(duel.gap).toFixed(1), rival: rival.name })}</p> : null}
               </div>
 
               <div className="duel-hud-side">
-                {duel.rounds.length ? (
-                  <div className="duel-history">
-                    <h2>{tt("duel_history_title")}</h2>
+                {/* Always on the board, so the corner it will fill does not appear out of nowhere
+                    after the first lap. */}
+                <div className="duel-history">
+                  <h2>{tt("duel_history_title")}</h2>
+                  {duel.rounds.length ? (
                     <ol>
                       {duel.rounds.map((round) => (
                         <li key={round.lap} className={round.swing > 0 ? "gain" : round.swing < 0 ? "loss" : undefined}>
@@ -190,8 +195,10 @@ export function DuelView({ onBack, onRacingChange }: { onBack: () => void; onRac
                         </li>
                       ))}
                     </ol>
-                  </div>
-                ) : null}
+                  ) : (
+                    <p className="duel-history-empty">{tt("duel_history_empty")}</p>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -250,10 +257,10 @@ function gapLabel(gap: number, tt: ReturnType<typeof useT>) {
   return tt(gap > 0 ? "duel_gap_lead" : "duel_gap_behind", { gap: Math.abs(gap).toFixed(1) });
 }
 
-/** A fresh circuit and rival per duel, so two runs never open on the same briefing. */
-function drawSetup(seed: string): { seed: string; rival: BotArchetype; circuit: CityCircuit; hydrated: CityCircuit } {
+/** A fresh circuit, rival and name per duel, so two runs never open on the same briefing. */
+function drawSetup(seed: string): { seed: string; rival: BotArchetype; rivalName: string; circuit: CityCircuit; hydrated: CityCircuit } {
   const rival = RIVALS[Math.floor(Math.random() * RIVALS.length)] ?? RIVALS[0]!;
   const circuit = CITY_CIRCUITS[Math.floor(Math.random() * CITY_CIRCUITS.length)] ?? CITY_CIRCUITS[0];
   // A fresh route snapshot, the way every other map takes one.
-  return { seed, rival: rival.archetype, circuit, hydrated: withRoute(circuit) };
+  return { seed, rival: rival.archetype, rivalName: randomTeamName(), circuit, hydrated: withRoute(circuit) };
 }

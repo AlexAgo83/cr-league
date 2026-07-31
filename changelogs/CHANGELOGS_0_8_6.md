@@ -16,8 +16,10 @@ Release date: 2026-07-31
 - The duel takes the whole screen. The map is the board: the standing top-left, the lap history top-right, both engagement tanks capping the three calls across the bottom, the rematch in the corner. The reveal panel is gone — the lap history already says what he chose and what it was worth.
 - The duel ends on a recap in the middle of the map, the way a Grand Prix and a chrono do: the verdict, the gap at the flag and how many laps each driver took.
 - Duel rivals are named by the same generator as every other team, so no two duels open on the same driver.
+- The duel's lap history is on the board from the start, with a line saying what will land there, instead of appearing after the first lap.
+- Leaving an arcade game for the menu points "Back to the game" at that arcade game rather than at a campaign left an hour ago. It reopens the game's entry screen: a duel in progress is not saved anywhere.
 - An attack with an empty tank is closed rather than offered.
-- The team you follow is named on the race-tracking panel instead of heading the running order it is already listed in.
+- The team you follow is named on the race-tracking panel, beside the gap pills, instead of heading the running order it is already listed in. A chrono has one car, so it says nothing there.
 - The dotted line is drawn between the selection and its car, with no other rule. It used to be all of them below four cars and only the followed one above.
 - Open-wheel cars carry marker lights on the nose instead of a GT's headlights.
 
@@ -28,3 +30,4 @@ Release date: 2026-07-31
 - Fixed status notifications landing on top of the race-day bar on a full-page map.
 - Fixed an arcade game offering "Back to the game" in the header, which is not where a player in a duel wants to go: it is the way back to the menu.
 - Fixed the camera zoom pumping between wide and close for a whole duel, because two cars are never far enough apart to leave close range.
+- Fixed a screen going blank when the circuit drawings fail to load. The Stand carries its panels over the map, and they went down with it: the race-day bar, the plan, the standings and every button that moves the Grand Prix on. Only the drawing is missing now.

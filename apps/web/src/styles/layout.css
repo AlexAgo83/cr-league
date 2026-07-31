@@ -5399,13 +5399,19 @@ label small {
   color: #101114;
   display: flex;
   font-family: var(--font-sans);
-  font-size: 0.72rem;
+  font-size: 0.7rem;
+  font-style: normal;
   font-weight: 900;
-  height: 17px;
+  height: 16px;
   justify-content: center;
+  letter-spacing: 0;
   line-height: 1;
   position: relative;
-  width: 17px;
+  /* The badge around it draws a four-way black outline, from when the number sat straight on the
+     helmet in light text. On a cream disc that outline smears a dark digit — which is why 4, 5 and
+     6 looked furred and the top three, carrying only a soft drop shadow, did not. */
+  text-shadow: none;
+  width: 16px;
 }
 
 .replay-tower-focus {

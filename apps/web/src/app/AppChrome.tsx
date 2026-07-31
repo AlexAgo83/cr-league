@@ -140,8 +140,8 @@ export function ProfileMenu({
           ) : null}
           {/* A switch rather than an action: it says what it is and what it currently is. */}
           <label className="profile-menu-action profile-menu-toggle">
+            <span>{tt("action_ambient_map")}</span>
             <input type="checkbox" checked={ambientMap} onChange={(event) => setAmbientMap(event.target.checked)} />
-            {tt("action_ambient_map")}
           </label>
           <button type="button" data-testid="profile-action-reset-preferences" className="profile-menu-action profile-menu-action-info" onClick={onOpenPreferencesReset}>
             {tt("action_reset_ui_preferences")}

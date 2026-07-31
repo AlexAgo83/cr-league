@@ -628,7 +628,8 @@
   }
 
   /* Four rows, not six: a phone has that much map to spare and no more. */
-  .map-list-collapsed > ol > li:nth-child(n + 5) {
+  /* Same exception as the wide fold: the row being followed is never folded away. */
+  .map-list-collapsed > ol > li:nth-child(n + 5):not(.focused) {
     display: none;
   }
 

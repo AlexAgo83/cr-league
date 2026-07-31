@@ -5126,7 +5126,11 @@ label small {
 /* The row count lives here rather than in the components: it differs per breakpoint, and the
    breakpoint is already a stylesheet concern. Both lists render every row; these rules pick how
    many show, and `:has` keeps the chevron out of a list short enough not to need one. */
-.map-list-collapsed > ol > li:nth-child(n + 7) {
+/* The fold hides the tail of the list, but never the row being followed: a folded row measures 0x0,
+   which is exactly the condition that suppresses its connector. On a phone the list folds to four
+   rows, so a player finishing fifth watched their own replay with no line to their car, and nothing
+   they clicked brought it back. */
+.map-list-collapsed > ol > li:nth-child(n + 7):not(.focused) {
   display: none;
 }
 

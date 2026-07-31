@@ -577,6 +577,18 @@ test("connects the followed standing to its car, and only that one on a full gri
   expect(await page.locator(".replay-tower > ol > li").evaluateAll((rows) => rows.filter((row) => row.getBoundingClientRect().height === 0).length)).toBeGreaterThan(0);
   await expect.poll(connectorsWithoutRow, { timeout: 4000 }).toBe(0);
   await expect.poll(drawnConnectors, { timeout: 4000 }).toHaveLength(1);
+
+  // Whichever standing is followed keeps its row out of the fold. Without that, a player finishing
+  // outside the four visible rows watched their own replay with no line to their car.
+  const lastTeam = await page.locator(".replay-tower > ol > li").last().locator("[data-team-id]").getAttribute("data-team-id");
+  const towerToggle = page.locator(".replay-tower .map-list-toggle");
+  await towerToggle.click();
+  await page.locator(`.replay-tower .replay-tower-focus[data-team-id="${lastTeam}"]`).click();
+  await towerToggle.click();
+  await expect(page.locator(".replay-tower.map-list-collapsed")).toHaveCount(1);
+  await expect.poll(followedTeam, { timeout: 4000 }).toBe(lastTeam);
+  expect(await page.locator(".replay-tower li.focused").evaluate((row) => row.getBoundingClientRect().height > 0)).toBe(true);
+  await expect.poll(drawnConnectors, { timeout: 4000 }).toEqual([lastTeam]);
 });
 
 test("keeps first-click commands animated and result shortcuts wired", async ({ page }) => {

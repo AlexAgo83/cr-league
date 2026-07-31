@@ -64,7 +64,7 @@ export function DestinyWheelView({ onBack, onRacingChange }: { onBack: () => voi
   const shareButton = (
     <button type="button" className="secondary-button wheel-share" disabled={!participants.length} onClick={share}>
       {/* The icon the app already uses for handing a league to someone else. */}
-      <BoardIcon className="setup-choice-icon" name="join-league" />
+      <BoardIcon className="wheel-share-icon" name="join-league" />
       {tt(shareCopied ? "wheel_share_copied" : "wheel_share")}
     </button>
   );

@@ -5926,6 +5926,20 @@ label small {
 
 /* ---------- Arcade: Destiny Wheel ---------- */
 
+/* An icon beside a label, not above it: a plain button leaves the image on the text baseline, which
+   sits a 40px icon high and left of the words it belongs to. */
+.wheel-share {
+  align-items: center;
+  display: inline-flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.wheel-share-icon {
+  height: 26px;
+  width: 26px;
+}
+
 /* ---------- Arcade duel ---------- */
 
 /* The board is the map: the duel fills the screen and every read-out takes a corner of it. */

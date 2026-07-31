@@ -42,6 +42,14 @@ function createMapToggle(key: string) {
   };
 }
 
+/**
+ * The ambient circuit behind the setup screens. It is a live SVG with eight cars driving a route,
+ * and on a tired machine it is the most expensive thing on a screen that is doing nothing else —
+ * so it can be swapped for a still.
+ */
+export const AMBIENT_MAP_KEY = "cr-league-ambient-map";
+export const useAmbientMapEnabled = createMapToggle(AMBIENT_MAP_KEY);
+
 export const useMapStatsExpanded = createMapToggle(MAP_STATS_EXPANDED_KEY);
 export const useMapInfoExpanded = createMapToggle(MAP_INFO_EXPANDED_KEY);
 

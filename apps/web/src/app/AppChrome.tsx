@@ -6,6 +6,7 @@ import { AssetImage } from "../features/AssetImage.js";
 import { PendingFeedback } from "../features/PendingFeedback.js";
 import { BoardIcon, CountryBadge, type BoardIconName } from "../features/VisualIcon.js";
 import { GAME_VIEWS, type GameView } from "./types.js";
+import { useAmbientMapEnabled } from "./viewPreferences.js";
 import type { Notification } from "./useNotifications.js";
 import { usePwaInstall, usePwaUpdate } from "./pwa.js";
 
@@ -92,6 +93,7 @@ export function ProfileMenu({
   onOpenChangelog: () => void;
 }) {
   const tt = useT();
+  const [ambientMap, setAmbientMap] = useAmbientMapEnabled();
   const { canInstall, promptInstall } = usePwaInstall();
   const { updateReady, applyUpdate } = usePwaUpdate();
   return (
@@ -136,6 +138,11 @@ export function ProfileMenu({
               {tt("action_copy_profile_code")}
             </button>
           ) : null}
+          {/* A switch rather than an action: it says what it is and what it currently is. */}
+          <label className="profile-menu-action profile-menu-toggle">
+            <input type="checkbox" checked={ambientMap} onChange={(event) => setAmbientMap(event.target.checked)} />
+            {tt("action_ambient_map")}
+          </label>
           <button type="button" data-testid="profile-action-reset-preferences" className="profile-menu-action profile-menu-action-info" onClick={onOpenPreferencesReset}>
             {tt("action_reset_ui_preferences")}
           </button>

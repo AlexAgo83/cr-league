@@ -144,4 +144,33 @@ describe("the duel board", () => {
     fireEvent.click(screen.getByRole("button", { name: "Line up" }));
     expect(screen.queryByRole("dialog")).toBe(null);
   });
+
+  it("keeps your colours and your car from one duel to the next", () => {
+    localStorage.setItem("cr-league-arcade-duel-livery", JSON.stringify({ primary: "#ff0000", secondary: "#00ff00", carAssetId: "car-009" }));
+    render(board());
+
+    // Colour inputs have no ARIA role of their own, so they are read off the card.
+    const colours = Array.from(document.querySelectorAll<HTMLInputElement>(".duel-player-card input[type=color]"));
+    expect(colours.map((input) => input.value)).toEqual(["#ff0000", "#00ff00"]);
+    expect(document.querySelector<HTMLImageElement>(".duel-player-card img[src*='cars']")?.getAttribute("src")).toContain("car-009");
+  });
+
+  it("lets you pick a car and a circuit pool from the briefing, and remembers both", () => {
+    localStorage.clear();
+    render(board());
+
+    fireEvent.click(screen.getByRole("button", { name: "Choose your car" }));
+    const options = Array.from(document.querySelectorAll<HTMLButtonElement>(".wheel-car-option"));
+    expect(options).toHaveLength(16);
+    fireEvent.click(options[6]!);
+    expect(document.querySelector("[role=dialog]")).toBe(null);
+    expect(localStorage.getItem("cr-league-arcade-duel-livery")).toContain("car-007");
+
+    // The pool is remembered, and the drawn circuit follows it rather than staying in the old one.
+    const circuitNow = () => document.querySelector(".duel-briefing dd")?.textContent ?? "";
+    const before = circuitNow();
+    fireEvent.change(document.querySelector(".wheel-region select")!, { target: { value: "africa" } });
+    expect(localStorage.getItem("cr-league-arcade-duel-region")).toBe("africa");
+    expect(circuitNow()).not.toBe(before);
+  });
 });

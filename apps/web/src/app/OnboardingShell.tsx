@@ -3,6 +3,7 @@ import { CITY_CIRCUITS, withRoute } from "./circuits.js";
 import { useCircuitRoutesReady } from "./circuitRoutes/index.js";
 import { type TranslationKey, useT } from "../i18n/index.js";
 import { CircuitMap } from "../features/CircuitMap.js";
+import { useAmbientMapEnabled } from "./viewPreferences.js";
 import { Modal } from "../features/Modal.js";
 import { ModalHero } from "../features/ModalHero.js";
 
@@ -37,6 +38,7 @@ export type StandardOnboardingHelpTopic = Exclude<OnboardingHelpTopic, "leagueIn
 export const SCREEN_ONBOARDING_HELP_TOPICS = ["race", "plan", "garage"] as const satisfies readonly OnboardingHelpTopic[];
 
 function AmbientRaceBackground() {
+  const [animated] = useAmbientMapEnabled();
   useCircuitRoutesReady(); // subscribe: re-render (and re-read the route below) once the cache loads
   const { circuit, cars } = useMemo(() => {
     const liveries: Array<[string, string]> = [
@@ -63,6 +65,10 @@ function AmbientRaceBackground() {
     };
   }, []);
   const hydratedCircuit = withRoute(circuit); // fresh route snapshot each render; cheap, rarely re-renders
+
+  // A still instead of eight cars driving a live SVG, for anyone who would rather spend the frames
+  // elsewhere. Same slot, same framing, so nothing else on the screen moves.
+  if (!animated) return <div className="ambient-race-background ambient-race-still" aria-hidden="true" />;
 
   return (
     <div className="ambient-race-background" aria-hidden="true">

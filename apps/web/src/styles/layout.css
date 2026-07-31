@@ -263,6 +263,11 @@
   width: 100%;
 }
 
+/* The still that stands in for the ambient circuit: same slot, same weight on the eye, no frames. */
+.ambient-race-still {
+  background: linear-gradient(180deg, rgb(16 14 18 / 0.72), rgb(16 14 18 / 0.94)), url("/assets/crl/home-background-wide.webp") center / cover no-repeat;
+}
+
 .ambient-race-map .map-attribution,
 .ambient-race-map .map-car text {
   display: none;
@@ -743,6 +748,13 @@
 /* Duplicates of the topbar pills, for the width where those are hidden. Shown by responsive.css. */
 .profile-menu-narrow-only {
   display: none;
+}
+
+.profile-menu-toggle {
+  align-items: center;
+  cursor: pointer;
+  display: flex;
+  gap: 8px;
 }
 
 .profile-menu-separator {
@@ -6085,6 +6097,16 @@ label small {
   grid-template-columns: 56px minmax(0, 1fr);
   margin-bottom: 12px;
   padding: 10px 12px;
+}
+
+/* Your card carries its own controls, so it takes a third column for them. */
+.duel-player-card {
+  border-color: color-mix(in srgb, var(--color-accent) 40%, transparent);
+  grid-template-columns: 62px minmax(0, 1fr) auto;
+}
+
+.duel-player-card .wheel-participant-car-button {
+  padding: 0;
 }
 
 .duel-rival-card strong {

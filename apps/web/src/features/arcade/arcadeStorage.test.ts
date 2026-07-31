@@ -3,14 +3,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { ACTIVE_PLAYER_CLAIM_KEY, PLAYER_CLAIMS_KEY } from "../../app/appStorage.js";
 import { SOLO_SLOT_INDEX_KEY, SOLO_SLOT_KEY_PREFIX } from "../../app/soloStorage.js";
-import {
-  addWheelParticipant,
-  loadWheelParticipants,
-  removeWheelParticipant,
-  saveWheelParticipants,
-  WHEEL_MAX_PARTICIPANTS,
-  WHEEL_PARTICIPANTS_KEY
-} from "./arcadeStorage.js";
+import { DEFAULT_DUEL_LIVERY, DUEL_LIVERY_KEY, DUEL_REGION_KEY, WHEEL_MAX_PARTICIPANTS, WHEEL_PARTICIPANTS_KEY, addWheelParticipant, loadDuelLivery, loadDuelRegion, loadWheelParticipants, removeWheelParticipant, saveDuelLivery, saveDuelRegion, saveWheelParticipants } from "./arcadeStorage.js";
 
 const people = [
   { id: "p1", name: "Alex" },
@@ -67,5 +60,34 @@ describe("wheel participants", () => {
     expect(localStorage.getItem(SOLO_SLOT_INDEX_KEY)).toBe("index");
     expect(localStorage.getItem(PLAYER_CLAIMS_KEY)).toBe("[]");
     expect(localStorage.getItem(ACTIVE_PLAYER_CLAIM_KEY)).toBe("team_1");
+  });
+});
+
+describe("what a player takes into a duel", () => {
+  it("remembers colours and a car, and survives whatever is in storage", () => {
+    saveDuelLivery({ primary: "#ff0000", secondary: "#00ff00", carAssetId: "car-009" });
+    expect(loadDuelLivery()).toEqual({ primary: "#ff0000", secondary: "#00ff00", carAssetId: "car-009" });
+
+    // A car is optional; colours are not, and neither is being readable at all.
+    saveDuelLivery({ primary: "#111111", secondary: "#222222" });
+    expect(loadDuelLivery().carAssetId).toBeUndefined();
+
+    localStorage.setItem(DUEL_LIVERY_KEY, "{not json");
+    expect(loadDuelLivery()).toEqual(DEFAULT_DUEL_LIVERY);
+    localStorage.setItem(DUEL_LIVERY_KEY, JSON.stringify({ primary: 4 }));
+    expect(loadDuelLivery()).toEqual(DEFAULT_DUEL_LIVERY);
+  });
+
+  it("opens on the starter pack until a pool is picked, and only accepts pools that exist", () => {
+    expect(loadDuelRegion()).toBe("starter");
+
+    saveDuelRegion("africa");
+    expect(loadDuelRegion()).toBe("africa");
+
+    saveDuelRegion("all");
+    expect(loadDuelRegion()).toBe("all");
+
+    localStorage.setItem(DUEL_REGION_KEY, "atlantis");
+    expect(loadDuelRegion()).toBe("starter");
   });
 });

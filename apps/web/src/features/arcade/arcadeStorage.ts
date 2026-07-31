@@ -5,6 +5,8 @@ import type { WheelRegion } from "./destinyWheel.js";
 /** Its own key: the arcade holds no league, so it must never touch a campaign save slot. */
 export const WHEEL_PARTICIPANTS_KEY = "cr-league-arcade-wheel-v1";
 export const WHEEL_REGION_KEY = "cr-league-arcade-wheel-region";
+export const DUEL_LIVERY_KEY = "cr-league-arcade-duel-livery";
+export const DUEL_REGION_KEY = "cr-league-arcade-duel-region";
 
 /** The grid ceiling the domain already states (MAX_PLAYERS_LIMIT), reused rather than reinvented. */
 export const WHEEL_MAX_PARTICIPANTS = 16;
@@ -40,8 +42,20 @@ export function saveWheelParticipants(participants: WheelParticipant[]) {
 
 /** Remembered like the participants: the same group usually wants the same corner of the world. */
 export function loadWheelRegion(): WheelRegion {
-  const saved = safeStorage.get(WHEEL_REGION_KEY);
-  // Same default as the circuit catalogue: the starter pack, until the player picks otherwise.
+  return readRegion(WHEEL_REGION_KEY);
+}
+
+export function loadDuelRegion(): WheelRegion {
+  return readRegion(DUEL_REGION_KEY);
+}
+
+export function saveDuelRegion(region: WheelRegion) {
+  safeStorage.set(DUEL_REGION_KEY, region);
+}
+
+/** Same default as the circuit catalogue: the starter pack, until the player picks otherwise. */
+function readRegion(key: string): WheelRegion {
+  const saved = safeStorage.get(key);
   return saved === "all" || REGION_ORDER.some((region) => region === saved) ? (saved as WheelRegion) : "starter";
 }
 
@@ -67,4 +81,24 @@ export function recolourWheelParticipant(participants: WheelParticipant[], id: s
 function isParticipant(entry: unknown): entry is WheelParticipant {
   const candidate = entry as Partial<WheelParticipant> | null;
   return Boolean(candidate && typeof candidate.id === "string" && typeof candidate.name === "string" && candidate.name.trim());
+}
+
+/** The colours and car the player takes into a duel. Remembered, like the wheel's entries. */
+export type DuelLivery = { primary: string; secondary: string; carAssetId?: string };
+export const DEFAULT_DUEL_LIVERY: DuelLivery = { primary: "#16c784", secondary: "#38bdf8" };
+
+export function loadDuelLivery(): DuelLivery {
+  const raw = safeStorage.get(DUEL_LIVERY_KEY);
+  if (!raw) return DEFAULT_DUEL_LIVERY;
+  try {
+    const parsed = JSON.parse(raw) as Partial<DuelLivery> | null;
+    if (typeof parsed?.primary !== "string" || typeof parsed.secondary !== "string") return DEFAULT_DUEL_LIVERY;
+    return { primary: parsed.primary, secondary: parsed.secondary, ...(typeof parsed.carAssetId === "string" ? { carAssetId: parsed.carAssetId } : {}) };
+  } catch {
+    return DEFAULT_DUEL_LIVERY;
+  }
+}
+
+export function saveDuelLivery(livery: DuelLivery) {
+  safeStorage.set(DUEL_LIVERY_KEY, JSON.stringify(livery));
 }

@@ -4,7 +4,11 @@ import { SetupBackButton } from "../../app/SetupViews.js";
 import { safeStorage } from "../../app/appStorage.js";
 import { ONBOARDING_HELP_KEYS, OnboardingHelpModal } from "../../app/OnboardingShell.js";
 import { randomTeamName } from "../../app/nameSeeds.js";
-import { CITY_CIRCUITS, withRoute, type CityCircuit } from "../../app/circuits.js";
+import { DEFAULT_DUEL_LIVERY, loadDuelLivery, loadDuelRegion, saveDuelLivery, saveDuelRegion, type DuelLivery } from "./arcadeStorage.js";
+import { type WheelRegion } from "./destinyWheel.js";
+import { Modal } from "../Modal.js";
+import { CAR_ASSETS } from "../carAssets.js";
+import { CITY_CIRCUITS, circuitsInRegion, regionsWithCircuits, withRoute, type CityCircuit } from "../../app/circuits.js";
 import { useCircuitRoutesReady } from "../../app/circuitRoutes/index.js";
 import { CircuitMap, type MapCar } from "../CircuitMap.js";
 import { BoardIcon, CountryBadge, VisualIcon } from "../VisualIcon.js";
@@ -52,7 +56,7 @@ const CALL_ICONS = { attack: "boost", manage: "balanced-approach", cover: "defen
  */
 export function DuelView({ onBack, onRacingChange }: { onBack: () => void; onRacingChange?: (racing: boolean) => void }) {
   const tt = useT();
-  const [setup, setSetup] = useState(() => drawSetup(`duel-${Date.now()}`));
+  const [setup, setSetup] = useState(() => drawSetup(`duel-${Date.now()}`, loadDuelRegion()));
   /**
    * Re-taken whenever the route cache fills, never frozen. Opening /arcade/duel cold mounts this
    * view before the route chunk has landed, and a snapshot taken then is an empty polyline that
@@ -64,6 +68,9 @@ export function DuelView({ onBack, onRacingChange }: { onBack: () => void; onRac
   // The lap being driven: the board waits on it, and the cars are placed from it every frame.
   const [lap, setLap] = useState<{ round: DuelRound; gapBefore: number; next: Duel } | null>(null);
   const [recapDismissed, setRecapDismissed] = useState(false);
+  const [livery, setLivery] = useState<DuelLivery>(() => loadDuelLivery());
+  const [region, setRegion] = useState<WheelRegion>(() => loadDuelRegion());
+  const [pickingCar, setPickingCar] = useState(false);
   // The same arrival help every other screen gets, opened when the duel does. Not on the briefing:
   // that screen is about who you drew, and the rules only matter once you are on the grid.
   const [helpOpen, setHelpOpen] = useState(false);
@@ -111,7 +118,7 @@ export function DuelView({ onBack, onRacingChange }: { onBack: () => void; onRac
   }
 
   function again() {
-    const next = drawSetup(`duel-${Date.now()}`);
+    const next = drawSetup(`duel-${Date.now()}`, region);
     carProgressRef.current = { [PLAYER_ID]: 0, [RIVAL_ID]: 0 };
     setSetup(next);
     setLap(null);
@@ -129,9 +136,37 @@ export function DuelView({ onBack, onRacingChange }: { onBack: () => void; onRac
     />
   ) : null;
 
+  function updateLivery(change: Partial<DuelLivery>) {
+    const next = { ...livery, ...change };
+    setLivery(next);
+    saveDuelLivery(next);
+  }
+
   if (!duel) {
     return (
       <section className="setup-grid setup-grid-single setup-grid-split" aria-labelledby="duel-title">
+        {pickingCar ? (
+          <Modal label={tt("duel_pick_car")} closeLabel={tt("action_close")} showCloseButton onClose={() => setPickingCar(false)}>
+            <h3>{tt("duel_pick_car")}</h3>
+            <div className="wheel-car-grid">
+              {CAR_ASSETS.map((asset) => (
+                <button
+                  key={asset.id}
+                  type="button"
+                  className={asset.id === (livery.carAssetId ?? DEFAULT_DUEL_LIVERY.carAssetId) ? "wheel-car-option selected" : "wheel-car-option"}
+                  aria-pressed={asset.id === livery.carAssetId}
+                  aria-label={asset.name}
+                  onClick={() => {
+                    updateLivery({ carAssetId: asset.id });
+                    setPickingCar(false);
+                  }}
+                >
+                  <TeamCar className="wheel-car-option-car" livery={{ ...livery, carAssetId: asset.id }} />
+                </button>
+              ))}
+            </div>
+          </Modal>
+        ) : null}
         <div className="panel setup-main-panel setup-hero-panel arcade-hero-panel">
           <SetupBackButton onBack={onBack} />
           <span className="section-kicker">{tt("duel_kicker")}</span>
@@ -139,6 +174,27 @@ export function DuelView({ onBack, onRacingChange }: { onBack: () => void; onRac
           <p className="status">{tt("duel_intro")}</p>
         </div>
         <div className="panel setup-main-panel setup-form-panel setup-choice-panel">
+          {/* Both cards, so the screen says who is racing rather than only who is being raced. */}
+          <div className="duel-rival-card duel-player-card">
+            <button type="button" className="wheel-participant-car-button" aria-label={tt("duel_pick_car")} onClick={() => setPickingCar(true)}>
+              <TeamCar className="duel-rival-car" livery={livery} />
+            </button>
+            <div>
+              <strong>{tt("duel_you")}</strong>
+              <small>{tt("duel_you_hint")}</small>
+            </div>
+            <span className="wheel-participant-colours">
+              {(["primary", "secondary"] as const).map((slot) => (
+                <input
+                  key={slot}
+                  type="color"
+                  aria-label={tt(slot === "primary" ? "garage_livery_primary" : "garage_livery_secondary")}
+                  value={livery[slot]}
+                  onChange={(event) => updateLivery({ [slot]: event.target.value })}
+                />
+              ))}
+            </span>
+          </div>
           <div className="duel-rival-card">
             <TeamCar className="duel-rival-car" livery={rival.livery} />
             <div>
@@ -160,6 +216,26 @@ export function DuelView({ onBack, onRacingChange }: { onBack: () => void; onRac
               </dd>
             </div>
           </dl>
+          <label className="wheel-region">
+            <span>{tt("wheel_region_label")}</span>
+            <select
+              className="circuit-filter-region"
+              value={region}
+              onChange={(event) => {
+                const next = event.target.value as WheelRegion;
+                setRegion(next);
+                saveDuelRegion(next);
+                // The drawn circuit belongs to the old pool, so redraw rather than leave a mismatch.
+                setSetup(drawSetup(`duel-${Date.now()}`, next));
+              }}
+            >
+              <option value="all">{tt("circuit_region_all")}</option>
+              {regionsWithCircuits().map((option) => (
+                <option key={option} value={option}>{tt(`circuit_region_${option}` as TranslationKey)}</option>
+              ))}
+            </select>
+          </label>
+
           <div className="actions arcade-actions">
             <button type="button" className="secondary-button" onClick={again}>
               {tt("duel_redraw")}
@@ -177,7 +253,7 @@ export function DuelView({ onBack, onRacingChange }: { onBack: () => void; onRac
   const cost = attackCost(duel.weather);
   const driving = Boolean(lap);
   const cars: MapCar[] = [
-    { id: PLAYER_ID, label: duel.gap >= 0 ? "1" : "2", player: true, delay: 0, duration: 30, progress: carProgressRef.current[PLAYER_ID] ?? 0, livery: { primary: "#16c784", secondary: "#38bdf8" } },
+    { id: PLAYER_ID, label: duel.gap >= 0 ? "1" : "2", player: true, delay: 0, duration: 30, progress: carProgressRef.current[PLAYER_ID] ?? 0, livery },
     { id: RIVAL_ID, label: duel.gap >= 0 ? "2" : "1", player: false, delay: 0, duration: 30, progress: carProgressRef.current[RIVAL_ID] ?? 0, livery: rival.livery }
   ];
 
@@ -307,8 +383,9 @@ function gapLabel(gap: number, tt: ReturnType<typeof useT>) {
 }
 
 /** A fresh circuit, rival and name per duel, so two runs never open on the same briefing. */
-function drawSetup(seed: string): { seed: string; rival: BotArchetype; rivalName: string; circuit: CityCircuit } {
+function drawSetup(seed: string, region: WheelRegion): { seed: string; rival: BotArchetype; rivalName: string; circuit: CityCircuit } {
   const rival = RIVALS[Math.floor(Math.random() * RIVALS.length)] ?? RIVALS[0]!;
-  const circuit = CITY_CIRCUITS[Math.floor(Math.random() * CITY_CIRCUITS.length)] ?? CITY_CIRCUITS[0];
+  const pool = circuitsInRegion(region);
+  const circuit = pool[Math.floor(Math.random() * pool.length)] ?? CITY_CIRCUITS[0];
   return { seed, rival: rival.archetype, rivalName: randomTeamName(), circuit };
 }

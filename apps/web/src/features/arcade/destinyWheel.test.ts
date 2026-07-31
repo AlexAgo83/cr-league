@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { drawDestinyWheel, wheelCircuit, wheelLivery } from "./destinyWheel.js";
+import { drawDestinyWheel, wheelCircuit, wheelLivery, wheelShareFromSearch, wheelShareLink, wheelShareSearch } from "./destinyWheel.js";
 import { circuitsInRegion, COUNTRY_REGION } from "../../app/circuits.js";
 import type { WheelParticipant } from "./arcadeStorage.js";
 
@@ -96,5 +96,43 @@ describe("destiny wheel draw", () => {
     expect(draw.circuit.layoutKey).toBe(wheelCircuit("identity-1", "asia").layoutKey);
     expect(draw.result.grandPrixName).toBe(draw.circuit.city);
     expect(draw.result.classification).toHaveLength(people.length);
+  });
+});
+
+describe("sharing a draw", () => {
+  const list = (...names: string[]) => names.map((name, index) => ({ id: `p-${index}`, name }));
+
+  it("carries the list and the pool, and reads them back", () => {
+    const search = wheelShareSearch(list("Alex", "Sam"), "europe");
+
+    expect(wheelShareFromSearch(search)).toEqual({ names: ["Alex", "Sam"], region: "europe" });
+  });
+
+  it("leaves the pool out when it is every region, since that is the default at the far end", () => {
+    expect(wheelShareSearch(list("Alex"), "all")).toBe("?name=Alex");
+    expect(wheelShareFromSearch("?name=Alex")).toEqual({ names: ["Alex"], region: "all" });
+  });
+
+  it("survives names a URL would otherwise break", () => {
+    const search = wheelShareSearch(list("Ana & Bo", "Zoé/Max", "100%"), "all");
+
+    expect(wheelShareFromSearch(search)?.names).toEqual(["Ana & Bo", "Zoé/Max", "100%"]);
+  });
+
+  it("refuses a link that carries nothing, or a pool that does not exist", () => {
+    expect(wheelShareFromSearch("")).toBe(null);
+    expect(wheelShareFromSearch("?region=europe")).toBe(null);
+    expect(wheelShareFromSearch("?name=%20%20")).toBe(null);
+    expect(wheelShareFromSearch("?name=Alex&region=atlantis")?.region).toBe("all");
+  });
+
+  it("keeps a link from being padded past what the wheel accepts", () => {
+    const many = list(...Array.from({ length: 40 }, (_, index) => `P${index}`));
+
+    expect(wheelShareFromSearch(wheelShareSearch(many, "all"), 16)?.names).toHaveLength(16);
+  });
+
+  it("builds an absolute link on the wheel's own path", () => {
+    expect(wheelShareLink(list("Alex", "Sam"), "all", "https://cr-league.example/")).toBe("https://cr-league.example/arcade/wheel?name=Alex&name=Sam");
   });
 });

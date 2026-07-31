@@ -1,5 +1,5 @@
 import { CITY_CIRCUIT_IDENTITIES, raceInputFromCircuit, simulateRace, type BotArchetype, type RaceResult, type TeamLivery } from "@cr-league/shared";
-import { CITY_CIRCUITS, circuitsInRegion, withRoute, type CircuitRegion, type CityCircuit } from "../../app/circuits.js";
+import { CITY_CIRCUITS, circuitsInRegion, regionsWithCircuits, withRoute, type CircuitRegion, type CityCircuit } from "../../app/circuits.js";
 import { DEFAULT_CAR_ASSET, CAR_ASSETS } from "../carAssets.js";
 import type { WheelParticipant } from "./arcadeStorage.js";
 
@@ -99,6 +99,39 @@ export function drawDestinyWheel(participants: WheelParticipant[], seed: string,
   });
 
   return { circuit, result, liveries };
+}
+
+/**
+ * The draw as a link. Everyone entered plus the circuit pool, so a group can set the list up on one
+ * screen and everyone else opens the same grid — the point of the wheel is that the people in it are
+ * in the room, and they are rarely at the same keyboard.
+ *
+ * Names and pool only: colours are not carried, since a shared list is re-coloured at the far end
+ * anyway and hex in a query makes the link unreadable at a glance.
+ */
+export function wheelShareSearch(participants: WheelParticipant[], region: WheelRegion): string {
+  const search = new URLSearchParams();
+  for (const participant of participants) search.append("name", participant.name);
+  if (region !== "all") search.set("region", region);
+  return `?${search.toString()}`;
+}
+
+export function wheelShareLink(participants: WheelParticipant[], region: WheelRegion, origin: string): string {
+  return `${origin.replace(/\/$/, "")}/arcade/wheel${wheelShareSearch(participants, region)}`;
+}
+
+/** What a shared link asks for, or null when the URL carries no list. */
+export function wheelShareFromSearch(search: string, max = 16): { names: string[]; region: WheelRegion } | null {
+  const params = new URLSearchParams(search);
+  const names = params
+    .getAll("name")
+    .map((name) => name.trim().slice(0, 24))
+    .filter(Boolean)
+    .slice(0, max);
+  if (!names.length) return null;
+  const region = params.get("region");
+  const pools: WheelRegion[] = ["all", ...regionsWithCircuits()];
+  return { names, region: pools.includes(region as WheelRegion) ? (region as WheelRegion) : "all" };
 }
 
 function hash(value: string) {

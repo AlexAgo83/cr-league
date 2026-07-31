@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { useT, type TranslationKey } from "../../i18n/index.js";
 import { SetupBackButton } from "../../app/SetupViews.js";
 import { regionsWithCircuits, circuitsInRegion } from "../../app/circuits.js";
@@ -16,7 +16,8 @@ import {
   WHEEL_MIN_PARTICIPANTS,
   type WheelParticipant
 } from "./arcadeStorage.js";
-import { drawDestinyWheel, wheelLivery, type WheelDraw, type WheelRegion } from "./destinyWheel.js";
+import { drawDestinyWheel, wheelLivery, wheelShareFromSearch, wheelShareLink, type WheelDraw, type WheelRegion } from "./destinyWheel.js";
+import { copyText } from "../../app/appStorage.js";
 
 const ReplayView = lazy(() => import("../ReplayView.js").then((module) => ({ default: module.ReplayView })));
 
@@ -26,9 +27,14 @@ const ReplayView = lazy(() => import("../ReplayView.js").then((module) => ({ def
  */
 export function DestinyWheelView({ onBack, onRacingChange }: { onBack: () => void; onRacingChange?: (racing: boolean) => void }) {
   const tt = useT();
-  const [participants, setParticipants] = useState<WheelParticipant[]>(() => loadWheelParticipants());
+  // A shared link wins over whatever this browser had saved: someone sent this list on purpose.
+  const shared = useMemo(() => wheelShareFromSearch(window.location.search, WHEEL_MAX_PARTICIPANTS), []);
+  const [participants, setParticipants] = useState<WheelParticipant[]>(() =>
+    shared ? shared.names.map((name, index) => ({ id: `wheel-shared-${index}`, name })) : loadWheelParticipants()
+  );
   const [name, setName] = useState("");
-  const [region, setRegion] = useState<WheelRegion>(() => loadWheelRegion());
+  const [region, setRegion] = useState<WheelRegion>(() => shared?.region ?? loadWheelRegion());
+  const [shareCopied, setShareCopied] = useState(false);
   const [draw, setDraw] = useState<WheelDraw | null>(null);
   const [showOrder, setShowOrder] = useState(false);
   const canRace = participants.length >= WHEEL_MIN_PARTICIPANTS;
@@ -46,6 +52,22 @@ export function DestinyWheelView({ onBack, onRacingChange }: { onBack: () => voi
     setDraw(drawDestinyWheel(participants, `wheel-${Date.now()}-${participants.length}`, region));
     setShowOrder(false);
   }
+
+  async function share() {
+    await copyText(wheelShareLink(participants, region, window.location.origin));
+    setShareCopied(true);
+    window.setTimeout(() => setShareCopied(false), 2400);
+  }
+
+  /* Before the launch button in both places, because a group sets the list up together and then
+     someone races it: sharing is what happens just before, not after. */
+  const shareButton = (
+    <button type="button" className="secondary-button wheel-share" disabled={!participants.length} onClick={share}>
+      {/* The icon the app already uses for handing a league to someone else. */}
+      <BoardIcon className="setup-choice-icon" name="join-league" />
+      {tt(shareCopied ? "wheel_share_copied" : "wheel_share")}
+    </button>
+  );
 
   function add() {
     const next = addWheelParticipant(participants, name);
@@ -96,6 +118,7 @@ export function DestinyWheelView({ onBack, onRacingChange }: { onBack: () => voi
             ))}
           </ol>
           <div className="actions">
+            {shareButton}
             <button type="button" className="primary-button" onClick={launch}>
               {tt("wheel_draw_again")}
             </button>
@@ -192,6 +215,7 @@ export function DestinyWheelView({ onBack, onRacingChange }: { onBack: () => voi
 
         <div className="actions">
           <small className="wheel-count">{tt("wheel_count", { count: participants.length, max: WHEEL_MAX_PARTICIPANTS })}</small>
+          {shareButton}
           <button type="button" className="primary-button" disabled={!canRace} onClick={launch}>
             {tt("wheel_launch")}
           </button>

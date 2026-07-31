@@ -171,18 +171,12 @@ export function DuelView({ onBack, onRacingChange }: { onBack: () => void; onRac
                 Laid out rather than pinned, so neither has to guess how tall the other is. */}
             <div className="duel-hud">
               <div className="duel-status">
-                <SetupBackButton onBack={onBack} />
                 <span className="section-kicker">{finished ? tt("duel_kicker") : tt("duel_lap", { lap: Math.min(duel.lap, duel.laps), laps: duel.laps })}</span>
                 <h1 id="duel-board-title">{finished ? tt(duelOutcome(duel) === "player" ? "duel_win_title" : "duel_lose_title") : gapLabel(duel.gap, tt)}</h1>
                 <p>{finished ? tt("duel_result_gap", { gap: Math.abs(duel.gap).toFixed(1), rival: rival.name }) : tt("duel_board_intro", { rival: rival.name })}</p>
               </div>
 
               <div className="duel-hud-side">
-                <div className="duel-tanks">
-                  <EngagementBar label={tt("duel_engagement_you")} value={duel.playerEngagement} />
-                  <EngagementBar label={rival.name} value={duel.rivalEngagement} />
-                </div>
-
                 {duel.rounds.length ? (
                   <div className="duel-history">
                     <h2>{tt("duel_history_title")}</h2>
@@ -201,27 +195,36 @@ export function DuelView({ onBack, onRacingChange }: { onBack: () => void; onRac
               </div>
             </div>
 
+            {/* Bottom of the screen: both tanks capping the calls they are about to pay for. */}
+            <div className="duel-controls">
+              <div className="duel-tanks">
+                <EngagementBar label={tt("duel_engagement_you")} value={duel.playerEngagement} />
+                <EngagementBar label={rival.name} value={duel.rivalEngagement} />
+              </div>
+              {finished ? null : (
+                <div className="duel-calls">
+                  {DUEL_CALLS.map((option) => {
+                    // Attacking on an empty tank only ever cost time, so the call is closed rather
+                    // than offered as a trap.
+                    const spent = option === "attack" && duel.playerEngagement < cost;
+                    return (
+                      <button key={option} type="button" className="duel-call" disabled={driving || spent} onClick={() => call(option)}>
+                        <BoardIcon className="duel-call-icon" name={CALL_ICONS[option]} />
+                        <strong>{tt(`duel_call_${option}` as TranslationKey)}</strong>
+                        <small>{tt(`duel_call_${option}_hint` as TranslationKey)}</small>
+                        <em>{option === "attack" ? tt("duel_call_cost", { cost }) : tt("duel_call_refill")}</em>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
             {finished ? (
               <button type="button" className="primary-button duel-again-button" onClick={again}>
                 {tt("duel_again")}
               </button>
-            ) : (
-              <div className="duel-calls">
-                {DUEL_CALLS.map((option) => {
-                  // Attacking on an empty tank only ever cost time, so the call is closed rather
-                  // than offered as a trap.
-                  const spent = option === "attack" && duel.playerEngagement < cost;
-                  return (
-                    <button key={option} type="button" className="duel-call" disabled={driving || spent} onClick={() => call(option)}>
-                      <BoardIcon className="duel-call-icon" name={CALL_ICONS[option]} />
-                      <strong>{tt(`duel_call_${option}` as TranslationKey)}</strong>
-                      <small>{tt(`duel_call_${option}_hint` as TranslationKey)}</small>
-                      <em>{option === "attack" ? tt("duel_call_cost", { cost }) : tt("duel_call_refill")}</em>
-                    </button>
-                  );
-                })}
-              </div>
-            )}
+            ) : null}
           </>
         }
       />

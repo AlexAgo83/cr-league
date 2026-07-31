@@ -931,13 +931,8 @@
     display: none;
   }
 
-  .duel-tanks {
-    width: auto;
-  }
-
   .duel-calls {
     gap: 6px;
-    width: calc(100% - 24px);
   }
 
   .duel-call {

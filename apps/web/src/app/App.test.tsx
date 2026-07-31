@@ -212,7 +212,9 @@ describe("App", () => {
     expect(await screen.findByRole("heading", { name: "4. Grand Prix finished" })).toBeTruthy();
     await closeLeagueIntro();
     await openRaceReplayFromFinalClassification();
-    fireEvent.click(await screen.findByRole("button", { name: "Skip to result" }));
+    // The replay is a lazy chunk: under coverage it can take longer than findBy's default second,
+    // which made this fail roughly one full run in three.
+    fireEvent.click(await screen.findByRole("button", { name: "Skip to result" }, { timeout: 5000 }));
 
     const payoff = screen.getByLabelText("What you gained");
     expect(payoff.textContent).toContain("P1");
@@ -580,7 +582,9 @@ describe("App", () => {
     expect(await screen.findByRole("heading", { name: "4. Grand Prix finished" })).toBeTruthy();
     await closeLeagueIntro();
     await openRaceReplayFromFinalClassification();
-    fireEvent.click(await screen.findByRole("button", { name: "Skip to result" }));
+    // The replay is a lazy chunk: under coverage it can take longer than findBy's default second,
+    // which made this fail roughly one full run in three.
+    fireEvent.click(await screen.findByRole("button", { name: "Skip to result" }, { timeout: 5000 }));
 
     expect(screen.getByLabelText("What you gained").textContent).toContain("No card spent");
   });

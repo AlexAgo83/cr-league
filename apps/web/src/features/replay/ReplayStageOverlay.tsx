@@ -188,18 +188,21 @@ export function ReplayStageOverlay({
         <div className="replay-info-stack">
           {activeDirector ? (
             <div className={`replay-director-panel ${activeDirector.type}`}>
-              <ReplayFocusChip entries={tower} teamLiveries={teamLiveries} focusedTeamId={focusedTeamId} />
               <span>{directorTitle} · L{activeDirector.lap}</span>
-              {playerGapItems.length ? (
-                <small className="replay-player-gaps">
-                  {playerGapItems.map((item, index) => (
-                    <span key={item.label} className={index === 0 ? "ahead" : "behind"} aria-label={`${item.label} ${item.value}`} title={`${item.label} ${item.value}`}>
-                      <i aria-hidden="true" />
-                      <b><GapValue value={item.value} /></b>
-                    </span>
-                  ))}
-                </small>
-              ) : null}
+              {/* The corner: the gaps, then who the map is following, to their right. */}
+              <div className="replay-director-corner">
+                {playerGapItems.length ? (
+                  <small className="replay-player-gaps">
+                    {playerGapItems.map((item, index) => (
+                      <span key={item.label} className={index === 0 ? "ahead" : "behind"} aria-label={`${item.label} ${item.value}`} title={`${item.label} ${item.value}`}>
+                        <i aria-hidden="true" />
+                        <b><GapValue value={item.value} /></b>
+                      </span>
+                    ))}
+                  </small>
+                ) : null}
+                {replayMode === "race" ? <ReplayFocusChip entries={tower} teamLiveries={teamLiveries} focusedTeamId={focusedTeamId} /> : null}
+              </div>
               <strong>{activeDirector.title}</strong>
               <small>{activeDirector.detail}</small>
               {activeDirector.zone ? <small className="replay-director-zone">{activeDirector.zone}</small> : null}
@@ -251,8 +254,10 @@ export function ReplayStageOverlay({
       {overlayActions && activeDirector ? (
         <div className="replay-overlay-director-slot">
           <div className={`replay-director-panel ${activeDirector.type}`}>
-            <ReplayFocusChip entries={tower} teamLiveries={teamLiveries} focusedTeamId={focusedTeamId} />
             <span>{directorTitle} · L{activeDirector.lap}</span>
+            <div className="replay-director-corner">
+              {replayMode === "race" ? <ReplayFocusChip entries={tower} teamLiveries={teamLiveries} focusedTeamId={focusedTeamId} /> : null}
+            </div>
             <strong>{activeDirector.title}</strong>
             <small>{activeDirector.detail}</small>
           </div>

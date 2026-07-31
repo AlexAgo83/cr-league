@@ -4960,12 +4960,10 @@ label small {
   color: rgb(255 255 255 / 0.72);
 }
 
-/* No explicit row: the focus chip takes the top when it is there, and the gaps follow the kicker. */
 .replay-player-gaps {
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
-  grid-column: 2;
   justify-content: flex-end;
 }
 
@@ -5103,8 +5101,17 @@ label small {
   z-index: 3;
 }
 
-/* Flush in the top-right of the race-tracking panel: its own row, so it never fights the gap pills
-   for the corner. */
+/* Flush in the top-right of the race-tracking panel, to the right of the gap pills. */
+.replay-director-corner {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  grid-column: 2;
+  grid-row: 1;
+  justify-content: flex-end;
+}
+
 .replay-focus-chip {
   align-items: center;
   background: rgb(248 243 232 / 0.08);
@@ -5114,9 +5121,7 @@ label small {
   font-size: 0.64rem;
   font-weight: 800;
   gap: 2px;
-  grid-column: 1 / -1;
-  justify-self: end;
-  margin-bottom: 2px;
+  margin-bottom: 0;
   max-width: 100%;
   padding: 1px 7px 1px 1px;
   width: fit-content;
@@ -5893,23 +5898,24 @@ label small {
   margin: 0;
 }
 
-.duel-status .setup-back-button {
-  margin-bottom: 6px;
-  position: static;
-}
-
-/* Bottom-centre: the one decision the screen is asking for. */
-.duel-calls {
+/* Bottom-centre: the one decision the screen is asking for, capped by the two tanks that pay for
+   it. One column, so the tanks are exactly as wide as the calls under them. */
+.duel-controls {
   bottom: 14px;
   display: grid;
   gap: 8px;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
   left: 50%;
   max-width: calc(100% - 24px);
   position: absolute;
   transform: translateX(-50%);
   width: 560px;
   z-index: 3;
+}
+
+.duel-calls {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 /* Right, under the tanks: the duel read back as a sequence of guesses. */
@@ -5973,7 +5979,6 @@ label small {
   display: grid;
   gap: 8px;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  width: 300px;
 }
 
 .duel-tank {

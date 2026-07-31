@@ -166,3 +166,5 @@ API simulation, 200 cycles:
 | One app function above ~3% | Real JS hotspot, worth a targeted fix. |
 | Worst frame only in the first window | Cold start, not a steady-state problem. |
 | Nodes/listeners rising every cycle | Retention. Nodes flat after the first open is normal. |
+
+For looking at a screen rather than timing it, see [Looking at the app](app-view-runbook.md).

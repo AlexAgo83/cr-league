@@ -56,6 +56,7 @@
     "review:circuits:water": "node scripts/review-circuit-water.mjs",
     "logics:validate": "logics-manager lint --require-status && logics-manager audit --group-by-doc",
     "capture:screenshots": "tsx scripts/capture-screenshots.ts",
+    "view": "tsx scripts/view.ts",
     "playtest:solo": "tsx scripts/solo-playtest.ts"
   },
   "devDependencies": {

@@ -259,6 +259,9 @@ See [docs/balance-simulations.md](docs/balance-simulations.md) for the metrics.
 Agent-oriented validation docs:
 
 - [AI app test runbook](docs/ai-app-test-runbook.md)
+- [Looking at the app](docs/app-view-runbook.md) — `npm run view` for screenshots of any
+  screen, and `scripts/viewKit.ts` for measuring, watching an animation or breaking a
+  request on purpose.
 - [Board icon assets runbook](docs/board-icon-assets-runbook.md) — generation,
   crop, audit, and UI mapping workflow for the CRL board-style PNG icon sheets.
 - [Circuit generation](docs/circuit-generation.md)

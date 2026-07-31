@@ -17,8 +17,9 @@ import {
   WHEEL_MIN_PARTICIPANTS,
   type WheelParticipant
 } from "./arcadeStorage.js";
-import { drawDestinyWheel, wheelLivery, wheelShareFromSearch, wheelShareLink, type WheelDraw, type WheelRegion } from "./destinyWheel.js";
+import { drawDestinyWheel, shuffleWheelLiveries, wheelLivery, wheelShareFromSearch, wheelShareLink, type WheelDraw, type WheelRegion } from "./destinyWheel.js";
 import { copyText } from "../../app/appStorage.js";
+import { finishTimes } from "../replay/replayMath.js";
 
 const ReplayView = lazy(() => import("../ReplayView.js").then((module) => ({ default: module.ReplayView })));
 
@@ -45,6 +46,8 @@ export function DestinyWheelView({ onBack, onRacingChange }: { onBack: () => voi
    */
   const routesReady = useCircuitRoutesReady();
   const drawnCircuit = useMemo(() => (draw && routesReady ? withRoute(draw.circuit) : null), [draw, routesReady]);
+  /** Finishing times for the order screen. Above the early returns, like every other hook. */
+  const orderTimes = useMemo(() => (draw ? finishTimes(draw.result, draw.result.replayTrace ?? []) : null), [draw]);
   const canRace = participants.length >= WHEEL_MIN_PARTICIPANTS;
   const racing = Boolean(draw) && !showOrder;
   useEffect(() => {
@@ -107,6 +110,18 @@ export function DestinyWheelView({ onBack, onRacingChange }: { onBack: () => voi
     );
   }
 
+  /* The winner's time, then each car's gap to the one ahead — the reading the running order gives
+     during the race, so the flag says the same thing as the screen it came from. Race seconds, not
+     scaled to circuit distance: the map speaks in these and a party game has no use for the other.
+     Computed once per draw rather than per row. */
+  function orderGap(index: number) {
+    if (!draw || !orderTimes) return "";
+    const time = orderTimes.times[draw.result.classification[index]!.teamId] ?? orderTimes.leader;
+    if (index === 0) return `${time.toFixed(1)}s`;
+    const ahead = orderTimes.times[draw.result.classification[index - 1]!.teamId] ?? orderTimes.leader;
+    return `+${Math.max(0, time - ahead).toFixed(1)}s`;
+  }
+
   if (draw) {
     return (
       <section className="setup-grid setup-grid-single setup-grid-split" aria-labelledby="wheel-result-title">
@@ -122,6 +137,7 @@ export function DestinyWheelView({ onBack, onRacingChange }: { onBack: () => voi
                 <span className="wheel-order-rank">{index + 1}</span>
                 <TeamCar className="wheel-order-car" livery={draw.liveries[entry.teamId] ?? wheelLivery(index)} />
                 <strong>{entry.teamName}</strong>
+                <small className="wheel-order-gap">{orderGap(index)}</small>
               </li>
             ))}
           </ol>
@@ -211,6 +227,8 @@ export function DestinyWheelView({ onBack, onRacingChange }: { onBack: () => voi
           </p>
         )}
 
+        <small className="wheel-count">{tt("wheel_count", { count: participants.length, max: WHEEL_MAX_PARTICIPANTS })}</small>
+
         <label className="wheel-region">
           <span>{tt("wheel_region_label")}</span>
           <select
@@ -226,7 +244,10 @@ export function DestinyWheelView({ onBack, onRacingChange }: { onBack: () => voi
         </label>
 
         <div className="actions arcade-actions">
-          <small className="wheel-count">{tt("wheel_count", { count: participants.length, max: WHEEL_MAX_PARTICIPANTS })}</small>
+          <button type="button" className="secondary-button wheel-share" disabled={!participants.length} onClick={() => setParticipants(shuffleWheelLiveries(participants))}>
+            <BoardIcon className="wheel-share-icon" name="car-skin" />
+            {tt("wheel_shuffle")}
+          </button>
           {shareButton}
           <button type="button" className="primary-button" disabled={!canRace} onClick={launch}>
             {tt("wheel_launch")}

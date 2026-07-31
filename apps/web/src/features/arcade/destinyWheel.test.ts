@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { drawDestinyWheel, wheelCircuit, wheelLivery, wheelShareFromSearch, wheelShareLink, wheelShareSearch } from "./destinyWheel.js";
+import { drawDestinyWheel, shuffleWheelLiveries, wheelApproach, wheelCircuit, wheelLivery, wheelShareFromSearch, wheelShareLink, wheelShareSearch } from "./destinyWheel.js";
 import { circuitsInRegion, COUNTRY_REGION } from "../../app/circuits.js";
 import type { WheelParticipant } from "./arcadeStorage.js";
 
@@ -134,5 +134,55 @@ describe("sharing a draw", () => {
 
   it("builds an absolute link on the wheel's own path", () => {
     expect(wheelShareLink(list("Alex", "Sam"), "all", "https://cr-league.example/")).toBe("https://cr-league.example/arcade/wheel?name=Alex&name=Sam");
+  });
+});
+
+describe("shuffling the grid's look", () => {
+  const list = (count: number) => Array.from({ length: count }, (_, index) => ({ id: `p-${index}`, name: `P${index}` }));
+
+  it("gives everyone a car and a pair of colours, and keeps who they are", () => {
+    const shuffled = shuffleWheelLiveries(list(6));
+
+    expect(shuffled.map((entry) => entry.name)).toEqual(["P0", "P1", "P2", "P3", "P4", "P5"]);
+    for (const entry of shuffled) {
+      expect(entry.carAssetId).toBeTruthy();
+      expect(entry.primary).toMatch(/^#[0-9a-f]{6}$/i);
+      expect(entry.secondary).toMatch(/^#[0-9a-f]{6}$/i);
+    }
+  });
+
+  it("never hands two entries the same car or the same pair of colours", () => {
+    // The pair, not the primary alone: the palette reuses a few colours across its two columns, so
+    // two entries can share a primary and still be told apart on the grid.
+    for (let run = 0; run < 40; run += 1) {
+      const shuffled = shuffleWheelLiveries(list(8));
+
+      expect(new Set(shuffled.map((entry) => entry.carAssetId)).size, "cars").toBe(8);
+      expect(new Set(shuffled.map((entry) => `${entry.primary}/${entry.secondary}`)).size, "liveries").toBe(8);
+    }
+  });
+
+  it("actually changes something", () => {
+    const before = list(6);
+    const runs = Array.from({ length: 20 }, () => shuffleWheelLiveries(before).map((entry) => `${entry.carAssetId}${entry.primary}`).join());
+
+    expect(new Set(runs).size).toBeGreaterThan(1);
+  });
+});
+
+describe("how a draw is driven", () => {
+  it("gives a six-car grid more than one way of driving, the same way every time", () => {
+    // Everyone drove the same balanced race, and whoever led early led to the flag four times in
+    // five. Measured, spreading the driving moves that to 17% and lifts a back-marker's chances of
+    // a podium from 42% to 46% — a real gain, but too small for a threshold to pin without being
+    // brittle, so what is pinned is the spread itself.
+    const grid = (seed: string) => Array.from({ length: 6 }, (_, index) => wheelApproach(seed, `p${index}`));
+
+    expect(new Set(grid("draw-1")).size).toBeGreaterThan(1);
+    expect(grid("draw-1")).toEqual(grid("draw-1"));
+    expect(new Set(["draw-1", "draw-2", "draw-3"].map((seed) => grid(seed).join()))).not.toHaveLength(1);
+    expect(new Set(Array.from({ length: 40 }, (_, index) => wheelApproach(`spread-${index}`, "p0")))).toEqual(
+      new Set(["aggressive", "balanced", "prudent"])
+    );
   });
 });

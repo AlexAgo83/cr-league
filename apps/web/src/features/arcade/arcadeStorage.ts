@@ -16,6 +16,8 @@ export type WheelParticipant = {
   /** Absent until the entry is recoloured; the palette default stands in until then. */
   primary?: string;
   secondary?: string;
+  /** Absent until the list is shuffled; the car follows the entry's position until then. */
+  carAssetId?: string;
 };
 
 export function loadWheelParticipants(): WheelParticipant[] {

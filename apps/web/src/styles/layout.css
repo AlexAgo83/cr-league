@@ -5957,10 +5957,6 @@ label small {
 }
 
 /* The count keeps the left of the entry row; the buttons go right, like the result rows. */
-.setup-choice-panel .actions .wheel-count {
-  margin-right: auto;
-}
-
 /* ---------- Arcade duel ---------- */
 
 /* The board is the map: the duel fills the screen and every read-out takes a corner of it. */
@@ -6342,9 +6338,13 @@ label small {
   white-space: nowrap;
 }
 
+/* Above the circuit picker, in the corner, so the list's size reads as part of the list rather than
+   as a label on the buttons. */
 .wheel-count {
-  margin-right: auto;
+  display: block;
+  margin: 0 0 10px;
   opacity: 0.72;
+  text-align: right;
 }
 
 .wheel-order {
@@ -6357,7 +6357,19 @@ label small {
 }
 
 .wheel-order-row {
-  grid-template-columns: 28px 64px minmax(0, 1fr);
+  grid-template-columns: 28px 64px minmax(0, 1fr) auto;
+}
+
+/* The winner's time and everyone else's gap to it, in the corner and quiet about it. */
+.wheel-order-gap {
+  color: var(--color-muted);
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+  justify-self: end;
+}
+
+.wheel-order-winner .wheel-order-gap {
+  color: var(--color-accent);
 }
 
 .wheel-order-rank {

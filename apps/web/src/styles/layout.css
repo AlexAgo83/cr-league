@@ -5341,6 +5341,7 @@ label small {
   background: rgb(248 113 113 / 0.14);
 }
 
+/* A box the size of the helmet: the helmet fills it, centred, and the position tags its corner. */
 .replay-tower-livery {
   align-items: end;
   background: transparent;
@@ -5350,7 +5351,7 @@ label small {
   flex: 0 0 auto;
   font-size: 0.5rem;
   font-weight: 900;
-  height: 22px;
+  height: 30px;
   justify-content: end;
   line-height: 1;
   min-height: 0;
@@ -5362,22 +5363,20 @@ label small {
     1px 0 1px rgb(0 0 0 / 0.9),
     -1px 0 1px rgb(0 0 0 / 0.9),
     0 -1px 1px rgb(0 0 0 / 0.9);
-  width: 30px;
+  width: 36px;
 }
 
-/* Shifted up and left so the position disc sits at its lower-right corner instead of across its
-   face: the helmet is the identity, the number is the label on it. */
 .replay-tower-helmet {
   background: linear-gradient(140deg, var(--livery-primary) 0 48%, var(--livery-secondary) 48% 100%);
-  height: 30px;
-  left: -9px;
+  height: 100%;
+  left: 0;
   mask: url("/assets/crl/helmet-token-primary.png") center / contain no-repeat;
   object-fit: contain;
   pointer-events: none;
   position: absolute;
-  top: -9px;
+  top: 0;
   -webkit-mask: url("/assets/crl/helmet-token-primary.png") center / contain no-repeat;
-  width: 36px;
+  width: 100%;
 }
 
 .replay-tower-helmet img {
@@ -5412,6 +5411,13 @@ label small {
      6 looked furred and the top three, carrying only a soft drop shadow, did not. */
   text-shadow: none;
   width: 16px;
+}
+
+/* Sat on the helmet's lower-right rather than hung off its corner, so the pair reads as one mark. */
+.replay-tower-livery > .replay-tower-rank {
+  bottom: 1px;
+  position: absolute;
+  right: 1px;
 }
 
 .replay-tower-focus {

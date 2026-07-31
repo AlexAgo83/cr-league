@@ -2,7 +2,7 @@ import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-li
 import { act } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { App } from "./App.js";
-import { CITY_CIRCUITS } from "./circuits.js";
+import { circuitsInRegion } from "./circuits.js";
 import { testCircuit, baseState, decidedState, resolvedState, nextGrandPrixState, seasonTwoState, qualifyingRun, qualifiedState, decidedStateWithQualifying, settingsState } from "./App.testFixtures.js";
 import { closeLeagueIntro, createLeagueFromSetup, expectGarageCode, response, saveProfile, startCampaign, resumeSavedLeague, startMultiplayerSetup, withoutPlayer } from "./App.testHelpers.js";
 import { createInitialSoloLeagueState } from "./soloLeague.js";
@@ -1064,7 +1064,8 @@ describe("App", () => {
     expect(document.querySelector(".current-round-badge")?.textContent).toBe("1");
     expect(document.querySelector(".mini-circuit-start-line")).toBeTruthy();
     const displayedCircuitNames = [...document.querySelectorAll(".circuit-calendar-button strong")].map((node) => node.textContent);
-    const sortedCircuitNames = [...CITY_CIRCUITS].map((circuit) => t(circuit.layoutKey, "en")).sort((left, right) => left.localeCompare(right, undefined, { sensitivity: "base" }));
+    // The catalogue opens on the starter pack, so that is the list it pages through.
+    const sortedCircuitNames = circuitsInRegion("starter").map((circuit) => t(circuit.layoutKey, "en")).sort((left, right) => left.localeCompare(right, undefined, { sensitivity: "base" }));
     const currentCircuitName = t(roundOneCircuit.layoutKey, "en");
     const expectedCircuitNames = sortedCircuitNames.slice(0, 8);
     if (!expectedCircuitNames.includes(currentCircuitName)) expectedCircuitNames[7] = currentCircuitName;

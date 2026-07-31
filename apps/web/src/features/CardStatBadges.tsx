@@ -143,6 +143,20 @@ export function StatBadges({ badges }: { badges: StatBadge[] }) {
   );
 }
 
+/**
+ * Every pill says what it is on hover and on focus, not just the stat ones. The wording on a pill is
+ * the answer — "Trigger: at the start" — and on its own it never said what the question was.
+ */
+function InfoBadge({ className, hint, children }: { className: string; hint: string; children: string }) {
+  return (
+    // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- informational, but the title has to be reachable without a mouse.
+    <span className={className} title={`${children}. ${hint}`} aria-label={`${children}. ${hint}`} tabIndex={0}>
+      <i aria-hidden="true">i</i>
+      <span>{children}</span>
+    </span>
+  );
+}
+
 export function CardStatBadges({ cardId }: { cardId: CardId }) {
   const tt = useT();
   const infoLabel = CARD_INFO_BADGES[cardId];
@@ -152,23 +166,19 @@ export function CardStatBadges({ cardId }: { cardId: CardId }) {
     <span className="card-stat-badges">
       <StatBadges badges={CARD_BADGES[cardId]} />
       {infoLabel ? (
-        <span className="card-stat-badge card-info-badge">
-          <i aria-hidden="true">i</i>
-          <span>{tt(infoLabel)}</span>
-        </span>
+        <InfoBadge className="card-stat-badge card-info-badge" hint={tt("card_badge_note_hint")}>
+          {tt(infoLabel)}
+        </InfoBadge>
       ) : null}
-      <span className={`card-stat-badge card-info-badge card-strength-${descriptor.strength}`}>
-        <i aria-hidden="true">i</i>
-        <span>{tt(descriptor.conditionKey as TranslationKey)}</span>
-      </span>
-      <span className={`card-stat-badge card-info-badge card-strength-${descriptor.strength}`}>
-        <i aria-hidden="true">i</i>
-        <span>{tt(CARD_STRENGTH_LABEL[descriptor.strength]!)}</span>
-      </span>
-      <span className="card-stat-badge card-info-badge weakness">
-        <i aria-hidden="true">i</i>
-        <span>{tt(descriptor.downsideKey as TranslationKey)}</span>
-      </span>
+      <InfoBadge className={`card-stat-badge card-info-badge card-strength-${descriptor.strength}`} hint={tt("card_badge_condition_hint")}>
+        {tt(descriptor.conditionKey as TranslationKey)}
+      </InfoBadge>
+      <InfoBadge className={`card-stat-badge card-info-badge card-strength-${descriptor.strength}`} hint={tt("card_badge_strength_hint")}>
+        {tt(CARD_STRENGTH_LABEL[descriptor.strength]!)}
+      </InfoBadge>
+      <InfoBadge className="card-stat-badge card-info-badge weakness" hint={tt("card_badge_downside_hint")}>
+        {tt(descriptor.downsideKey as TranslationKey)}
+      </InfoBadge>
     </span>
   );
 }

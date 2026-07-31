@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { drawDestinyWheel, shuffleWheelLiveries, wheelApproach, wheelCircuit, wheelLivery, wheelShareFromSearch, wheelShareLink, wheelShareSearch } from "./destinyWheel.js";
-import { circuitsInRegion, COUNTRY_REGION } from "../../app/circuits.js";
+import { circuitsInRegion, COUNTRY_REGION, STARTER_PACK_LAYOUTS } from "../../app/circuits.js";
 import type { WheelParticipant } from "./arcadeStorage.js";
 
 const people = ["Alex", "Sam", "Robin", "Chris", "Jules"].map((name, index) => ({ id: `p${index}`, name })) as WheelParticipant[];
@@ -184,5 +184,25 @@ describe("how a draw is driven", () => {
     expect(new Set(Array.from({ length: 40 }, (_, index) => wheelApproach(`spread-${index}`, "p0")))).toEqual(
       new Set(["aggressive", "balanced", "prudent"])
     );
+  });
+});
+
+describe("the starter pack", () => {
+  it("is ten hand-picked circuits, not a place on the map", () => {
+    const pack = circuitsInRegion("starter");
+
+    expect(pack).toHaveLength(STARTER_PACK_LAYOUTS.length);
+    expect(pack.map((circuit) => circuit.layoutKey).sort()).toEqual([...STARTER_PACK_LAYOUTS].sort());
+    // Hand-picked means every key has to name a circuit that exists.
+    for (const layout of STARTER_PACK_LAYOUTS) expect(circuitsInRegion("all").some((circuit) => circuit.layoutKey === layout), layout).toBe(true);
+    // Spread across the map rather than a corner of it.
+    expect(new Set(pack.map((circuit) => COUNTRY_REGION[circuit.country])).size).toBeGreaterThan(3);
+  });
+
+  it("draws only from the pack when it is the chosen pool", () => {
+    const drawn = new Set(Array.from({ length: 60 }, (_, index) => wheelCircuit(`starter-${index}`, "starter").layoutKey));
+
+    for (const layout of drawn) expect(STARTER_PACK_LAYOUTS).toContain(layout);
+    expect(drawn.size).toBeGreaterThan(1);
   });
 });

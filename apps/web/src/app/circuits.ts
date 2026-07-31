@@ -35,8 +35,26 @@ export const CITY_CIRCUITS = CITY_CIRCUIT_IDENTITIES.map((identity) => ({
 
 const CIRCUIT_BY_LAYOUT = new Map(CITY_CIRCUITS.map((circuit) => [circuit.layoutKey, circuit]));
 
-export type CircuitRegion = "europe" | "americas" | "asia" | "africa" | "oceania";
-export const REGION_ORDER: CircuitRegion[] = ["europe", "americas", "asia", "africa", "oceania"];
+export type CircuitRegion = "starter" | "europe" | "americas" | "asia" | "africa" | "oceania";
+export const REGION_ORDER: CircuitRegion[] = ["starter", "europe", "americas", "asia", "africa", "oceania"];
+
+/**
+ * Ten circuits that make a good first hour: short enough to read, spread across the map, and none
+ * of the awkward ones. Picked by hand, so this is a list of layout keys rather than a rule — a
+ * starter pack that computed itself would drift the moment a circuit was added.
+ */
+export const STARTER_PACK_LAYOUTS: readonly TranslationKey[] = [
+  "circuit_porto_boavista_loop",
+  "circuit_helsinki_icebreak",
+  "circuit_prague_vltava_loop",
+  "circuit_docklands_sprint",
+  "circuit_ocean_drive",
+  "circuit_reforma",
+  "circuit_bund",
+  "circuit_seoul_overpass_gp",
+  "circuit_casablanca_atlantic_boulevard",
+  "circuit_brisbane_river_city"
+] as TranslationKey[];
 // ponytail: flat ISO2 -> region map covers current + planned circuit countries; unknown codes simply won't match a region filter.
 export const COUNTRY_REGION: Record<string, CircuitRegion> = {
   FR: "europe", NL: "europe", DE: "europe", IT: "europe", PT: "europe", ES: "europe", AT: "europe", MC: "europe", GB: "europe",
@@ -49,7 +67,10 @@ export const COUNTRY_REGION: Record<string, CircuitRegion> = {
 
 /** "all" is a region choice like any other, so callers never special-case it. */
 export function circuitsInRegion(region: "all" | CircuitRegion, circuits: readonly CityCircuit[] = CITY_CIRCUITS) {
-  return region === "all" ? circuits : circuits.filter((circuit) => COUNTRY_REGION[circuit.country] === region);
+  if (region === "all") return circuits;
+  // The starter pack is a hand-picked list rather than a place, so it selects by layout, not country.
+  if (region === "starter") return circuits.filter((circuit) => STARTER_PACK_LAYOUTS.includes(circuit.layoutKey));
+  return circuits.filter((circuit) => COUNTRY_REGION[circuit.country] === region);
 }
 
 export function regionsWithCircuits(circuits: readonly CityCircuit[] = CITY_CIRCUITS) {

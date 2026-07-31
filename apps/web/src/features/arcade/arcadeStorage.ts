@@ -41,7 +41,8 @@ export function saveWheelParticipants(participants: WheelParticipant[]) {
 /** Remembered like the participants: the same group usually wants the same corner of the world. */
 export function loadWheelRegion(): WheelRegion {
   const saved = safeStorage.get(WHEEL_REGION_KEY);
-  return REGION_ORDER.some((region) => region === saved) ? (saved as WheelRegion) : "all";
+  // Same default as the circuit catalogue: the starter pack, until the player picks otherwise.
+  return saved === "all" || REGION_ORDER.some((region) => region === saved) ? (saved as WheelRegion) : "starter";
 }
 
 export function saveWheelRegion(region: WheelRegion) {

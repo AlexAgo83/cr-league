@@ -62,7 +62,8 @@ export function ChampionshipView({
   const previewClock = useCircuitPreviewClock(previewCircuit, previewCar);
   const catalogCircuits = CITY_CIRCUITS.map(withRoute).sort((left, right) => tt(left.layoutKey).localeCompare(tt(right.layoutKey), undefined, { sensitivity: "base" }));
   const [circuitQuery, setCircuitQuery] = useState("");
-  const [circuitRegion, setCircuitRegion] = useState<"all" | CircuitRegion>("all");
+  // The starter pack opens the catalogue: seventy-one circuits is a lot to meet at once.
+  const [circuitRegion, setCircuitRegion] = useState<"all" | CircuitRegion>("starter");
   const [circuitPage, setCircuitPage] = useState(0);
   const availableRegions = regionsWithCircuits(catalogCircuits);
   const filteredCircuits = circuitsInRegion(circuitRegion, catalogCircuits).filter((circuit) => {
@@ -658,8 +659,10 @@ function historyPosition(grandPrix: LeagueState["grandPrixHistory"][number], pla
 function visiblePageCircuits(filteredCircuits: CityCircuit[], pageIndex: number, currentCircuit: CityCircuit | undefined) {
   const page = filteredCircuits.slice(pageIndex * CIRCUIT_PAGE_SIZE, pageIndex * CIRCUIT_PAGE_SIZE + CIRCUIT_PAGE_SIZE);
   if (!currentCircuit || page.some((circuit) => circuit.layoutKey === currentCircuit.layoutKey)) return page;
-  const current = filteredCircuits.find((circuit) => circuit.layoutKey === currentCircuit.layoutKey);
-  return current && pageIndex === 0 ? [...page.slice(0, CIRCUIT_PAGE_SIZE - 1), current] : page;
+  // The circuit being raced keeps its place on the first page whatever the filter says — it used to
+  // be pinned only when the filter already included it, so the starter pack default hid the one
+  // entry nobody goes looking for and everybody needs.
+  return pageIndex === 0 ? [...page.slice(0, CIRCUIT_PAGE_SIZE - 1), currentCircuit] : page;
 }
 
 function groupHistoryBySeason(history: LeagueState["grandPrixHistory"]) {

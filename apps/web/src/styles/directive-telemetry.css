@@ -134,9 +134,9 @@
 .plan-view .directive-choice-approach .card-stat-badge,
 .plan-view .directive-choice-preparation .card-stat-badge,
 .plan-view .directive-choice-pit .card-stat-badge {
-  font-size: 0.48rem;
-  gap: 1px;
-  padding: 1px 3px 1px 1px;
+  font-size: 0.64rem;
+  gap: 3px;
+  padding: 2px 6px 2px 2px;
 }
 
 .plan-view .directive-choice-approach .card-stat-badge i,

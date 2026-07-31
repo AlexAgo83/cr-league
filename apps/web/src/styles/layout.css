@@ -5791,23 +5791,26 @@ label small {
   align-items: flex-start;
   display: flex;
   flex-wrap: wrap;
-  gap: 3px;
+  gap: 4px;
   position: relative;
   z-index: 2;
 }
 
+/* 0.56rem is roughly 9px: legible on a design mock, not on a card in a shop. These carry the only
+   numbers that say what a card does, so they are sized to be read. */
 .card-stat-badge {
   align-items: center;
   background: rgb(255 255 255 / 0.04);
   border: 1px solid rgb(255 255 255 / 0.08);
   border-radius: 999px;
   color: var(--color-muted);
+  cursor: help;
   display: inline-flex;
-  font-size: 0.56rem;
+  font-size: 0.72rem;
   font-weight: 900;
-  gap: 3px;
+  gap: 5px;
   line-height: 1;
-  padding: 2px 5px 2px 2px;
+  padding: 3px 8px 3px 3px;
   text-transform: uppercase;
 }
 
@@ -5817,10 +5820,17 @@ label small {
   border-radius: 999px;
   color: var(--trait-tone);
   display: inline-flex;
+  flex: none;
   font-style: normal;
-  height: 13px;
+  height: 17px;
   justify-content: center;
-  width: 13px;
+  width: 17px;
+}
+
+.card-stat-badge i svg,
+.card-stat-badge i img {
+  height: 12px;
+  width: 12px;
 }
 
 .card-stat-badge.bonus {

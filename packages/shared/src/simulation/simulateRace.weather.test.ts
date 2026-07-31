@@ -3,7 +3,9 @@ import { DEMO_RACE_INPUT } from "./demoRace.js";
 import { simulateRace } from "./simulateRace.js";
 import type { RaceInput, TechnicalPreparation } from "../domain/race.js";
 
-const SEEDS = 200;
+// 100, not 200: the figures are stable from 80 seeds up (0.10 / 0.83 / -0.37 either way) and the
+// larger run took 5.1s under full-suite coverage, against a 5s per-test limit.
+const SEEDS = 100;
 const PLAYER = DEMO_RACE_INPUT.participants[0]!.teamId;
 
 const FORECASTS = {

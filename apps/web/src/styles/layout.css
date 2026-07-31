@@ -3267,6 +3267,34 @@ label small {
   fill: rgb(248 243 232 / 0.06);
 }
 
+/* Centred in the empty stage: the one thing the map can still tell you is why it is empty. */
+.map-routes-unavailable {
+  align-items: center;
+  background: rgb(16 14 18 / 0.82);
+  border: 1px solid rgb(255 255 255 / 0.14);
+  border-radius: 8px;
+  color: var(--color-muted);
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 0.8rem;
+  gap: 10px;
+  justify-content: center;
+  left: 50%;
+  margin: 0;
+  max-width: calc(100% - 32px);
+  padding: 10px 14px;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+}
+
+/* The pill is a corner button everywhere else, so it has to be told to sit in the line here. */
+.map-routes-unavailable .map-plan-edit-button {
+  position: static;
+  padding: 4px 9px;
+}
+
 /* Same pill as the FPS readout on the opposite corner: one visual weight for both map footnotes.
    ponytail: tile attribution has to stay legible, so this is the floor — do not shrink further. */
 .map-attribution {

@@ -4,7 +4,7 @@ import type { CSSProperties } from "react";
 import type { DecisionDeltaKey, TeamLivery, TrackSpeedProfile, Weather } from "@cr-league/shared";
 import type { TranslationKey } from "../i18n/index.js";
 import { circuitDistanceLabel, type CityCircuit } from "../app/circuits.js";
-import { useCircuitRoutesReady } from "../app/circuitRoutes/index.js";
+import { useCircuitRoutesStatus } from "../app/circuitRoutes/index.js";
 import { useMapInfoExpanded } from "../app/viewPreferences.js";
 import { applyTrackSpeedProfile } from "./replay/replayMath.js";
 import { DEFAULT_CAR_ASSET, carAssetForId, carRenderGeometryForId, type CarAsset } from "./carAssets.js";
@@ -341,16 +341,35 @@ export function routeFitTransform(points: RoutePoint[]) {
  * header if that one chunk ever failed to arrive.
  */
 export function CircuitMap(props: Parameters<typeof CircuitMapInner>[0]) {
-  useCircuitRoutesReady();
+  const status = useCircuitRoutesStatus();
   if (props.circuit.route.length === 0) {
     const { className, framed = true, weather, overlay } = props;
     return (
       <section className={mapSectionClassName(className, framed, weather)}>
-        <div className="circuit-map-stage">{overlay}</div>
+        <div className="circuit-map-stage">
+          {status === "failed" ? <MapRoutesUnavailable /> : null}
+          {overlay}
+        </div>
       </section>
     );
   }
   return <CircuitMapInner {...props} />;
+}
+
+/**
+ * A failed chunk cannot be re-imported — the browser records the specifier as errored — so a reload
+ * is genuinely the only way back. Saying so beats a map that is silently, permanently blank.
+ */
+function MapRoutesUnavailable() {
+  const tt = useT();
+  return (
+    <p className="map-routes-unavailable" role="status">
+      <span>{tt("map_routes_unavailable")}</span>
+      <button type="button" className="map-plan-edit-button" onClick={() => window.location.reload()}>
+        {tt("action_reload")}
+      </button>
+    </p>
+  );
 }
 
 function mapSectionClassName(className: string | undefined, framed: boolean, weather: Weather | undefined) {

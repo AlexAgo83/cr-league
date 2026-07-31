@@ -42,7 +42,9 @@ describe("replayState", () => {
     const generated = simulateRace(DEMO_RACE_INPUT);
     const trace = generated.replayTrace ?? [];
 
-    expect(replayOrderAtProgress(generated, trace, 0.5)).toEqual(["redpeak", "mika", "volt", "hugo", "northline", "atlas"]);
+    // Re-pinned when the wet-grip window was narrowed: volt runs weather rubber on a forecast with
+    // rain in it, and hugo and northline swap behind it.
+    expect(replayOrderAtProgress(generated, trace, 0.5)).toEqual(["redpeak", "mika", "volt", "northline", "hugo", "atlas"]);
     expect(traceTimesAt(trace, 0.5)).toEqual({
       atlas: 66.3,
       hugo: 66.3,
@@ -53,11 +55,11 @@ describe("replayState", () => {
     });
     expect(traceGapsAt(trace, 0.5)).toEqual({
       atlas: 12.6,
-      hugo: 7.6,
+      hugo: 7.5,
       mika: 1,
-      northline: 8.5,
+      northline: 8.1,
       redpeak: 0,
-      volt: 2.6
+      volt: 2.4
     });
   });
 });

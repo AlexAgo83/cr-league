@@ -176,6 +176,8 @@
   "map_plan_config_title": "Current plan",
   "field_card": "Card",
   "map_trait_grip": "Grip",
+  "map_routes_unavailable": "The circuit drawings could not be loaded.",
+  "action_reload": "Reload",
   "map_trait_overtaking": "Overtaking",
   "map_trait_energy": "Energy",
   "trait_level_weak": "Weak",

@@ -176,6 +176,8 @@
   "map_plan_config_title": "Plan actuel",
   "field_card": "Carte",
   "map_trait_grip": "Grip",
+  "map_routes_unavailable": "Les tracés de circuit n'ont pas pu être chargés.",
+  "action_reload": "Recharger",
   "map_trait_overtaking": "Dépassement",
   "map_trait_energy": "Énergie",
   "trait_level_weak": "Faible",

@@ -7,8 +7,11 @@ import { useSyncExternalStore } from "react";
 // little since a league cycles through several tracks anyway.
 export type CircuitRoute = Array<{ lat: number; lng: number }>;
 
+export type CircuitRoutesStatus = "pending" | "ready" | "failed";
+
 let routeCache: Record<string, CircuitRoute> = {};
 let loadPromise: Promise<void> | null = null;
+let status: CircuitRoutesStatus = "pending";
 const listeners = new Set<() => void>();
 const emit = () => listeners.forEach((listener) => listener());
 
@@ -27,11 +30,16 @@ export function loadCircuitRoutes(): Promise<void> {
     loadPromise = import("./data.js")
       .then((module) => {
         routeCache = module.CIRCUIT_ROUTES;
+        status = "ready";
         emit();
       })
       // Swallowed rather than left dangling: every render asks again, and each one would log its
-      // own unhandled rejection.
-      .catch(() => {});
+      // own unhandled rejection. The status is what the UI reads to say so and offer the reload
+      // that is the only way out.
+      .catch(() => {
+        status = "failed";
+        emit();
+      });
   }
   return loadPromise;
 }
@@ -47,16 +55,25 @@ export function circuitRoutesReady(): boolean {
   return Object.keys(routeCache).length > 0;
 }
 
-// React hook: kicks off the load and reports readiness so views that draw the route can gate on it.
-export function useCircuitRoutesReady(): boolean {
-  const ready = useSyncExternalStore(
+export function circuitRoutesStatus(): CircuitRoutesStatus {
+  return status;
+}
+
+// React hook: kicks off the load and reports where it got to, so views that draw the route can gate
+// on it and the one that cannot draw can say why.
+export function useCircuitRoutesStatus(): CircuitRoutesStatus {
+  const current = useSyncExternalStore(
     (onChange) => {
       listeners.add(onChange);
       return () => listeners.delete(onChange);
     },
-    circuitRoutesReady,
-    () => false
+    circuitRoutesStatus,
+    () => "pending" as const
   );
-  if (!ready) void loadCircuitRoutes();
-  return ready;
+  if (current === "pending") void loadCircuitRoutes();
+  return current;
+}
+
+export function useCircuitRoutesReady(): boolean {
+  return useCircuitRoutesStatus() === "ready";
 }

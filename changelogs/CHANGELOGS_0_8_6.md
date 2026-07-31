@@ -12,6 +12,7 @@ Release date: 2026-07-31
 - The full-page map is now the layout for the Stand and the replay, at every width. The header floats over the map and the route is drawn edge to edge.
 - Bots think about the weekend in front of them. Approach, tyres, pit strategy and the card they play all read the forecast, the circuit and the championship instead of repeating one plan all season — and they buy for the season rather than at random.
 - Chrono attempts learn: a bot runs its plan, tries one variation, then goes back out on whichever was quicker.
+- Wet tyres are worth taking when it really rains. They used to lose to speed rubber even in a downpour, so the forecast never actually changed the right answer. They now cost you places in the dry, still cost you in a drizzle, and gain you places in heavy rain — a judgement call rather than a formality.
 - Below four cars, every one leaves a tyre trail on any map.
 - The duel takes the whole screen. The map is the board: the standing top-left, the lap history top-right, both engagement tanks capping the three calls across the bottom, the rematch in the corner. The reveal panel is gone — the lap history already says what he chose and what it was worth.
 - The duel ends on a recap in the middle of the map, the way a Grand Prix and a chrono do: the verdict, the gap at the flag and how many laps each driver took.
@@ -30,4 +31,5 @@ Release date: 2026-07-31
 - Fixed status notifications landing on top of the race-day bar on a full-page map.
 - Fixed an arcade game offering "Back to the game" in the header, which is not where a player in a duel wants to go: it is the way back to the menu.
 - Fixed the camera zoom pumping between wide and close for a whole duel, because two cars are never far enough apart to leave close range.
+- The map says so when the circuit drawings fail to load, and offers the reload that is the only way to get them back.
 - Fixed a screen going blank when the circuit drawings fail to load. The Stand carries its panels over the map, and they went down with it: the race-day bar, the plan, the standings and every button that moves the Grand Prix on. Only the drawing is missing now.

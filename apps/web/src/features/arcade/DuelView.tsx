@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useT, type TranslationKey } from "../../i18n/index.js";
 import { SetupBackButton } from "../../app/SetupViews.js";
+import { safeStorage } from "../../app/appStorage.js";
+import { ONBOARDING_HELP_KEYS, OnboardingHelpModal } from "../../app/OnboardingShell.js";
 import { randomTeamName } from "../../app/nameSeeds.js";
 import { CITY_CIRCUITS, withRoute, type CityCircuit } from "../../app/circuits.js";
 import { CircuitMap, type MapCar } from "../CircuitMap.js";
@@ -54,6 +56,9 @@ export function DuelView({ onBack, onRacingChange }: { onBack: () => void; onRac
   // The lap being driven: the board waits on it, and the cars are placed from it every frame.
   const [lap, setLap] = useState<{ round: DuelRound; gapBefore: number; next: Duel } | null>(null);
   const [recapDismissed, setRecapDismissed] = useState(false);
+  // The same arrival help every other screen gets, opened when the duel does. Not on the briefing:
+  // that screen is about who you drew, and the rules only matter once you are on the grid.
+  const [helpOpen, setHelpOpen] = useState(false);
   const carProgressRef = useRef<Record<string, number>>({ [PLAYER_ID]: 0, [RIVAL_ID]: 0 });
   const rival = { ...(RIVALS.find((candidate) => candidate.archetype === setup.rival) ?? RIVALS[0]!), name: setup.rivalName };
 
@@ -92,6 +97,7 @@ export function DuelView({ onBack, onRacingChange }: { onBack: () => void; onRac
 
   function start() {
     setRecapDismissed(false);
+    setHelpOpen(safeStorage.get(ONBOARDING_HELP_KEYS.duel) !== "1");
     carProgressRef.current = { [PLAYER_ID]: 0, [RIVAL_ID]: 0 };
     setDuel(createDuel(setup.seed, setup.rival, setup.circuit.likelyWeather));
   }
@@ -104,6 +110,16 @@ export function DuelView({ onBack, onRacingChange }: { onBack: () => void; onRac
     setDuel(null);
     setRecapDismissed(false);
   }
+
+  const help = helpOpen ? (
+    <OnboardingHelpModal
+      topic="duel"
+      onClose={(dismiss) => {
+        if (dismiss) safeStorage.set(ONBOARDING_HELP_KEYS.duel, "1");
+        setHelpOpen(false);
+      }}
+    />
+  ) : null;
 
   if (!duel) {
     return (
@@ -160,6 +176,7 @@ export function DuelView({ onBack, onRacingChange }: { onBack: () => void; onRac
   // Full screen once the duel is on: the map is the board, and every read-out is a corner of it.
   return (
     <div className="duel-race" aria-labelledby="duel-board-title">
+      {help}
       <CircuitMap
         className="duel-map"
         circuit={setup.hydrated}

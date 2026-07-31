@@ -11,13 +11,15 @@ export const ONBOARDING_HELP_KEYS = {
   leagueIntro: "cr-league-help-league-intro",
   race: "cr-league-help-race",
   plan: "cr-league-help-plan",
-  garage: "cr-league-help-garage"
+  garage: "cr-league-help-garage",
+  duel: "cr-league-help-duel"
 } as const;
 
 export const ONBOARDING_HELP_IMAGES = {
   race: "/assets/crl/track-briefing.webp",
   plan: "/assets/crl/strategy-cards.webp",
-  garage: "/assets/crl/garage-empty.webp"
+  garage: "/assets/crl/garage-empty.webp",
+  duel: "/assets/crl/arcade-catalogue.webp"
 } as const;
 
 const LEAGUE_ONBOARDING_IMAGES = [
@@ -30,6 +32,8 @@ const LEAGUE_ONBOARDING_IMAGES = [
 export type OnboardingHelpTopic = keyof typeof ONBOARDING_HELP_KEYS;
 export type StandardOnboardingHelpTopic = Exclude<OnboardingHelpTopic, "leagueIntro">;
 
+/* The screens the game shell opens help for on arrival. The duel is not one: it lives in the arcade,
+   outside the shell, and opens its own on the briefing. */
 export const SCREEN_ONBOARDING_HELP_TOPICS = ["race", "plan", "garage"] as const satisfies readonly OnboardingHelpTopic[];
 
 function AmbientRaceBackground() {

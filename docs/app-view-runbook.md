@@ -70,7 +70,7 @@ console.log(await view.probe(`Array.from(document.querySelectorAll("button")).fi
 Match `circuitRoutes/data`, not `circuitRoutes` — in dev the module itself lives at
 `circuitRoutes/index.ts`, and blocking it takes the whole app down instead of the data.
 
-## Three traps, all of them met the hard way
+## Four traps, all of them met the hard way
 
 **`page.evaluate(fn)` throws `__name is not defined`.** `tsx` compiles with esbuild's `keepNames`,
 which wraps functions in a `__name` call the page does not have. Pass expressions as **strings**.
@@ -78,6 +78,11 @@ which wraps functions in a `__name` call the page does not have. Pass expression
 
 **Never reload to change screen.** A reload drops the solo save back to the setup screen. `goto`
 pushes state and fires `popstate`, which is how the app navigates.
+
+**`page.goto` wipes localStorage.** `openApp` seeds storage in an init script, and that script runs
+on *every* load — so navigating by URL resets anything the app saved. A first check of a
+"don't show this again" box passed through the address bar and reported the box did nothing. Do
+anything about persistence inside the app: `goto()`, `click()`, the game's own navigation.
 
 **A campaign starts at `/drive`, not `/`.** `/` is the splash, which holds everything behind a
 press-start. `fresh` sessions do start at `/`, since the splash is the thing being looked at.

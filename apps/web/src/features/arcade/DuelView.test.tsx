@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import { loadCircuitRoutes } from "../../app/circuitRoutes/index.js";
 import { t, TranslationProvider, type TranslationKey, type TranslationParams } from "../../i18n/index.js";
@@ -21,10 +21,22 @@ const callButton = (label: string) =>
   Array.from(document.querySelectorAll<HTMLButtonElement>(".duel-call"))
     .find((button) => button.querySelector("strong")?.textContent === label)!;
 
+/**
+ * Fake timers with a real 16ms frame run ~265 callbacks per lap, and eight laps of that took 6s
+ * under coverage. The board only cares that the lap reaches its end, not how many frames it took,
+ * so frames are coarse here: same behaviour, a thirtieth of the work.
+ */
+const FRAME_MS = 500;
+function useCoarseFrames() {
+  vi.useFakeTimers({ toFake: ["performance", "setTimeout", "clearTimeout", "Date"] });
+  vi.stubGlobal("requestAnimationFrame", (callback: FrameRequestCallback) => setTimeout(() => callback(performance.now()), FRAME_MS) as unknown as number);
+  vi.stubGlobal("cancelAnimationFrame", (handle: number) => clearTimeout(handle as unknown as NodeJS.Timeout));
+}
+
 function playLap(label: string) {
   fireEvent.click(callButton(label));
   act(() => {
-    vi.advanceTimersByTime(LAP_MS + 32);
+    vi.advanceTimersByTime(LAP_MS + FRAME_MS * 2);
   });
 }
 
@@ -35,6 +47,9 @@ beforeAll(async () => {
 });
 
 afterEach(() => {
+  // Vitest runs without globals here, so testing-library never registers its own auto-cleanup:
+  // without this the trees pile up and a second render finds two of everything.
+  cleanup();
   vi.useRealTimers();
   vi.unstubAllGlobals();
 });
@@ -55,7 +70,7 @@ describe("the duel board", () => {
   });
 
   it("closes the attack once the tank is empty", () => {
-    vi.useFakeTimers({ toFake: ["requestAnimationFrame", "cancelAnimationFrame", "performance", "setTimeout", "clearTimeout", "Date"] });
+    useCoarseFrames();
     render(board());
     fireEvent.click(screen.getByRole("button", { name: "Line up" }));
 
@@ -68,7 +83,7 @@ describe("the duel board", () => {
   });
 
   it("ends on a recap in the middle of the map, not in the standing panel", () => {
-    vi.useFakeTimers({ toFake: ["requestAnimationFrame", "cancelAnimationFrame", "performance", "setTimeout", "clearTimeout", "Date"] });
+    useCoarseFrames();
     render(board());
     fireEvent.click(screen.getByRole("button", { name: "Line up" }));
 
@@ -83,5 +98,33 @@ describe("the duel board", () => {
     fireEvent.click(screen.getByRole("button", { name: "Close" }));
     expect(document.querySelector(".replay-finish-recap")).toBe(null);
     expect(screen.getByRole("button", { name: "New duel" })).toBeTruthy();
+  });
+
+  it("explains itself on the grid, not on the briefing, and remembers being dismissed", () => {
+    localStorage.clear();
+    render(board());
+    expect(screen.queryByRole("dialog")).toBe(null);
+
+    fireEvent.click(screen.getByRole("button", { name: "Line up" }));
+    expect(screen.getByRole("dialog")).toBeTruthy();
+
+    // Closed without ticking: nothing is remembered.
+    fireEvent.click(screen.getByRole("button", { name: "Got it" }));
+    expect(screen.queryByRole("dialog")).toBe(null);
+    expect(localStorage.getItem("cr-league-help-duel")).toBe(null);
+
+    cleanup();
+    render(board());
+    fireEvent.click(screen.getByRole("button", { name: "Line up" }));
+    expect(screen.getByRole("dialog")).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("checkbox"));
+    fireEvent.click(screen.getByRole("button", { name: "Got it" }));
+    expect(localStorage.getItem("cr-league-help-duel")).toBe("1");
+
+    cleanup();
+    render(board());
+    fireEvent.click(screen.getByRole("button", { name: "Line up" }));
+    expect(screen.queryByRole("dialog")).toBe(null);
   });
 });

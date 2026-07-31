@@ -117,11 +117,15 @@ export function DestinyWheelView({ onBack, onRacingChange }: { onBack: () => voi
               </li>
             ))}
           </ol>
-          <div className="actions">
+          {/* Two rows on purpose: running it again, then the two ways out. Four buttons never fit on
+              one line here, and left to wrap they broke three-and-one with the stray on its own. */}
+          <div className="actions wheel-result-actions">
             {shareButton}
             <button type="button" className="primary-button" onClick={launch}>
               {tt("wheel_draw_again")}
             </button>
+          </div>
+          <div className="actions wheel-result-exits">
             <button type="button" className="secondary-button" onClick={() => setDraw(null)}>
               {tt("wheel_back_to_entry")}
             </button>

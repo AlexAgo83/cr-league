@@ -5935,9 +5935,16 @@ label small {
   justify-content: center;
 }
 
+/* Sized to the button's own line, so a row of buttons is one height whether or not it carries an
+   icon: at 26px it stood 6px taller than its neighbours and the row read as ragged. */
 .wheel-share-icon {
-  height: 26px;
-  width: 26px;
+  height: 18px;
+  width: 18px;
+}
+
+/* The two rows read as one block: only the first keeps the gap from what is above it. */
+.wheel-result-exits {
+  margin-top: 12px;
 }
 
 /* ---------- Arcade duel ---------- */

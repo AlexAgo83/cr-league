@@ -1,6 +1,6 @@
 import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
-import { loadCircuitRoutes } from "../../app/circuitRoutes/index.js";
+import { loadCircuitRoutes, resetCircuitRoutesForTest } from "../../app/circuitRoutes/index.js";
 import { t, TranslationProvider, type TranslationKey, type TranslationParams } from "../../i18n/index.js";
 import { DuelView } from "./DuelView.js";
 import { DUEL_LAPS } from "./duel.js";
@@ -44,6 +44,23 @@ function playLap(label: string) {
 // chunk has landed. Loaded once for the file.
 beforeAll(async () => {
   await loadCircuitRoutes();
+});
+
+describe("a duel opened before the route data lands", () => {
+  it("draws the circuit once it does", async () => {
+    // /arcade/duel mounts this view cold, so the route cache can still be empty. A snapshot taken
+    // then used to be frozen empty for the whole duel: a board on a blank map.
+    resetCircuitRoutesForTest();
+    render(board());
+    fireEvent.click(screen.getByRole("button", { name: "Line up" }));
+    expect(document.querySelector(".circuit-route-layer")).toBe(null);
+
+    await act(async () => {
+      await loadCircuitRoutes();
+    });
+
+    expect(document.querySelector(".circuit-route-layer")).not.toBe(null);
+  });
 });
 
 afterEach(() => {

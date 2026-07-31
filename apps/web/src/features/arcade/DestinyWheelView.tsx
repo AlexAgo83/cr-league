@@ -1,7 +1,8 @@
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
+import { useCircuitRoutesReady } from "../../app/circuitRoutes/index.js";
 import { useT, type TranslationKey } from "../../i18n/index.js";
 import { SetupBackButton } from "../../app/SetupViews.js";
-import { regionsWithCircuits } from "../../app/circuits.js";
+import { regionsWithCircuits, withRoute } from "../../app/circuits.js";
 import { BoardIcon } from "../VisualIcon.js";
 import { TeamCar } from "../TeamCar.js";
 import {
@@ -37,6 +38,13 @@ export function DestinyWheelView({ onBack, onRacingChange }: { onBack: () => voi
   const [shareCopied, setShareCopied] = useState(false);
   const [draw, setDraw] = useState<WheelDraw | null>(null);
   const [showOrder, setShowOrder] = useState(false);
+  /**
+   * Same reason as the duel: a draw launched before the route chunk lands would carry an empty
+   * polyline for the whole race. The draw itself does not depend on it — the simulation reads track
+   * length and speed profile, not the drawn line — so re-taking it only affects what is drawn.
+   */
+  const routesReady = useCircuitRoutesReady();
+  const drawnCircuit = useMemo(() => (draw && routesReady ? withRoute(draw.circuit) : null), [draw, routesReady]);
   const canRace = participants.length >= WHEEL_MIN_PARTICIPANTS;
   const racing = Boolean(draw) && !showOrder;
   useEffect(() => {
@@ -82,7 +90,7 @@ export function DestinyWheelView({ onBack, onRacingChange }: { onBack: () => voi
           {/* No plan, decision or payoff inputs: those surfaces are absent rather than disabled. */}
           <ReplayView
             result={draw.result}
-            circuit={draw.circuit}
+            circuit={drawnCircuit ?? draw.circuit}
             playerTeamId={undefined}
             teamLiveries={draw.liveries}
             titleKey="wheel_kicker"

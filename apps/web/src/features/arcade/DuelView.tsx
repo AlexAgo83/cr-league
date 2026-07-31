@@ -1,10 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useT, type TranslationKey } from "../../i18n/index.js";
 import { SetupBackButton } from "../../app/SetupViews.js";
 import { safeStorage } from "../../app/appStorage.js";
 import { ONBOARDING_HELP_KEYS, OnboardingHelpModal } from "../../app/OnboardingShell.js";
 import { randomTeamName } from "../../app/nameSeeds.js";
 import { CITY_CIRCUITS, withRoute, type CityCircuit } from "../../app/circuits.js";
+import { useCircuitRoutesReady } from "../../app/circuitRoutes/index.js";
 import { CircuitMap, type MapCar } from "../CircuitMap.js";
 import { BoardIcon, CountryBadge, VisualIcon } from "../VisualIcon.js";
 import { TeamCar } from "../TeamCar.js";
@@ -52,6 +53,13 @@ const CALL_ICONS = { attack: "boost", manage: "balanced-approach", cover: "defen
 export function DuelView({ onBack, onRacingChange }: { onBack: () => void; onRacingChange?: (racing: boolean) => void }) {
   const tt = useT();
   const [setup, setSetup] = useState(() => drawSetup(`duel-${Date.now()}`));
+  /**
+   * Re-taken whenever the route cache fills, never frozen. Opening /arcade/duel cold mounts this
+   * view before the route chunk has landed, and a snapshot taken then is an empty polyline that
+   * stays empty: the map drew nothing for the whole duel.
+   */
+  const routesReady = useCircuitRoutesReady();
+  const hydrated = useMemo(() => (routesReady ? withRoute(setup.circuit) : setup.circuit), [routesReady, setup.circuit]);
   const [duel, setDuel] = useState<Duel | null>(null);
   // The lap being driven: the board waits on it, and the cars are placed from it every frame.
   const [lap, setLap] = useState<{ round: DuelRound; gapBefore: number; next: Duel } | null>(null);
@@ -179,7 +187,7 @@ export function DuelView({ onBack, onRacingChange }: { onBack: () => void; onRac
       {help}
       <CircuitMap
         className="duel-map"
-        circuit={setup.hydrated}
+        circuit={hydrated}
         cars={cars}
         carProgressRef={carProgressRef}
         weather={duel.weather}
@@ -299,9 +307,8 @@ function gapLabel(gap: number, tt: ReturnType<typeof useT>) {
 }
 
 /** A fresh circuit, rival and name per duel, so two runs never open on the same briefing. */
-function drawSetup(seed: string): { seed: string; rival: BotArchetype; rivalName: string; circuit: CityCircuit; hydrated: CityCircuit } {
+function drawSetup(seed: string): { seed: string; rival: BotArchetype; rivalName: string; circuit: CityCircuit } {
   const rival = RIVALS[Math.floor(Math.random() * RIVALS.length)] ?? RIVALS[0]!;
   const circuit = CITY_CIRCUITS[Math.floor(Math.random() * CITY_CIRCUITS.length)] ?? CITY_CIRCUITS[0];
-  // A fresh route snapshot, the way every other map takes one.
-  return { seed, rival: rival.archetype, rivalName: randomTeamName(), circuit, hydrated: withRoute(circuit) };
+  return { seed, rival: rival.archetype, rivalName: randomTeamName(), circuit };
 }

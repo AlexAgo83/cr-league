@@ -44,6 +44,14 @@ export function loadCircuitRoutes(): Promise<void> {
   return loadPromise;
 }
 
+/** Test seam: puts the cache back to how a cold page load finds it. */
+export function resetCircuitRoutesForTest() {
+  routeCache = {};
+  loadPromise = null;
+  status = "pending";
+  emit();
+}
+
 export function circuitRouteFor(layoutKey: string): CircuitRoute {
   const route = routeCache[layoutKey];
   if (route) return route;

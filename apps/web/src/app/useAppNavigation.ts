@@ -5,7 +5,13 @@ import type { GameView, ProfileSession } from "./types.js";
 import { parseAppRoute, pathForAppRoute, type PlanSubscreen } from "./routes.js";
 import { CHAMPIONSHIP_RECORD_TAB_KEY, GARAGE_PANEL_KEY, savedCardPanel, savedRecordTab, type CardPanel, type ChampionshipRecordTab } from "./viewPreferences.js";
 
-export function useAppNavigation(profileSession: ProfileSession | null, onRouteChange: () => void, activeReplayGrandPrixId?: string) {
+export function useAppNavigation(
+  profileSession: ProfileSession | null,
+  onRouteChange: () => void,
+  activeReplayGrandPrixId?: string,
+  /** A setup screen that owns the URL while it is open, so the game route does not overwrite it. */
+  setupPath?: string | null
+) {
   const initialRoute = useMemo(() => parseAppRoute(window.location.pathname), []);
   const [gameView, setGameView] = useState<GameView>(() => initialRoute.view);
   const [planSubscreen, setPlanSubscreen] = useState<PlanSubscreen>(() => initialRoute.planSubscreen);
@@ -37,16 +43,18 @@ export function useAppNavigation(profileSession: ProfileSession | null, onRouteC
       return;
     }
 
-    const path = pathForAppRoute({
-      view: gameView,
-      planSubscreen,
-      directiveStep,
-      championshipTab: championshipRecordTab,
-      garagePanel,
-      replayGrandPrixId: activeReplayGrandPrixId ?? routeReplayGrandPrixId
-    });
+    const path =
+      setupPath ??
+      pathForAppRoute({
+        view: gameView,
+        planSubscreen,
+        directiveStep,
+        championshipTab: championshipRecordTab,
+        garagePanel,
+        replayGrandPrixId: activeReplayGrandPrixId ?? routeReplayGrandPrixId
+      });
     if (window.location.pathname !== path) window.history.pushState(null, "", path);
-  }, [activeReplayGrandPrixId, championshipRecordTab, directiveStep, gameView, garagePanel, planSubscreen, profileSession, routeReplayGrandPrixId]);
+  }, [activeReplayGrandPrixId, championshipRecordTab, directiveStep, gameView, garagePanel, planSubscreen, profileSession, routeReplayGrandPrixId, setupPath]);
 
   useEffect(() => {
     safeStorage.set(CHAMPIONSHIP_RECORD_TAB_KEY, championshipRecordTab);

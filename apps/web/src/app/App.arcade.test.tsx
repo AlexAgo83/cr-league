@@ -17,13 +17,18 @@ afterEach(() => {
 });
 
 async function openWheel() {
+  // An arcade game owns its URL, so a second visit within the same document opens straight onto it
+  // and there is no entry flow left to click through.
+  const alreadyThere = window.location.pathname === "/arcade/wheel";
   render(<App />);
   // The splash is skipped once the app has been entered, so a second visit has no start button.
   const splash = screen.queryByRole("button", { name: "PRESS START" });
   if (splash) fireEvent.click(splash);
-  fireEvent.click(await screen.findByRole("button", { name: /^Solo$/ }));
-  fireEvent.click(await screen.findByRole("button", { name: /^Arcade$/ }));
-  fireEvent.click(await screen.findByRole("button", { name: /Destiny Wheel/ }));
+  if (!alreadyThere) {
+    fireEvent.click(await screen.findByRole("button", { name: /^Solo$/ }));
+    fireEvent.click(await screen.findByRole("button", { name: /^Arcade$/ }));
+    fireEvent.click(await screen.findByRole("button", { name: /Destiny Wheel/ }));
+  }
   await screen.findByRole("heading", { name: "Who is in the draw?" });
 }
 

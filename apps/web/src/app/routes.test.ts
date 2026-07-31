@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { isStartPath, parseAppRoute, pathForAppRoute } from "./routes.js";
+import { isStartPath, parseAppRoute, pathForAppRoute, pathForSetupEntry, setupEntryFromPath } from "./routes.js";
 
 describe("app routes", () => {
   it("maps stable navigation paths to app state", () => {
@@ -28,5 +28,21 @@ describe("app routes", () => {
     expect(pathForAppRoute({ view: "garage", planSubscreen: "plan", directiveStep: "approach", championshipTab: "standings", garagePanel: "team" })).toBe("/garage/team");
     expect(pathForAppRoute({ view: "drive", planSubscreen: "plan", directiveStep: "approach", championshipTab: "standings", garagePanel: "inventory" })).toBe("/drive");
     expect(pathForAppRoute({ view: "drive", planSubscreen: "plan", directiveStep: "approach", championshipTab: "standings", garagePanel: "inventory", replayGrandPrixId: "gp_abcd1" })).toBe("/replay/gp_abcd1");
+  });
+
+  it("reads an arcade game out of its own URL, and writes it back", () => {
+    expect(setupEntryFromPath("/arcade")).toBe("arcade");
+    expect(setupEntryFromPath("/arcade/duel")).toBe("duel");
+    expect(setupEntryFromPath("/arcade/wheel")).toBe("wheel");
+    // An arcade path nobody ships still lands on the catalogue rather than nowhere.
+    expect(setupEntryFromPath("/arcade/pinball")).toBe("arcade");
+    expect(setupEntryFromPath("/drive")).toBe(null);
+    expect(setupEntryFromPath("/")).toBe(null);
+
+    expect(pathForSetupEntry("duel")).toBe("/arcade/duel");
+    expect(pathForSetupEntry("wheel")).toBe("/arcade/wheel");
+    expect(pathForSetupEntry("arcade")).toBe("/arcade");
+    // The rest of the entry flow has no path of its own: the game route still speaks for it.
+    for (const mode of ["choice", "solo", "campaign", "multiplayer"] as const) expect(pathForSetupEntry(mode)).toBe(null);
   });
 });

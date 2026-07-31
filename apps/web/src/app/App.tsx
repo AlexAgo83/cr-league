@@ -37,7 +37,7 @@ import { rememberPlayerClaim, withCurrentPlayer as restoreCurrentPlayer, without
 import { createProfileActions } from "./profileActions.js";
 import { SetupProvider, type SetupContextValue } from "./setupContext.js";
 import { createRaceActions } from "./raceActions.js";
-import { isGrandPrixRouteId, isStartPath, shortGrandPrixId } from "./routes.js";
+import { isGrandPrixRouteId, isStartPath, pathForSetupEntry, setupEntryFromPath, shortGrandPrixId } from "./routes.js";
 import { createSessionActions } from "./sessionActions.js";
 import { type ProfileMode, type SetupEntryMode, type SetupMode } from "./SetupViews.js";
 import { createLeagueMutations } from "./leagueMutations.js";
@@ -133,6 +133,19 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
   const clearRouteReplay = useCallback(() => setHistoryReplay(null), [setHistoryReplay]);
   const activeReplayGrandPrixId =
     historyReplay ? shortGrandPrixId(historyReplay.id) : leagueState?.currentGrandPrix.result && resultOpen && resultTab === "replay" ? shortGrandPrixId(leagueState.currentGrandPrix.id) : undefined;
+  // An arcade URL opens straight onto that game, cold, with no clicks through the entry flow — and
+  // while one is open it owns the address bar, so the game route does not write /drive over it.
+  const [setupEntryMode, setSetupEntryMode] = useState<SetupEntryMode>(() => setupEntryFromPath(window.location.pathname) ?? "choice");
+  const setupUrlPath = leagueState ? null : pathForSetupEntry(setupEntryMode);
+
+  // Back and forward move between arcade screens the way they move between game screens. The game
+  // route has its own popstate listener inside useAppNavigation; this one owns the setup half.
+  useEffect(() => {
+    const applySetupRoute = () => setSetupEntryMode((current) => setupEntryFromPath(window.location.pathname) ?? (pathForSetupEntry(current) ? "choice" : current));
+    window.addEventListener("popstate", applySetupRoute);
+    return () => window.removeEventListener("popstate", applySetupRoute);
+  }, []);
+
   const {
     gameView,
     planSubscreen,
@@ -146,10 +159,9 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
     setGaragePanel,
     routeReplayGrandPrixId,
     setRouteReplayGrandPrixId
-  } = useAppNavigation(profileSession, clearRouteReplay, activeReplayGrandPrixId);
+  } = useAppNavigation(profileSession, clearRouteReplay, activeReplayGrandPrixId, setupUrlPath);
   const tt = useCallback((key: TranslationKey, params?: Parameters<typeof t>[2]) => t(key, locale, params), [locale]);
   const [profileMode, setProfileMode] = useState<ProfileMode>("choice");
-  const [setupEntryMode, setSetupEntryMode] = useState<SetupEntryMode>("choice");
   const [activeSoloSlot, setActiveSoloSlot] = useState<SoloSlot | null>(null);
   /**
    * How to get back into the last game, not the game itself: leaving one drops leagueState on

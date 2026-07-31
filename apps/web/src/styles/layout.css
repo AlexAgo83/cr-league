@@ -3096,17 +3096,52 @@ label small {
   z-index: 1;
 }
 
-/* Drops on the lens do not fall and do not follow the camera: they sit where they landed. */
-.circuit-weather-light_rain .map-rain,
-.circuit-weather-heavy_rain .map-rain {
+/* Drops on the lens. They do not follow the camera — they are on the glass, not on the track — but
+   they do not sit there either: each one arrives, trickles a couple of centimetres down the screen
+   and thins out. Two sets on the same loop, half a cycle apart, so drops are always arriving while
+   others are leaving and the layer never blinks as a block.
+
+   Both properties the keyframes touch (opacity, translate) composite, so this costs the main thread
+   nothing, same as the curtains behind it. */
+.circuit-weather-light_rain .map-rain::before,
+.circuit-weather-light_rain .map-rain::after,
+.circuit-weather-heavy_rain .map-rain::before,
+.circuit-weather-heavy_rain .map-rain::after {
+  animation: map-rain-lens 9s linear infinite;
+  content: "";
+  inset: 0;
+  position: absolute;
+  will-change: translate, opacity;
+}
+
+.circuit-weather-light_rain .map-rain::before,
+.circuit-weather-heavy_rain .map-rain::before {
   background-image:
     radial-gradient(ellipse 3px 4px at 18% 24%, rgb(233 244 255 / 0.5), transparent),
-    radial-gradient(ellipse 2px 3px at 63% 12%, rgb(233 244 255 / 0.42), transparent),
     radial-gradient(ellipse 4px 5px at 82% 41%, rgb(233 244 255 / 0.46), transparent),
-    radial-gradient(ellipse 2px 3px at 34% 63%, rgb(233 244 255 / 0.38), transparent),
     radial-gradient(ellipse 3px 4px at 71% 78%, rgb(233 244 255 / 0.44), transparent),
-    radial-gradient(ellipse 2px 2px at 9% 82%, rgb(233 244 255 / 0.36), transparent),
-    radial-gradient(ellipse 3px 4px at 46% 34%, rgb(233 244 255 / 0.34), transparent);
+    radial-gradient(ellipse 2px 2px at 9% 82%, rgb(233 244 255 / 0.36), transparent);
+}
+
+.circuit-weather-light_rain .map-rain::after,
+.circuit-weather-heavy_rain .map-rain::after {
+  /* Half a cycle behind, and nowhere near the first set's drops. */
+  animation-delay: -4.5s;
+  background-image:
+    radial-gradient(ellipse 2px 3px at 63% 12%, rgb(233 244 255 / 0.42), transparent),
+    radial-gradient(ellipse 2px 3px at 34% 63%, rgb(233 244 255 / 0.38), transparent),
+    radial-gradient(ellipse 3px 4px at 46% 34%, rgb(233 244 255 / 0.34), transparent),
+    radial-gradient(ellipse 2px 3px at 90% 68%, rgb(233 244 255 / 0.4), transparent);
+}
+
+/* A downpour runs the same drops through more often. */
+.circuit-weather-heavy_rain .map-rain::before,
+.circuit-weather-heavy_rain .map-rain::after {
+  animation-duration: 5.5s;
+}
+
+.circuit-weather-heavy_rain .map-rain::after {
+  animation-delay: -2.75s;
 }
 
 .circuit-weather-light_rain .map-rain {
@@ -3154,6 +3189,15 @@ label small {
   30% { rotate: 15deg; }
   55% { rotate: 9deg; }
   80% { rotate: 13deg; }
+}
+
+/* A drop landing, running down the glass and thinning out. Held at full opacity through the middle
+   so the slide is what reads, not the fade. */
+@keyframes map-rain-lens {
+  0% { opacity: 0; translate: 0 -8px; }
+  16% { opacity: 1; }
+  72% { opacity: 1; }
+  100% { opacity: 0; translate: 0 26px; }
 }
 
 /* One set of keyframes per tile height, travelling exactly one tile so the loop never seams. The
@@ -4879,9 +4923,17 @@ label small {
   .solo-slot-recent { animation: none; }
   /* The reaction still shows; only the motion stops. */
   .map-car .map-car-emote { animation: none; }
-  /* The rain stays on screen, it just stops falling: the weather still reads at a glance. */
+  /* The rain stays on screen, it just stops falling: the weather still reads at a glance. The lens
+     drops need their opacity back, since their keyframes start and end invisible. */
   .map-rain-curtain,
   .map-rain-curtain::before { animation: none; }
+
+  .map-rain::before,
+  .map-rain::after {
+    animation: none;
+    opacity: 1;
+    translate: none;
+  }
 }
 
 @keyframes replay-flag-pop {

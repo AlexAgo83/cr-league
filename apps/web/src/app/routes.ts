@@ -1,5 +1,6 @@
 import type { DirectiveStep } from "../features/DirectivePanel.js";
 import type { GameView } from "./types.js";
+import type { SetupEntryMode } from "./SetupViews.js";
 import type { CardPanel, ChampionshipRecordTab } from "./viewPreferences.js";
 
 export type PlanSubscreen = "plan" | "chrono" | "report";
@@ -25,6 +26,31 @@ export function parseAppRoute(pathname: string): AppRoute {
   if (first === "admin") return route("admin", "plan", "approach", "standings", "inventory");
   if (first === "changelog") return route("changelog", "plan", "approach", "standings", "inventory");
   return route("drive", "plan", "approach", "standings", "inventory");
+}
+
+/**
+ * Arcade games are reachable by URL, so one can be linked, bookmarked or opened cold. They are the
+ * only setup screens with a path of their own: the rest of the entry flow is a few clicks from the
+ * splash and has nothing worth addressing.
+ */
+const ARCADE_PATHS: Record<string, SetupEntryMode> = {
+  "": "arcade",
+  duel: "duel",
+  wheel: "wheel"
+};
+
+export function setupEntryFromPath(pathname: string): SetupEntryMode | null {
+  const parts = pathname.split("/").filter(Boolean);
+  if (parts[0] !== "arcade") return null;
+  return ARCADE_PATHS[parts[1] ?? ""] ?? "arcade";
+}
+
+/** The path a setup screen owns, or null for the ones the game route still speaks for. */
+export function pathForSetupEntry(mode: SetupEntryMode): string | null {
+  if (mode === "arcade") return "/arcade";
+  if (mode === "duel") return "/arcade/duel";
+  if (mode === "wheel") return "/arcade/wheel";
+  return null;
 }
 
 export function isStartPath(pathname: string) {

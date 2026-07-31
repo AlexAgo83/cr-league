@@ -173,4 +173,24 @@ describe("the duel board", () => {
     expect(localStorage.getItem("cr-league-arcade-duel-region")).toBe("africa");
     expect(circuitNow()).not.toBe(before);
   });
+
+  it("draws the rival a new car with the new name, and never the player's", () => {
+    localStorage.clear();
+    render(board());
+    const cars = () =>
+      Array.from(document.querySelectorAll<HTMLImageElement>(".duel-rival-card img[src*='cars']")).map(
+        (image) => image.getAttribute("src")?.split("/").slice(-2)[0] ?? ""
+      );
+
+    const rivalCars = new Set<string>();
+    for (let draw = 0; draw < 12; draw += 1) {
+      const [mine, theirs] = cars();
+      // Two identical cars on a two-car map is the one thing it has to get right.
+      expect(theirs, "the rival is in the player's car").not.toBe(mine);
+      rivalCars.add(theirs!);
+      fireEvent.click(screen.getByRole("button", { name: "Another rival" }));
+    }
+
+    expect(rivalCars.size, "the rival is always in the same car").toBeGreaterThan(1);
+  });
 });

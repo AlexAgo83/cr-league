@@ -7,7 +7,7 @@ import { randomTeamName } from "../../app/nameSeeds.js";
 import { DEFAULT_DUEL_LIVERY, loadDuelLivery, loadDuelRegion, saveDuelLivery, saveDuelRegion, type DuelLivery } from "./arcadeStorage.js";
 import { type WheelRegion } from "./destinyWheel.js";
 import { Modal } from "../Modal.js";
-import { CAR_ASSETS } from "../carAssets.js";
+import { CAR_ASSETS, DEFAULT_CAR_ASSET } from "../carAssets.js";
 import { CITY_CIRCUITS, circuitsInRegion, regionsWithCircuits, withRoute, type CityCircuit } from "../../app/circuits.js";
 import { useCircuitRoutesReady } from "../../app/circuitRoutes/index.js";
 import { CircuitMap, type MapCar } from "../CircuitMap.js";
@@ -56,7 +56,7 @@ const CALL_ICONS = { attack: "boost", manage: "balanced-approach", cover: "defen
  */
 export function DuelView({ onBack, onRacingChange }: { onBack: () => void; onRacingChange?: (racing: boolean) => void }) {
   const tt = useT();
-  const [setup, setSetup] = useState(() => drawSetup(`duel-${Date.now()}`, loadDuelRegion()));
+  const [setup, setSetup] = useState(() => drawSetup(`duel-${Date.now()}`, loadDuelRegion(), loadDuelLivery().carAssetId));
   /**
    * Re-taken whenever the route cache fills, never frozen. Opening /arcade/duel cold mounts this
    * view before the route chunk has landed, and a snapshot taken then is an empty polyline that
@@ -75,7 +75,8 @@ export function DuelView({ onBack, onRacingChange }: { onBack: () => void; onRac
   // that screen is about who you drew, and the rules only matter once you are on the grid.
   const [helpOpen, setHelpOpen] = useState(false);
   const carProgressRef = useRef<Record<string, number>>({ [PLAYER_ID]: 0, [RIVAL_ID]: 0 });
-  const rival = { ...(RIVALS.find((candidate) => candidate.archetype === setup.rival) ?? RIVALS[0]!), name: setup.rivalName };
+  const rivalArchetype = RIVALS.find((candidate) => candidate.archetype === setup.rival) ?? RIVALS[0]!;
+  const rival = { ...rivalArchetype, name: setup.rivalName, livery: { ...rivalArchetype.livery, carAssetId: setup.rivalCarAssetId } };
 
   // The briefing keeps its panel and its ambient circuit; the board takes the screen.
   useEffect(() => {
@@ -118,7 +119,7 @@ export function DuelView({ onBack, onRacingChange }: { onBack: () => void; onRac
   }
 
   function again() {
-    const next = drawSetup(`duel-${Date.now()}`, region);
+    const next = drawSetup(`duel-${Date.now()}`, region, livery.carAssetId);
     carProgressRef.current = { [PLAYER_ID]: 0, [RIVAL_ID]: 0 };
     setSetup(next);
     setLap(null);
@@ -226,7 +227,7 @@ export function DuelView({ onBack, onRacingChange }: { onBack: () => void; onRac
                 setRegion(next);
                 saveDuelRegion(next);
                 // The drawn circuit belongs to the old pool, so redraw rather than leave a mismatch.
-                setSetup(drawSetup(`duel-${Date.now()}`, next));
+                setSetup(drawSetup(`duel-${Date.now()}`, next, livery.carAssetId));
               }}
             >
               <option value="all">{tt("circuit_region_all")}</option>
@@ -383,9 +384,21 @@ function gapLabel(gap: number, tt: ReturnType<typeof useT>) {
 }
 
 /** A fresh circuit, rival and name per duel, so two runs never open on the same briefing. */
-function drawSetup(seed: string, region: WheelRegion): { seed: string; rival: BotArchetype; rivalName: string; circuit: CityCircuit } {
+function drawSetup(seed: string, region: WheelRegion, playerCarAssetId?: string): {
+  seed: string;
+  rival: BotArchetype;
+  rivalName: string;
+  rivalCarAssetId: string;
+  circuit: CityCircuit;
+} {
   const rival = RIVALS[Math.floor(Math.random() * RIVALS.length)] ?? RIVALS[0]!;
   const pool = circuitsInRegion(region);
   const circuit = pool[Math.floor(Math.random() * pool.length)] ?? CITY_CIRCUITS[0];
-  return { seed, rival: rival.archetype, rivalName: randomTeamName(), circuit };
+  // A new car with the new name and colours. Never the one the player is in: two identical cars on
+  // a two-car map is the one thing the map has to get right. The fallback matters — a player who
+  // has never picked a car is still in one, and it is the default.
+  const playerCar = playerCarAssetId ?? DEFAULT_CAR_ASSET.id;
+  const cars = CAR_ASSETS.filter((asset) => asset.id !== playerCar);
+  const car = cars[Math.floor(Math.random() * cars.length)] ?? CAR_ASSETS[0]!;
+  return { seed, rival: rival.archetype, rivalName: randomTeamName(), rivalCarAssetId: car.id, circuit };
 }

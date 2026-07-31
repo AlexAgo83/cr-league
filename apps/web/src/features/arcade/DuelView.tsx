@@ -152,7 +152,7 @@ export function DuelView({ onBack, onRacingChange }: { onBack: () => void; onRac
               </dd>
             </div>
           </dl>
-          <div className="actions">
+          <div className="actions arcade-actions">
             <button type="button" className="secondary-button" onClick={again}>
               {tt("duel_redraw")}
             </button>

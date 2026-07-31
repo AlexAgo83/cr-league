@@ -5942,12 +5942,13 @@ label small {
   width: 18px;
 }
 
-/* Flush right, and the second row tucked under the first so the pair reads as one block. */
-.wheel-result-actions {
+/* Every arcade action row sits in the corner the eye already goes to, and a second row tucks under
+   the first so the pair reads as one block. */
+.arcade-actions {
   justify-content: flex-end;
 }
 
-.wheel-result-actions + .wheel-result-actions {
+.arcade-actions + .arcade-actions {
   margin-top: 12px;
 }
 

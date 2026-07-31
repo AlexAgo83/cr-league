@@ -1071,7 +1071,6 @@
   "wheel_empty": "Nobody yet. Add at least two names.",
   "wheel_count": "{count} of {max}",
   "wheel_region_label": "Circuit pool",
-  "wheel_region_count": "{count} circuits",
   "wheel_launch": "Race the draw",
   "wheel_need_more": "Add at least two names to race.",
   "wheel_result_kicker": "The draw has spoken",

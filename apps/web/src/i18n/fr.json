@@ -1071,7 +1071,6 @@
   "wheel_empty": "Personne pour l'instant. Ajoute au moins deux noms.",
   "wheel_count": "{count} sur {max}",
   "wheel_region_label": "Sélection de circuits",
-  "wheel_region_count": "{count} circuits",
   "wheel_launch": "Lancer le tirage",
   "wheel_need_more": "Ajoute au moins deux noms pour lancer.",
   "wheel_result_kicker": "Le sort a parlé",

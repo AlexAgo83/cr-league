@@ -1,7 +1,7 @@
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { useT, type TranslationKey } from "../../i18n/index.js";
 import { SetupBackButton } from "../../app/SetupViews.js";
-import { regionsWithCircuits, circuitsInRegion } from "../../app/circuits.js";
+import { regionsWithCircuits } from "../../app/circuits.js";
 import { BoardIcon } from "../VisualIcon.js";
 import { TeamCar } from "../TeamCar.js";
 import {
@@ -120,13 +120,13 @@ export function DestinyWheelView({ onBack, onRacingChange }: { onBack: () => voi
           {/* Two rows on purpose, both flush right: four buttons never fit on one line here, and left
               to wrap they broke three-and-one with the stray on its own. Each row pairs a way back
               with a way on, so the two things you can do next sit under each other on the right. */}
-          <div className="actions wheel-result-actions">
+          <div className="actions arcade-actions">
             <button type="button" className="secondary-button" onClick={() => setDraw(null)}>
               {tt("wheel_back_to_entry")}
             </button>
             {shareButton}
           </div>
-          <div className="actions wheel-result-actions">
+          <div className="actions arcade-actions">
             <button type="button" className="secondary-button" onClick={onBack}>
               {tt("wheel_back_to_catalogue")}
             </button>
@@ -215,10 +215,9 @@ export function DestinyWheelView({ onBack, onRacingChange }: { onBack: () => voi
               <option key={option} value={option}>{tt(`circuit_region_${option}` as TranslationKey)}</option>
             ))}
           </select>
-          <small>{tt("wheel_region_count", { count: circuitsInRegion(region).length })}</small>
         </label>
 
-        <div className="actions wheel-result-actions">
+        <div className="actions arcade-actions">
           <small className="wheel-count">{tt("wheel_count", { count: participants.length, max: WHEEL_MAX_PARTICIPANTS })}</small>
           {shareButton}
           <button type="button" className="primary-button" disabled={!canRace} onClick={launch}>

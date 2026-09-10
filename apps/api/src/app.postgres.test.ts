@@ -23,7 +23,7 @@ run("api app postgres integration", () => {
 
     execFileSync("npx", ["prisma", "migrate", "deploy"], {
       env: { ...process.env, DATABASE_URL: databaseUrl },
-      stdio: "ignore"
+      stdio: "inherit"
     });
 
     prisma = new PrismaClient({ adapter: createPgAdapter(databaseUrl) });

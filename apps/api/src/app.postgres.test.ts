@@ -1,4 +1,5 @@
 import { execFileSync } from "node:child_process";
+import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@prisma/client";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { createTestApp } from "./app.testHelpers.js";
@@ -15,7 +16,7 @@ run("api app postgres integration", () => {
     const { databaseUrl, maintenanceUrl } = testDatabaseUrls();
     process.env.DATABASE_URL = databaseUrl;
 
-    const bootstrap = new PrismaClient({ datasources: { db: { url: maintenanceUrl } } });
+    const bootstrap = new PrismaClient({ adapter: new PrismaPg({ connectionString: maintenanceUrl }) });
     await bootstrap.$executeRawUnsafe(`DROP DATABASE IF EXISTS ${quotedTestDatabase()} WITH (FORCE)`);
     await bootstrap.$executeRawUnsafe(`CREATE DATABASE ${quotedTestDatabase()}`);
     await bootstrap.$disconnect();
@@ -25,7 +26,7 @@ run("api app postgres integration", () => {
       stdio: "ignore"
     });
 
-    prisma = new PrismaClient({ datasources: { db: { url: databaseUrl } } });
+    prisma = new PrismaClient({ adapter: new PrismaPg({ connectionString: databaseUrl }) });
   });
 
   beforeEach(async () => {
@@ -36,7 +37,7 @@ run("api app postgres integration", () => {
     if (!prisma) return;
     await prisma.$disconnect();
     const { maintenanceUrl } = testDatabaseUrls();
-    const cleanup = new PrismaClient({ datasources: { db: { url: maintenanceUrl } } });
+    const cleanup = new PrismaClient({ adapter: new PrismaPg({ connectionString: maintenanceUrl }) });
     await cleanup.$executeRawUnsafe(`DROP DATABASE IF EXISTS ${quotedTestDatabase()} WITH (FORCE)`);
     await cleanup.$disconnect();
   });

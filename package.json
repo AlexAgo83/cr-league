@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "engines": {
-    "node": "^20.19.0"
+    "node": "^22.22.2"
   },
   "workspaces": [
     "apps/*",
@@ -80,6 +80,7 @@
     "vitest": "^4.0.8"
   },
   "overrides": {
-    "deepmerge-ts": "8.0.2"
+    "deepmerge-ts": "8.0.2",
+    "mysql2": "^3.24.4"
   }
 }

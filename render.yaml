@@ -11,7 +11,7 @@ services:
     healthCheckPath: /health
     envVars:
       - key: NODE_VERSION
-        value: "20"
+        value: "22"
       - key: API_HOST
         value: 0.0.0.0
       - key: API_PORT
@@ -34,7 +34,7 @@ services:
     pullRequestPreviewsEnabled: true
     envVars:
       - key: NODE_VERSION
-        value: "20"
+        value: "22"
       - key: VITE_API_BASE_URL
         sync: false
     routes:

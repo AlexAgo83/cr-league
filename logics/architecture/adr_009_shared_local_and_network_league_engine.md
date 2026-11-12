@@ -1,6 +1,6 @@
 ## adr_009_shared_local_and_network_league_engine - Shared local and network league engine
 > Date: 2026-07-28
-> Status: Proposed
+> Status: Accepted
 > Related request: `req_131_solo_and_multiplayer_entry_split_with_local_solo_mode`
 > Related backlog: `item_348_build_local_solo_state_persistence_and_action_adapter`
 > Related task: `task_132_orchestrate_solo_multiplayer_entry_and_local_solo_mode`
@@ -30,6 +30,7 @@ flowchart LR
 - The confirmed product scope is one local solo save slot, no cloud sync, no invite code, no profile requirement for Solo, and no PWA/offline packaging requirement in this slice.
 
 # Decision
+- 2026-11-12 operator cleanup: Accepted after verifying the shared transition engine in `packages/shared/src/domain/leagueEngine.ts`, its API adapters in `apps/api/src/features/leagues/`, and Solo actions and persistence in `apps/web/src/app/App.tsx` and `soloStorage.ts`. Delivery history includes `7145fdaf` (shared engine), `88150a2e` (local GP loop), and `a1787092` (API GP lifecycle). Initial state creation remains in adapters rather than the proposed `leagueFactory.ts`, and the original one-slot scope has evolved into three slots; these details do not change the delivered shared transition architecture. No further work is planned by this cleanup.
 - Extract or create shared domain modules under `packages/shared/src/domain/`:
   - `leagueFactory.ts` creates initial LeagueState instances for solo and API-backed league creation from explicit inputs.
   - `leagueEngine.ts` owns deterministic LeagueState transitions.

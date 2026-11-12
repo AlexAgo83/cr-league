@@ -4,7 +4,7 @@
 
 | Doc | Title | Status | Owner | Progress | Path |
 |---|---|---|---|---|---|
-| [adr_001_cr_league_v1_static_pwa_api_architecture](architecture/adr_001_cr_league_v1_static_pwa_api_architecture.md) | Option B: Static PWA + dedicated API | Accepted |  |  | architecture/adr_001_cr_league_v1_static_pwa_api_architecture.md |
+| [adr_001_cr_league_v1_static_pwa_api_architecture](architecture/adr_001_cr_league_v1_static_pwa_api_architecture.md) | CR League V1 static PWA API architecture | Accepted |  |  | architecture/adr_001_cr_league_v1_static_pwa_api_architecture.md |
 | [adr_002_framework_stack](architecture/adr_002_framework_stack.md) | Framework Stack | Accepted |  |  | architecture/adr_002_framework_stack.md |
 | [adr_003_code_organization](architecture/adr_003_code_organization.md) | Code Organization | Accepted |  |  | architecture/adr_003_code_organization.md |
 | [adr_004_data_security](architecture/adr_004_data_security.md) | Data and Security | Accepted |  |  | architecture/adr_004_data_security.md |
@@ -12,14 +12,14 @@
 | [adr_006_accessibility](architecture/adr_006_accessibility.md) | Accessibility | Accepted |  |  | architecture/adr_006_accessibility.md |
 | [adr_007_i18n](architecture/adr_007_i18n.md) | Internationalization | Accepted |  |  | architecture/adr_007_i18n.md |
 | [adr_008_testing_quality](architecture/adr_008_testing_quality.md) | Testing and Quality | Accepted |  |  | architecture/adr_008_testing_quality.md |
-| [adr_009_shared_local_and_network_league_engine](architecture/adr_009_shared_local_and_network_league_engine.md) | Shared local and network league engine | Proposed |  |  | architecture/adr_009_shared_local_and_network_league_engine.md |
+| [adr_009_shared_local_and_network_league_engine](architecture/adr_009_shared_local_and_network_league_engine.md) | Shared local and network league engine | Accepted |  |  | architecture/adr_009_shared_local_and_network_league_engine.md |
 | [adr_010_replay_layout_zone_ownership](architecture/adr_010_replay_layout_zone_ownership.md) | Replay layout zone ownership | Accepted |  |  | architecture/adr_010_replay_layout_zone_ownership.md |
 
 ## Product briefs
 
 | Doc | Title | Status | Owner | Progress | Path |
 |---|---|---|---|---|---|
-| [prod_001_cr_league_product_brief](product/prod_001_cr_league_product_brief.md) | 8. Progression | Settled |  |  | product/prod_001_cr_league_product_brief.md |
+| [prod_001_cr_league_product_brief](product/prod_001_cr_league_product_brief.md) | CR League Product Brief | Settled |  |  | product/prod_001_cr_league_product_brief.md |
 | [prod_002_visual_replay_v0_product_brief](product/prod_002_visual_replay_v0_product_brief.md) | Visual Replay V0 Product Brief | Settled |  |  | product/prod_002_visual_replay_v0_product_brief.md |
 | [prod_003_race_cockpit_redesign_v0_product_brief](product/prod_003_race_cockpit_redesign_v0_product_brief.md) | Race Cockpit Redesign V0 Product Brief | Settled |  |  | product/prod_003_race_cockpit_redesign_v0_product_brief.md |
 | [prod_004_over_engineering_cleanup_product_brief](product/prod_004_over_engineering_cleanup_product_brief.md) | Over-engineering Cleanup Product Brief | Settled |  |  | product/prod_004_over_engineering_cleanup_product_brief.md |
@@ -103,15 +103,15 @@
 | [prod_082_repo_review_remediation_pass_7_product_brief](product/prod_082_repo_review_remediation_pass_7_product_brief.md) | Repo Review Remediation Pass 7 Product Brief | Settled |  |  | product/prod_082_repo_review_remediation_pass_7_product_brief.md |
 | [prod_083_solo_multiplayer_entry_and_local_solo_mode_product_brief](product/prod_083_solo_multiplayer_entry_and_local_solo_mode_product_brief.md) | Solo / Multiplayer Entry And Local Solo Mode Product Brief | Settled |  |  | product/prod_083_solo_multiplayer_entry_and_local_solo_mode_product_brief.md |
 | [prod_084_race_replay_driver_emotes_product_brief](product/prod_084_race_replay_driver_emotes_product_brief.md) | Race Replay Driver Emotes Product Brief | Settled |  |  | product/prod_084_race_replay_driver_emotes_product_brief.md |
-| [prod_085_solo_save_slots_product_brief](product/prod_085_solo_save_slots_product_brief.md) | Solo Save Slots Product Brief | Proposed |  |  | product/prod_085_solo_save_slots_product_brief.md |
+| [prod_085_solo_save_slots_product_brief](product/prod_085_solo_save_slots_product_brief.md) | Solo Save Slots Product Brief | Settled |  |  | product/prod_085_solo_save_slots_product_brief.md |
 | [prod_086_solo_arcade_product_brief](product/prod_086_solo_arcade_product_brief.md) | Solo Arcade Product Brief | Settled |  |  | product/prod_086_solo_arcade_product_brief.md |
 
 ## Roadmaps
 
 | Doc | Title | Status | Owner | Progress | Path |
 |---|---|---|---|---|---|
-| [1.0](roadmap/road_001_cr_league_roadmap.md) | Private league V1 | Superseded |  |  | roadmap/road_001_cr_league_roadmap.md |
-| [1.0](roadmap/road_002_cr_league_roadmap_v2.md) | Private league V1 | Accepted |  |  | roadmap/road_002_cr_league_roadmap_v2.md |
+| [road_001_cr_league_roadmap](roadmap/road_001_cr_league_roadmap.md) | CR League Roadmap | Superseded |  |  | roadmap/road_001_cr_league_roadmap.md |
+| [road_002_cr_league_roadmap_v2](roadmap/road_002_cr_league_roadmap_v2.md) | CR League Roadmap v2 | Accepted |  |  | roadmap/road_002_cr_league_roadmap_v2.md |
 
 ## Requests
 
@@ -612,7 +612,7 @@
 | [item_353_bound_what_a_solo_save_costs_in_storage](backlog/item_353_bound_what_a_solo_save_costs_in_storage.md) | Bound what a solo save costs in storage | Done |  | 100 | backlog/item_353_bound_what_a_solo_save_costs_in_storage.md |
 | [item_354_store_solo_games_in_three_slots_with_a_light_index](backlog/item_354_store_solo_games_in_three_slots_with_a_light_index.md) | Store solo games in three slots with a light index | Done |  | 100 | backlog/item_354_store_solo_games_in_three_slots_with_a_light_index.md |
 | [item_355_pick_a_solo_slot_from_the_entry_screen](backlog/item_355_pick_a_solo_slot_from_the_entry_screen.md) | Pick a solo slot from the entry screen | Done |  | 100 | backlog/item_355_pick_a_solo_slot_from_the_entry_screen.md |
-| [item_356_produce_the_arcade_board_icons_and_hero](backlog/item_356_produce_the_arcade_board_icons_and_hero.md) | Arcade catalogue hero | Done |  | 100 | backlog/item_356_produce_the_arcade_board_icons_and_hero.md |
+| [item_356_produce_the_arcade_board_icons_and_hero](backlog/item_356_produce_the_arcade_board_icons_and_hero.md) | Produce the arcade board icons and hero | Done |  | 100 | backlog/item_356_produce_the_arcade_board_icons_and_hero.md |
 | [item_357_split_solo_into_campaign_and_arcade](backlog/item_357_split_solo_into_campaign_and_arcade.md) | Split Solo into Campaign and Arcade | Done |  | 100 | backlog/item_357_split_solo_into_campaign_and_arcade.md |
 | [item_358_enter_and_keep_the_destiny_wheel_participants](backlog/item_358_enter_and_keep_the_destiny_wheel_participants.md) | Enter and keep the Destiny Wheel participants | Done |  | 100 | backlog/item_358_enter_and_keep_the_destiny_wheel_participants.md |
 | [item_359_race_the_destiny_wheel_draw_and_show_the_order](backlog/item_359_race_the_destiny_wheel_draw_and_show_the_order.md) | Race the Destiny Wheel draw and show the order | Done |  | 100 | backlog/item_359_race_the_destiny_wheel_draw_and_show_the_order.md |
@@ -756,3 +756,7 @@
 | [task_133_orchestrate_race_replay_driver_emotes](tasks/task_133_orchestrate_race_replay_driver_emotes.md) | Orchestrate race replay driver emotes | Done |  | 100% | tasks/task_133_orchestrate_race_replay_driver_emotes.md |
 | [task_134_orchestrate_solo_save_slots](tasks/task_134_orchestrate_solo_save_slots.md) | Orchestrate solo save slots | Done |  | 100 | tasks/task_134_orchestrate_solo_save_slots.md |
 | [task_135_orchestrate_the_solo_arcade_and_its_destiny_wheel](tasks/task_135_orchestrate_the_solo_arcade_and_its_destiny_wheel.md) | Orchestrate the Solo Arcade and its Destiny Wheel | Done |  | 100 | tasks/task_135_orchestrate_the_solo_arcade_and_its_destiny_wheel.md |
+
+## Runbooks
+
+_None_
